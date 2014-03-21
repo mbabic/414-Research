@@ -1,10 +1,27 @@
 package Project;
 
+import java.io.File;
+
 import org.opencv.highgui.VideoCapture;
+
+import com.googlecode.javacv.Frame;
+import com.googlecode.javacv.FrameRecorder;
+import com.googlecode.javacv.FrameRecorder.Exception;
+import com.googlecode.javacv.OpenCVFrameRecorder;
 
 public class Transmitter {
 
-	Transmitter() {
+	private FrameRecorder recorderBackGround;
+	private FrameRecorder recorderFacial;
+	private VideoCapture capture;
+
+	Transmitter(File bFile, File fFile) {
+
+		recorderBackGround = new OpenCVFrameRecorder(bFile, Settings.WIDTH,
+				Settings.HEIGHT);
+		recorderFacial = new OpenCVFrameRecorder(fFile, Settings.WIDTH,
+				Settings.HEIGHT);
+
 	}
 
 	/**
@@ -29,7 +46,7 @@ public class Transmitter {
 	 */
 	public VideoCapture receiveStream(String fileloc)
 			throws InterruptedException {
-		VideoCapture capture = new VideoCapture(fileloc);
+		capture = new VideoCapture(fileloc);
 
 		if (capture.isOpened()) {
 			return capture;
@@ -50,7 +67,7 @@ public class Transmitter {
 	 * @throws InterruptedException
 	 */
 	public VideoCapture receiveStream(int input) throws InterruptedException {
-		VideoCapture capture = new VideoCapture(input);
+		capture = new VideoCapture(input);
 
 		if (capture.isOpened()) {
 			Thread.sleep(900);
@@ -62,10 +79,31 @@ public class Transmitter {
 	}
 
 	/**
-	 * TransmitStream will send the video stream out to a file or viewer.
+	 * Adds frames to the video output streams
+	 * 
+	 * @param bFrame
+	 *            Background frame to record
+	 * @param fFrame
+	 *            Facial data frame to record
 	 */
-	public void transmitStream() {
+	public void videoBuilder(Frame bFrame, Frame fFrame) {
+		try {
+			recorderBackGround.record(bFrame);
+			recorderFacial.record(fFrame);
+		} catch (Exception e) {
+			System.err.println("Failed to write frame to recorder");
+			e.printStackTrace();
+		}
+	}
 
+	/**
+	 * TransmitStream will send the video stream out to a file or viewer.
+	 * 
+	 * @throws Exception
+	 */
+	public void transmitStream() throws Exception {
+		recorderBackGround.stop();
+		recorderFacial.stop();
 	}
 
 	/**
