@@ -1,3 +1,4 @@
+package Examples;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
