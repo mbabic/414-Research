@@ -3,16 +3,17 @@ package Project;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_core.CvCloneFunc;
-import com.googlecode.javacv.cpp.opencv_highgui;
-import com.googlecode.javacv.cpp.opencv_imgproc;;
+import com.googlecode.javacv.cpp.opencv_core.CvMat;
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
+import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+import com.googlecode.javacv.cpp.opencv_imgproc;
+import com.googlecode.javacv.cpp.opencv_objdetect;
+
 
 /**
  * Does the facial recognition
@@ -44,14 +45,12 @@ public class Analyzer {
 	 *            The original unedited image
 	 * @return The location of all the faces
 	 */
-	public MatOfRect detectFaces(Mat inputMat) {
-		Mat greyMat = new Mat();
+	public MatOfRect detectFaces(CvMat inputMat) {
+		CvMat greyMat = inputMat.clone();
 		MatOfRect faces = new MatOfRect();
-
-		inputMat.copyTo(greyMat);
-
-		Imgproc.cvtColor(inputMat, greyMat, Imgproc.COLOR_BGR2GRAY);
-		Imgproc.equalizeHist(greyMat, greyMat);
+	
+		opencv_imgproc.cvCvtColor(inputMat, greyMat, opencv_imgproc.CV_BGR2GRAY);
+		opencv_imgproc.cvEqualizeHist(greyMat, greyMat);
 		faceCascade.detectMultiScale(greyMat, faces);
 		return faces;
 	}
@@ -74,11 +73,11 @@ public class Analyzer {
 	 * @param rect
 	 *            The rectangle that will be drawn
 	 */
-	public void blackOutFaces(Mat inputMat, Rect rect) {
-		Core.rectangle(inputMat,
-				new Point(rect.x, rect.y - rect.height * 0.25), new Point(
-						rect.x + rect.width, rect.y + rect.height), new Scalar(
-						0, 255, 0), Core.FILLED, 8, 0);
+	public void blackOutFaces(CvMat inputMat, CvRect rect) {
+		opencv_core.cvRectangle(inputMat, new CvPoint(rect.x(),
+				(int) (rect.y() - rect.height() * 0.25)), new CvPoint(rect.x()
+				+ rect.width(), rect.y() + rect.height()), new CvScalar(0, 255,
+				0, 0), Core.FILLED, 8, 0);
 
 	}
 
@@ -86,8 +85,10 @@ public class Analyzer {
 	 * This function will do the foreground extraction. Having a standardized
 	 * size may be useful for simplification.
 	 */
-	public void extractForeground(Mat origMat, Mat newMat) {
-		
+	public void extractForeground(CvMat origMat, CvMat maskMat) {
+		CvMat newMat = new CvMat();
+		opencv_core.cvCopy(origMat, maskMat, newMat);
+
 	}
 
 	/**
