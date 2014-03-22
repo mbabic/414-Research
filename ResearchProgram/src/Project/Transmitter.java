@@ -2,14 +2,12 @@ package Project;
 
 import java.io.File;
 
-import org.opencv.highgui.VideoCapture;
-
-import com.googlecode.javacv.Frame;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.OpenCVFrameGrabber;
 import com.googlecode.javacv.OpenCVFrameRecorder;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
  * This section handles video loading, building, and saving.
@@ -42,8 +40,8 @@ public class Transmitter {
 	}
 
 	/**
-	 * Default option will open a VideoCapture stream using the webcam as base
-	 * input device
+	 * Default option will open a FrameGrabber stream using the webcam as input
+	 * device
 	 * 
 	 * @return A video stream
 	 * @throws InterruptedException
@@ -53,7 +51,7 @@ public class Transmitter {
 	}
 
 	/**
-	 * receiveStream takes a file name opens it and returns a VideoCapture
+	 * receiveStream takes a file name opens it and returns a FrameGrabber
 	 * stream.
 	 * 
 	 * @param fileloc
@@ -89,15 +87,15 @@ public class Transmitter {
 	/**
 	 * Adds frames to the video output streams
 	 * 
-	 * @param bFrame
+	 * @param bImage
 	 *            Background frame to record
-	 * @param fFrame
+	 * @param fImage
 	 *            Facial data frame to record
 	 */
-	public void videoBuilder(Frame bFrame, Frame fFrame) {
+	public void videoBuilder(IplImage bImage, IplImage fImage) {
 		try {
-			recorderBackGround.record(bFrame);
-			recorderFacial.record(fFrame);
+			recorderBackGround.record(bImage);
+			recorderFacial.record(fImage);
 		} catch (Exception e) {
 			System.err.println("Failed to write frame to recorder");
 			e.printStackTrace();
