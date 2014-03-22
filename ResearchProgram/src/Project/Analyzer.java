@@ -1,20 +1,41 @@
 package Project;
 
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
+import com.googlecode.javacv.cpp.opencv_objdetect.CascadeClassifier;
+
 /**
  * Does the facial recognition
+ * 
  * @author Marcus
- *
+ * 
  */
 public class Analyzer {
+	private CascadeClassifier faceCascade;
 
-	Analyzer() {
+	/**
+	 * Constructor for the analyzer.
+	 * 
+	 * @throws ClassiferLoadFailure
+	 */
+	Analyzer() throws ClassiferLoadFailure {
+		String classifierDir = Settings.CLASSIFIER_DIR
+				+ "haarcascade_frontalface_default.xml";
+		faceCascade = new CascadeClassifier(classifierDir);
+		if (faceCascade.empty()) {
+			throw new ClassiferLoadFailure(classifierDir);
+		}
 	}
 
 	/**
 	 * This will look for faces and return the coordinates of the faces
 	 */
-	public void detectFaces() {
+	public void detectFaces(Mat inputMat) {
+		Mat rgbaMat = new Mat();
+		Mat greyMat = new Mat();
 
+		Imgproc.cvtColor(rgbaMat, greyMat, Imgproc.COLOR_BGR2GRAY);
 	}
 
 	/**
