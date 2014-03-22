@@ -1,9 +1,10 @@
 package Project;
 
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
 
-import com.googlecode.javacv.cpp.opencv_objdetect.CascadeClassifier;
 
 /**
  * Does the facial recognition
@@ -27,15 +28,21 @@ public class Analyzer {
 			throw new ClassiferLoadFailure(classifierDir);
 		}
 	}
-
 	/**
 	 * This will look for faces and return the coordinates of the faces
+	 * @param inputMat The original unedited image
+	 * @return The location of all the faces
 	 */
-	public void detectFaces(Mat inputMat) {
-		Mat rgbaMat = new Mat();
+	public MatOfRect detectFaces(Mat inputMat) {
 		Mat greyMat = new Mat();
-
-		Imgproc.cvtColor(rgbaMat, greyMat, Imgproc.COLOR_BGR2GRAY);
+		MatOfRect faces = new MatOfRect();
+		
+		inputMat.copyTo(greyMat);
+		
+		Imgproc.cvtColor(inputMat, greyMat, Imgproc.COLOR_BGR2GRAY);
+		Imgproc.equalizeHist(greyMat, greyMat);
+		faceCascade.detectMultiScale(greyMat, faces);
+		return faces;
 	}
 
 	/**
