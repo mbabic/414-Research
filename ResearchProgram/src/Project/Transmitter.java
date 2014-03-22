@@ -5,8 +5,10 @@ import java.io.File;
 import org.opencv.highgui.VideoCapture;
 
 import com.googlecode.javacv.Frame;
+import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.FrameRecorder.Exception;
+import com.googlecode.javacv.OpenCVFrameGrabber;
 import com.googlecode.javacv.OpenCVFrameRecorder;
 
 /**
@@ -19,10 +21,10 @@ public class Transmitter {
 
 	private FrameRecorder recorderBackGround;
 	private FrameRecorder recorderFacial;
-	private VideoCapture capture;
+	private FrameGrabber grabber;
 
 	/**
-	 * This initializes all the recorders. Must be called before transmitting
+	 * This initializes all the recorders. Must be called before transmiting
 	 * files
 	 * 
 	 * @param bFile
@@ -46,7 +48,7 @@ public class Transmitter {
 	 * @return A video stream
 	 * @throws InterruptedException
 	 */
-	public VideoCapture receiveStream() throws InterruptedException {
+	public FrameGrabber receiveStream() throws InterruptedException {
 		return receiveStream(0);
 	}
 
@@ -59,15 +61,11 @@ public class Transmitter {
 	 * @return A video stream
 	 * @throws InterruptedException
 	 */
-	public VideoCapture receiveStream(String fileloc)
+	public FrameGrabber receiveStream(String fileloc)
 			throws InterruptedException {
-		capture = new VideoCapture(fileloc);
+		grabber = new OpenCVFrameGrabber(fileloc);
 
-		if (capture.isOpened()) {
-			return capture;
-		}
-		System.err.println("Video Capture File failed to load");
-		return null;
+		return grabber;
 
 	}
 
@@ -81,16 +79,11 @@ public class Transmitter {
 	 * @return A video stream
 	 * @throws InterruptedException
 	 */
-	public VideoCapture receiveStream(int input) throws InterruptedException {
-		capture = new VideoCapture(input);
+	public FrameGrabber receiveStream(int input) throws InterruptedException {
 
-		if (capture.isOpened()) {
-			Thread.sleep(900);
-			return capture;
-		}
-		System.err.println("Video Capture Device failed to load");
-		return null;
+		grabber = new OpenCVFrameGrabber(input);
 
+		return grabber;
 	}
 
 	/**
