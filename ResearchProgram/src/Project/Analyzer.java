@@ -1,7 +1,13 @@
 package Project;
-public class Analyser {
 
-	Analyser() {
+/**
+ * Does the facial recognition
+ * @author Marcus
+ *
+ */
+public class Analyzer {
+
+	Analyzer() {
 	}
 
 	/**
