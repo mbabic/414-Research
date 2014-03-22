@@ -9,13 +9,28 @@ import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.OpenCVFrameRecorder;
 
+/**
+ * This section handles video loading, building, and saving.
+ * 
+ * @author Marcus Karpoff, Marko Babic
+ * 
+ */
 public class Transmitter {
 
 	private FrameRecorder recorderBackGround;
 	private FrameRecorder recorderFacial;
 	private VideoCapture capture;
 
-	Transmitter(File bFile, File fFile) {
+	/**
+	 * This initializes all the recorders. Must be called before transmiting
+	 * files
+	 * 
+	 * @param bFile
+	 *            file location for the background stream.
+	 * @param fFile
+	 *            file location for the facial stream.
+	 */
+	public Transmitter(File bFile, File fFile) {
 
 		recorderBackGround = new OpenCVFrameRecorder(bFile, Settings.WIDTH,
 				Settings.HEIGHT);
