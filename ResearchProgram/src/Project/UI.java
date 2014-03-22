@@ -37,10 +37,10 @@ class MyPanel extends CanvasFrame {
 public class UI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	public MyPanel videoPanel;
+	private MyPanel videoPanel;
 
 	/**
-	 * This is the main UI class
+	 * Initializes the UI
 	 */
 	public UI() {
 		super("Super Sexy Research Program");
@@ -51,6 +51,12 @@ public class UI extends JFrame {
 		this.setVisible(true);
 	}
 
+	/**
+	 * Puts a image onto the image screen
+	 * 
+	 * @param image
+	 *            the image to be placed
+	 */
 	public void putFrame(IplImage image) {
 		videoPanel.putFrame(image);
 	}

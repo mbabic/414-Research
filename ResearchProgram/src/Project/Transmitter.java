@@ -22,7 +22,7 @@ public class Transmitter {
 	private FrameGrabber grabber;
 
 	/**
-	 * This initializes all the recorders. Must be called before transmiting
+	 * This initializes all the recorders. Must be called before transmitting
 	 * files
 	 * 
 	 * @param bFile
