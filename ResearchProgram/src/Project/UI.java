@@ -1,36 +1,44 @@
 package Project;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+
+import com.googlecode.javacv.CanvasFrame;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
  * This UI panel holds the video stream
  * 
  * @author Marcus Karpoff, Marko Babic
- *
+ * 
  */
-class MyPanel extends JPanel {
+class MyPanel extends CanvasFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor. This UI panel holds the video stream.
 	 */
 	public MyPanel() {
-		super();
+		super("Video Frame");
 		this.setSize(Settings.WIDTH, Settings.HEIGHT);
 	}
+
+	public void putFrame(IplImage image) {
+		this.showImage(image);
+	}
+
 }
+
 /**
  * This is the main UI class
  * 
  * @author Marcus Karpoff, Marko Babic
- *
+ * 
  */
-public class UI extends JFrame{
+public class UI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	public MyPanel videoPanel;
-	
+
 	/**
 	 * This is the main UI class
 	 */
@@ -42,4 +50,9 @@ public class UI extends JFrame{
 		this.setContentPane(videoPanel);
 		this.setVisible(true);
 	}
+
+	public void putFrame(IplImage image) {
+		videoPanel.putFrame(image);
+	}
+
 }
