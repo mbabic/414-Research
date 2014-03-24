@@ -7,12 +7,17 @@ package Project;
 //import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 //import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
 //import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
+import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
+import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
-import static com.googlecode.javacv.cpp.opencv_core.*;
 
 import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_core.CvMat;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -61,13 +66,21 @@ public class Analyzer {
 	}
 
 	/**
-	 * This will return the split video streams. It will take the original video
-	 * stream and the location of the faces as input. It will return two video
-	 * streams as a tuple. One will have the faces only the other will have
-	 * everything else.
+	 * * This will return the split video streams. It will take the original
+	 * video stream and the location of the faces as input. It will return two
+	 * video streams as a tuple. One will have the faces only the other will
+	 * have everything else.
+	 * 
+	 * @param orig
+	 *            Original IplImage
+	 * @param back
+	 *            Where the background images will go
+	 * @param face
+	 *            Where the facial image will go
 	 */
-	public void separateStreams(CvMat inputMat, CvSeq faces) {
-
+	public void separateStreams(IplImage orig, IplImage back, IplImage face) {
+		blackOutFaces(back, detectFaces(orig));
+		cvAbsDiff(orig, back, face);
 	}
 
 	/**
@@ -82,23 +95,11 @@ public class Analyzer {
 		int total_Faces = rects.total();
 		for (int i = 0; i < total_Faces; i++) {
 			CvRect r = new CvRect(cvGetSeqElem(rects, i));
-			cvRectangle(input, cvPoint(r.x(), r.y()- (int) (r.height()*.25)),
+			cvRectangle(input,
+					cvPoint(r.x(), r.y() - (int) (r.height() * .25)),
 					cvPoint(r.width() + r.x(), r.height() + r.y()),
 					CvScalar.BLACK, opencv_core.CV_FILLED, CV_AA, 0);
-
 		}
-
-	}
-
-	/**
-	 * This function will do the foreground extraction. Having a standardized
-	 * size may be useful for simplification.
-	 */
-	public IplImage extractForeground(IplImage input1, IplImage input2) {
-		IplImage output = input1.clone();
-		cvAbsDiff(input1, input2, output);
-		return output;
-
 	}
 
 	/**
