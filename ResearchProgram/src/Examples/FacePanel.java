@@ -87,7 +87,7 @@ public class FacePanel extends JPanel implements Runnable
   private static final int LINES_LEN = 60;  
 
   // cascade definition to be used for face detection
-  private static final String FACE_CASCADE_FNM = "haarcascade_frontalface_alt.xml";
+  private static final String FACE_CASCADE_FNM = "C:/OpenCV/opencv/source/data/haarcascade/haarcascade_frontalface_alt.xml";
                                                  // "haarcascade_frontalface_alt2.xml";
 
   private static final String CROSSHAIRS_FNM = "crosshairs.png";

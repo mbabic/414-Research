@@ -1,15 +1,24 @@
 package Project;
 
-import org.opencv.core.MatOfRect;
+//import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+//import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
+//import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
+//import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+//import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+//import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
+//import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
+import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
+import static com.googlecode.javacv.cpp.opencv_core.*;
 
 import com.googlecode.javacv.cpp.opencv_core;
 import com.googlecode.javacv.cpp.opencv_core.CvMat;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
+import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_imgproc;
-import com.googlecode.javacv.cpp.opencv_objdetect.CascadeClassifier;
-
+import com.googlecode.javacv.cpp.opencv_core.CvSeq;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 
 /**
  * Does the facial recognition
@@ -18,7 +27,8 @@ import com.googlecode.javacv.cpp.opencv_objdetect.CascadeClassifier;
  * 
  */
 public class Analyzer {
-	private CascadeClassifier faceCascade;
+	private CvHaarClassifierCascade faceCascade;
+	private CvMemStorage storage;
 
 	/**
 	 * Constructor for the analyzer.
@@ -28,8 +38,9 @@ public class Analyzer {
 	Analyzer() throws ClassiferLoadFailure {
 		String classifierDir = Settings.CLASSIFIER_DIR
 				+ "haarcascade_frontalface_default.xml";
-		faceCascade = new CascadeClassifier(classifierDir);
-		if (faceCascade.empty()) {
+		faceCascade = new CvHaarClassifierCascade(cvLoad(classifierDir));
+		storage = CvMemStorage.create();
+		if (faceCascade.isNull()) {
 			throw new ClassiferLoadFailure(classifierDir);
 		}
 	}
@@ -41,14 +52,12 @@ public class Analyzer {
 	 *            The original unedited image
 	 * @return The location of all the faces
 	 */
-	public MatOfRect detectFaces(CvMat inputMat) { // This function is broken. Having trouble getting javacv and opencv to work..
-		CvMat greyMat = inputMat.clone();
-		MatOfRect faces = new MatOfRect();
-	
-		opencv_imgproc.cvCvtColor(inputMat, greyMat, opencv_imgproc.CV_BGR2GRAY);
-		opencv_imgproc.cvEqualizeHist(greyMat, greyMat);
-		faceCascade.detectMultiScale(greyMat, faces);
-		return faces;
+	public CvSeq detectFaces(IplImage input) {
+		CvSeq rects = cvHaarDetectObjects(input, faceCascade, storage, 1.5, 3,
+				CV_HAAR_DO_CANNY_PRUNING);
+		cvClearMemStorage(storage);
+		return rects;
+
 	}
 
 	/**
@@ -57,7 +66,7 @@ public class Analyzer {
 	 * streams as a tuple. One will have the faces only the other will have
 	 * everything else.
 	 */
-	public void separateStreams(CvMat inputMat, MatOfRect faces) {
+	public void separateStreams(CvMat inputMat, CvSeq faces) {
 
 	}
 
@@ -69,11 +78,15 @@ public class Analyzer {
 	 * @param rect
 	 *            The rectangle that will be drawn
 	 */
-	public void blackOutFaces(CvMat inputMat, CvRect rect) {
-		opencv_core.cvRectangle(inputMat, new CvPoint(rect.x(),
-				(int) (rect.y() - rect.height() * 0.25)), new CvPoint(rect.x()
-				+ rect.width(), rect.y() + rect.height()), new CvScalar(0, 255,
-				0, 0), opencv_core.CV_FILLED, 8, 0);
+	public void blackOutFaces(IplImage input, CvSeq rects) {
+		int total_Faces = rects.total();
+		for (int i = 0; i < total_Faces; i++) {
+			CvRect r = new CvRect(cvGetSeqElem(rects, i));
+			cvRectangle(input, cvPoint(r.x(), r.y()- (int) (r.height()*.25)),
+					cvPoint(r.width() + r.x(), r.height() + r.y()),
+					CvScalar.BLACK, opencv_core.CV_FILLED, CV_AA, 0);
+
+		}
 
 	}
 
@@ -81,9 +94,10 @@ public class Analyzer {
 	 * This function will do the foreground extraction. Having a standardized
 	 * size may be useful for simplification.
 	 */
-	public void extractForeground(CvMat origMat, CvMat maskMat) {
-		CvMat newMat = new CvMat();
-		opencv_core.cvCopy(origMat, maskMat, newMat);
+	public IplImage extractForeground(IplImage input1, IplImage input2) {
+		IplImage output = input1.clone();
+		cvAbsDiff(input1, input2, output);
+		return output;
 
 	}
 
