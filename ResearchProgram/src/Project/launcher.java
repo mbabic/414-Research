@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameGrabber.Exception;
-import com.googlecode.javacv.cpp.opencv_core.CvSeq;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class launcher {
@@ -18,16 +17,14 @@ public class launcher {
 			FrameGrabber f = t.receiveStream();
 			a = new Analyzer();
 			IplImage m;
-			IplImage n;
-			IplImage c;
-			CvSeq r;
+			m = f.grab();
+			IplImage n = m.clone();
+			IplImage c = m.clone();
 			UI gui = new UI();
 			while(true){
 				m = f.grab();
 				n = m.clone();
-				r = a.detectFaces(m);
-				a.blackOutFaces(n, r);
-				c = a.extractForeground(m, n);
+				a.separateStreams(m, n, c);
 				gui.putFrame(m, n, c);
 			}
 		} catch (Exception e) {
