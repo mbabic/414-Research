@@ -1,10 +1,6 @@
 package Project;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.CascadeClassifier;
 
 import com.googlecode.javacv.cpp.opencv_core;
 import com.googlecode.javacv.cpp.opencv_core.CvMat;
@@ -12,7 +8,7 @@ import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_imgproc;
-import com.googlecode.javacv.cpp.opencv_objdetect;
+import com.googlecode.javacv.cpp.opencv_objdetect.CascadeClassifier;
 
 
 /**
@@ -51,7 +47,7 @@ public class Analyzer {
 	
 		opencv_imgproc.cvCvtColor(inputMat, greyMat, opencv_imgproc.CV_BGR2GRAY);
 		opencv_imgproc.cvEqualizeHist(greyMat, greyMat);
-		faceCascade.detectMultiScale(greyMat, faces);
+//		faceCascade.detectMultiScale(greyMat, faces);
 		return faces;
 	}
 
@@ -61,7 +57,7 @@ public class Analyzer {
 	 * streams as a tuple. One will have the faces only the other will have
 	 * everything else.
 	 */
-	public void separateStreams(Mat inputMat, MatOfRect faces) {
+	public void separateStreams(CvMat inputMat, MatOfRect faces) {
 
 	}
 
@@ -77,7 +73,7 @@ public class Analyzer {
 		opencv_core.cvRectangle(inputMat, new CvPoint(rect.x(),
 				(int) (rect.y() - rect.height() * 0.25)), new CvPoint(rect.x()
 				+ rect.width(), rect.y() + rect.height()), new CvScalar(0, 255,
-				0, 0), Core.FILLED, 8, 0);
+				0, 0), opencv_core.CV_FILLED, 8, 0);
 
 	}
 

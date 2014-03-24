@@ -34,7 +34,7 @@ class MyPanel extends CanvasFrame {
  * @author Marcus Karpoff, Marko Babic
  * 
  */
-public class UI extends JFrame {
+public class UI extends CanvasFrame /*JFrame*/ {
 
 	private static final long serialVersionUID = 1L;
 	private MyPanel videoPanel;
@@ -46,8 +46,8 @@ public class UI extends JFrame {
 		super("Super Sexy Research Program");
 		this.setSize(Settings.WIDTH, Settings.HEIGHT);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		videoPanel = new MyPanel();
-		this.setContentPane(videoPanel);
+//		videoPanel = new MyPanel();
+//		this.setContentPane(videoPanel);
 		this.setVisible(true);
 	}
 
@@ -58,7 +58,8 @@ public class UI extends JFrame {
 	 *            the image to be placed
 	 */
 	public void putFrame(IplImage image) {
-		videoPanel.putFrame(image);
+//		videoPanel.putFrame(image);
+		this.showImage(image);
 	}
 
 }
