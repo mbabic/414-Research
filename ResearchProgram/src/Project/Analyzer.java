@@ -1,12 +1,5 @@
 package Project;
 
-//import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
-//import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
-//import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
-//import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
-//import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
-//import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
-//import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
 import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
 import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
 import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
