@@ -41,13 +41,13 @@ public class Analyzer {
 	 *            The original unedited image
 	 * @return The location of all the faces
 	 */
-	public MatOfRect detectFaces(CvMat inputMat) {
+	public MatOfRect detectFaces(CvMat inputMat) { // This function is broken. Having trouble getting javacv and opencv to work..
 		CvMat greyMat = inputMat.clone();
 		MatOfRect faces = new MatOfRect();
 	
 		opencv_imgproc.cvCvtColor(inputMat, greyMat, opencv_imgproc.CV_BGR2GRAY);
 		opencv_imgproc.cvEqualizeHist(greyMat, greyMat);
-//		faceCascade.detectMultiScale(greyMat, faces);
+		faceCascade.detectMultiScale(greyMat, faces);
 		return faces;
 	}
 
