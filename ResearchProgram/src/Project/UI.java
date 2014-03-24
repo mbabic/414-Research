@@ -1,5 +1,7 @@
 package Project;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
 
 import com.googlecode.javacv.CanvasFrame;
@@ -17,9 +19,11 @@ class MyPanel extends CanvasFrame {
 	/**
 	 * Constructor. This UI panel holds the video stream.
 	 */
-	public MyPanel() {
-		super("Video Frame");
+	public MyPanel(String title) {
+		super(title);
 		this.setSize(Settings.WIDTH, Settings.HEIGHT);
+		this.setVisible(true);;
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	public void putFrame(IplImage image) {
@@ -34,32 +38,31 @@ class MyPanel extends CanvasFrame {
  * @author Marcus Karpoff, Marko Babic
  * 
  */
-public class UI extends CanvasFrame /*JFrame*/ {
+public class UI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private MyPanel videoPanel;
-
+	private MyPanel origPanel;
+	private MyPanel facePanel;
+	private MyPanel backPanel;
 	/**
 	 * Initializes the UI
 	 */
 	public UI() {
 		super("Super Sexy Research Program");
-		this.setSize(Settings.WIDTH, Settings.HEIGHT);
+		this.setSize(2 * Settings.WIDTH, 2 * Settings.HEIGHT);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		videoPanel = new MyPanel();
-//		this.setContentPane(videoPanel);
 		this.setVisible(true);
+		this.setLayout(new BorderLayout());
+		
+		origPanel = new MyPanel("Original");
+		facePanel = new MyPanel("Faces");
+		backPanel = new MyPanel("Background");
 	}
-
-	/**
-	 * Puts a image onto the image screen
-	 * 
-	 * @param image
-	 *            the image to be placed
-	 */
-	public void putFrame(IplImage image) {
-//		videoPanel.putFrame(image);
-		this.showImage(image);
+	
+	public void putFrame(IplImage orig, IplImage face, IplImage back) {
+		origPanel.putFrame(orig);
+		facePanel.putFrame(face);
+		backPanel.putFrame(back);
 	}
 
 }
