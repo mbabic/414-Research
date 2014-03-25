@@ -46,7 +46,7 @@ public class Transmitter {
 	 * @return A video stream
 	 * @throws InterruptedException
 	 */
-	public FrameGrabber receiveStream() throws InterruptedException {
+	public FrameGrabber receiveStream() {
 		return receiveStream(0);
 	}
 
@@ -57,12 +57,16 @@ public class Transmitter {
 	 * @param fileloc
 	 *            Location of the file to be loaded
 	 * @return A video stream
-	 * @throws InterruptedException
+	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
 	 */
-	public FrameGrabber receiveStream(String fileloc)
-			throws InterruptedException {
+	public FrameGrabber receiveStream(String fileloc) {
 		grabber = new OpenCVFrameGrabber(fileloc);
-
+		try {
+			grabber.start();
+		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			System.err.println("FrameGrabber failed to start.");
+			e.printStackTrace();
+		}
 		return grabber;
 
 	}
@@ -75,12 +79,17 @@ public class Transmitter {
 	 * @param input
 	 *            The number corresponding to the device being loaded
 	 * @return A video stream
-	 * @throws InterruptedException
+	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
 	 */
-	public FrameGrabber receiveStream(int input) throws InterruptedException {
+	public FrameGrabber receiveStream(int input) {
 
 		grabber = new OpenCVFrameGrabber(input);
-
+		try {
+			grabber.start();
+		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			System.err.println("FrameGrabber failed to start.");
+			e.printStackTrace();
+		}
 		return grabber;
 	}
 
