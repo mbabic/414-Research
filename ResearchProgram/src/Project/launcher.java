@@ -11,21 +11,22 @@ public class launcher {
 	public static void main(String[] args) {
 		File outb = new File("C:/outb.a");
 		File outf = new File("C:/outf.a");
-		Transmitter t = new Transmitter(outb, outf);
-		Analyzer a;
+		Transmitter transmitter = new Transmitter(outb, outf);
+		Analyzer analyzer;
 		try {
-			FrameGrabber f = t.receiveStream();
-			a = new Analyzer();
-			IplImage m;
-			m = f.grab();
-			IplImage n = m.clone();
-			IplImage c = m.clone();
+			FrameGrabber frameGrabber = transmitter.receiveStream();
+			analyzer = new Analyzer();
+			IplImage origImage;
+			origImage = frameGrabber.grab();
+			
+			IplImage backImage = origImage.clone();
+			IplImage faceImage = origImage.clone();
 			UI gui = new UI();
 			while(true){
-				m = f.grab();
-				n = m.clone();
-				a.separateStreams(m, n, c);
-				gui.putFrame(m, n, c);
+				origImage = frameGrabber.grab();
+				backImage = origImage.clone();
+				analyzer.separateStreams(origImage, backImage, faceImage);
+				gui.putFrame(origImage, backImage, faceImage);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -34,5 +35,6 @@ public class launcher {
 		}
 
 	}
+
 
 }
