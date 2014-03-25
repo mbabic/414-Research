@@ -2,12 +2,12 @@ package Project;
 
 import java.io.File;
 
-import org.opencv.highgui.VideoCapture;
-
-import com.googlecode.javacv.Frame;
+import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.FrameRecorder.Exception;
+import com.googlecode.javacv.OpenCVFrameGrabber;
 import com.googlecode.javacv.OpenCVFrameRecorder;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
  * This section handles video loading, building, and saving.
@@ -19,10 +19,10 @@ public class Transmitter {
 
 	private FrameRecorder recorderBackGround;
 	private FrameRecorder recorderFacial;
-	private VideoCapture capture;
+	private FrameGrabber grabber;
 
 	/**
-	 * This initializes all the recorders. Must be called before transmiting
+	 * This initializes all the recorders. Must be called before transmitting
 	 * files
 	 * 
 	 * @param bFile
@@ -40,34 +40,34 @@ public class Transmitter {
 	}
 
 	/**
-	 * Default option will open a VideoCapture stream using the webcam as base
-	 * input device
+	 * Default option will open a FrameGrabber stream using the webcam as input
+	 * device
 	 * 
 	 * @return A video stream
 	 * @throws InterruptedException
 	 */
-	public VideoCapture receiveStream() throws InterruptedException {
+	public FrameGrabber receiveStream() {
 		return receiveStream(0);
 	}
 
 	/**
-	 * receiveStream takes a file name opens it and returns a VideoCapture
+	 * receiveStream takes a file name opens it and returns a FrameGrabber
 	 * stream.
 	 * 
 	 * @param fileloc
 	 *            Location of the file to be loaded
 	 * @return A video stream
-	 * @throws InterruptedException
+	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
 	 */
-	public VideoCapture receiveStream(String fileloc)
-			throws InterruptedException {
-		capture = new VideoCapture(fileloc);
-
-		if (capture.isOpened()) {
-			return capture;
+	public FrameGrabber receiveStream(String fileloc) {
+		grabber = new OpenCVFrameGrabber(fileloc);
+		try {
+			grabber.start();
+		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			System.err.println("FrameGrabber failed to start.");
+			e.printStackTrace();
 		}
-		System.err.println("Video Capture File failed to load");
-		return null;
+		return grabber;
 
 	}
 
@@ -79,32 +79,32 @@ public class Transmitter {
 	 * @param input
 	 *            The number corresponding to the device being loaded
 	 * @return A video stream
-	 * @throws InterruptedException
+	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
 	 */
-	public VideoCapture receiveStream(int input) throws InterruptedException {
-		capture = new VideoCapture(input);
+	public FrameGrabber receiveStream(int input) {
 
-		if (capture.isOpened()) {
-			Thread.sleep(900);
-			return capture;
+		grabber = new OpenCVFrameGrabber(input);
+		try {
+			grabber.start();
+		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			System.err.println("FrameGrabber failed to start.");
+			e.printStackTrace();
 		}
-		System.err.println("Video Capture Device failed to load");
-		return null;
-
+		return grabber;
 	}
 
 	/**
 	 * Adds frames to the video output streams
 	 * 
-	 * @param bFrame
+	 * @param bImage
 	 *            Background frame to record
-	 * @param fFrame
+	 * @param fImage
 	 *            Facial data frame to record
 	 */
-	public void videoBuilder(Frame bFrame, Frame fFrame) {
+	public void videoBuilder(IplImage bImage, IplImage fImage) {
 		try {
-			recorderBackGround.record(bFrame);
-			recorderFacial.record(fFrame);
+			recorderBackGround.record(bImage);
+			recorderFacial.record(fImage);
 		} catch (Exception e) {
 			System.err.println("Failed to write frame to recorder");
 			e.printStackTrace();
