@@ -21,13 +21,16 @@ public class launcher {
 			
 			IplImage backImage = origImage.clone();
 			IplImage faceImage = origImage.clone();
-			UI gui = new UI();
-			while(true){
+			Boolean windowOpen = true;
+			UI gui = new UI(windowOpen);
+			while(windowOpen){
 				origImage = frameGrabber.grab();
 				backImage = origImage.clone();
 				analyzer.separateStreams(origImage, backImage, faceImage);
 				gui.putFrame(origImage, backImage, faceImage);
 			}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} catch (ClassiferLoadFailure e) {

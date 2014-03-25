@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -28,8 +27,11 @@ class MyPanel extends CanvasFrame {
 
 	/**
 	 * This is used for creating popout windows
-	 * @param title The title for the window
-	 * @param a the active status Boolean associated with the window
+	 * 
+	 * @param title
+	 *            The title for the window
+	 * @param a
+	 *            the active status Boolean associated with the window
 	 */
 	public MyPanel(String title, Boolean a) {
 		super(title);
@@ -37,8 +39,10 @@ class MyPanel extends CanvasFrame {
 		active = a;
 		setDefaultCloseOperation(0);
 	}
+
 	/**
-	 * This sets the active status Boolean associated with the window to false on closure of the window
+	 * This sets the active status Boolean associated with the window to false
+	 * on closure of the window
 	 */
 	@Override
 	public void setDefaultCloseOperation(int operation) {
@@ -47,7 +51,9 @@ class MyPanel extends CanvasFrame {
 
 	/**
 	 * Fills the window with an IplImage
-	 * @param img the IplImage to fill the window.
+	 * 
+	 * @param img
+	 *            the IplImage to fill the window.
 	 */
 	public void putFrame(IplImage img) {
 		this.showImage(img);
@@ -81,6 +87,9 @@ public class UI extends CanvasFrame implements ActionListener {
 	private MyPanel backPanel;
 	private MyPanel facePanel;
 
+	@SuppressWarnings("unused")
+	private Boolean active;
+
 	/**
 	 * Initializes the UI
 	 */
@@ -88,10 +97,34 @@ public class UI extends CanvasFrame implements ActionListener {
 		super("Super Sexy Research Program -- Original");
 
 		buildMenuBar();
+		setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
+		setSize(2 * Settings.WIDTH, 2 * Settings.HEIGHT);
+		setVisible(true);
+	}
+
+	/**
+	 * Initializes the UI with an Active Status Boolean that will notify the
+	 * caller when the window is destroyed.
+	 * 
+	 * @param active_status
+	 */
+	public UI(Boolean active_status) {
+		super("Super Sexy Research Program -- Original");
+		active = active_status;
+
+		buildMenuBar();
 
 		setSize(2 * Settings.WIDTH, 2 * Settings.HEIGHT);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
+	}
+
+	/**
+	 * Notifies the launcher that it is inactive
+	 */
+	@Override
+	public void setDefaultCloseOperation(int operation) {
+		super.setDefaultCloseOperation(operation);
+		active = false;
 	}
 
 	/**
@@ -126,7 +159,7 @@ public class UI extends CanvasFrame implements ActionListener {
 			facePanel.putFrame(face);
 
 	}
-	
+
 	/**
 	 * Action listener
 	 */
@@ -153,7 +186,7 @@ public class UI extends CanvasFrame implements ActionListener {
 			mi2_3_active = true;
 		}
 	}
-	
+
 	/**
 	 * Builds the menu bar
 	 */
