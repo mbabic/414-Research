@@ -2,11 +2,12 @@ package Project;
 
 import java.io.File;
 
+import com.googlecode.javacv.FFmpegFrameGrabber;
+import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.OpenCVFrameGrabber;
-import com.googlecode.javacv.OpenCVFrameRecorder;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
@@ -18,7 +19,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class Transmitter {
 
 	private FrameRecorder recorderBackGround;
-	private FrameRecorder recorderFacial;
+	private FFmpegFrameRecorder recorderFacial;
 	private FrameGrabber grabber;
 
 	/**
@@ -30,15 +31,22 @@ public class Transmitter {
 	 * @param fFile
 	 *            file location for the facial stream.
 	 */
-	public Transmitter(File bFile, File fFile) {
-
-		recorderBackGround = new OpenCVFrameRecorder(bFile, Settings.WIDTH,
-				Settings.HEIGHT);
-		recorderFacial = new OpenCVFrameRecorder(fFile, Settings.WIDTH,
-				Settings.HEIGHT);
+	public Transmitter() {
 
 	}
 
+	public  void initializeRecorders(File bFile, File fFile, IplImage img) throws Exception{
+		recorderBackGround = new FFmpegFrameRecorder(bFile, img.width(),
+				img.height());
+		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
+				img.height());
+		
+		
+		recorderBackGround.start();
+		recorderFacial.start();
+	}
+	
+	
 	/**
 	 * Default option will open a FrameGrabber stream using the webcam as input
 	 * device

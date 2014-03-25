@@ -22,9 +22,6 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 class MyPanel extends CanvasFrame {
 	private static final long serialVersionUID = 1L;
 
-	@SuppressWarnings("unused")
-	private Boolean active;
-
 	/**
 	 * This is used for creating popout windows
 	 * 
@@ -33,20 +30,11 @@ class MyPanel extends CanvasFrame {
 	 * @param a
 	 *            the active status Boolean associated with the window
 	 */
-	public MyPanel(String title, Boolean a) {
+	public MyPanel(String title) {
 		super(title);
-		this.setSize(Settings.WIDTH, Settings.HEIGHT);
-		active = a;
-		setDefaultCloseOperation(0);
-	}
-
-	/**
-	 * This sets the active status Boolean associated with the window to false
-	 * on closure of the window
-	 */
-	@Override
-	public void setDefaultCloseOperation(int operation) {
-		active = false;
+		setVisible(false);
+		setSize(Settings.WIDTH, Settings.HEIGHT);
+		setDefaultCloseOperation(CanvasFrame.HIDE_ON_CLOSE);
 	}
 
 	/**
@@ -78,14 +66,10 @@ public class UI extends CanvasFrame implements ActionListener {
 	private JMenuItem mi2_1;
 	private JMenuItem mi2_2;
 	private JMenuItem mi2_3;
-
-	private Boolean mi2_1_active = false;
-	private Boolean mi2_2_active = false;
-	private Boolean mi2_3_active = false;
-
-	private MyPanel origPanel;
-	private MyPanel backPanel;
-	private MyPanel facePanel;
+	
+	private MyPanel origPanel = new MyPanel("Original");
+	private MyPanel backPanel = new MyPanel("Background");
+	private MyPanel facePanel = new MyPanel("ForeGround");
 
 	@SuppressWarnings("unused")
 	private Boolean active;
@@ -100,31 +84,6 @@ public class UI extends CanvasFrame implements ActionListener {
 		setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 		setSize(2 * Settings.WIDTH, 2 * Settings.HEIGHT);
 		setVisible(true);
-	}
-
-	/**
-	 * Initializes the UI with an Active Status Boolean that will notify the
-	 * caller when the window is destroyed.
-	 * 
-	 * @param active_status
-	 */
-	public UI(Boolean active_status) {
-		super("Super Sexy Research Program -- Original");
-		active = active_status;
-
-		buildMenuBar();
-
-		setSize(2 * Settings.WIDTH, 2 * Settings.HEIGHT);
-		setVisible(true);
-	}
-
-	/**
-	 * Notifies the launcher that it is inactive
-	 */
-	@Override
-	public void setDefaultCloseOperation(int operation) {
-		super.setDefaultCloseOperation(operation);
-		active = false;
 	}
 
 	/**
@@ -151,12 +110,9 @@ public class UI extends CanvasFrame implements ActionListener {
 		default:
 			break;
 		}
-		if (mi2_1_active)
-			origPanel.putFrame(orig);
-		if (mi2_2_active)
-			backPanel.putFrame(back);
-		if (mi2_3_active)
-			facePanel.putFrame(face);
+		origPanel.putFrame(orig);
+		backPanel.putFrame(back);
+		facePanel.putFrame(face);
 
 	}
 
@@ -175,15 +131,12 @@ public class UI extends CanvasFrame implements ActionListener {
 		} else if (source == mi1_3 && mi1_3.isSelected()) {
 			setTitle("Super Sexy Research Program -- Foreground");
 			selected = 3;
-		} else if (source == mi2_1 && !mi2_1_active) {
-			origPanel = new MyPanel("Original", mi2_1_active);
-			mi2_1_active = true;
-		} else if (source == mi2_2 && !mi2_2_active) {
-			backPanel = new MyPanel("Background", mi2_2_active);
-			mi2_2_active = true;
-		} else if (source == mi2_3 && !mi2_3_active) {
-			facePanel = new MyPanel("ForeGround", mi2_3_active);
-			mi2_3_active = true;
+		} else if (source == mi2_1) {
+			origPanel.setVisible(true);
+		} else if (source == mi2_2) {
+			backPanel.setVisible(true);
+		} else if (source == mi2_3) {
+			facePanel.setVisible(true);
 		}
 	}
 
