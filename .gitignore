@@ -1,0 +1,8 @@
+# Ignore binary files.
+ResearchProject/bin/*
+
+# Ignore output video files.
+ResearchProject/out/*.yuv
+
+# Ignore classpath file.
+ResearchProject/.classpath
