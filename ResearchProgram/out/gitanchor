@@ -1,0 +1,4 @@
+Please do not delete me.  I exist to force git to include this directory
+in the repo even though it should ignore all .yuv files (so that Java doesn't
+complain that the directory doesn't exist when trying to write the output
+files)
