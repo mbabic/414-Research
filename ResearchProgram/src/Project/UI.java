@@ -23,12 +23,10 @@ class MyPanel extends CanvasFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * This is used for creating popout windows
+	 * This is used for creating pop out windows
 	 * 
 	 * @param title
 	 *            The title for the window
-	 * @param a
-	 *            the active status Boolean associated with the window
 	 */
 	public MyPanel(String title) {
 		super(title);
@@ -57,6 +55,8 @@ class MyPanel extends CanvasFrame {
 public class UI extends CanvasFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
+
+	// Menu items
 	private JRadioButton mi1_1;
 	private JRadioButton mi1_2;
 	private JRadioButton mi1_3;
@@ -66,18 +66,17 @@ public class UI extends CanvasFrame implements ActionListener {
 	private JMenuItem mi2_1;
 	private JMenuItem mi2_2;
 	private JMenuItem mi2_3;
-	
+
 	private MyPanel origPanel = new MyPanel("Original");
 	private MyPanel backPanel = new MyPanel("Background");
 	private MyPanel facePanel = new MyPanel("ForeGround");
-
 
 	/**
 	 * Initializes the UI
 	 */
 	public UI() {
 		super("Super Sexy Research Program -- Original");
-		
+
 		buildMenuBar();
 		setDefaultCloseOperation(CanvasFrame.HIDE_ON_CLOSE);
 		setSize(Settings.WIDTH, Settings.HEIGHT);
@@ -113,14 +112,17 @@ public class UI extends CanvasFrame implements ActionListener {
 		facePanel.putFrame(face);
 
 	}
-	
-	public void destroy(){
+
+	/**
+	 * Destroys the UI panel and all the pop out panels.
+	 */
+	public void destroy() {
 		origPanel.dispose();
 		backPanel.dispose();
 		facePanel.dispose();
 		this.dispose();
 	}
-	
+
 	/**
 	 * Action listener
 	 */
