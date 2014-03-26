@@ -71,18 +71,16 @@ public class UI extends CanvasFrame implements ActionListener {
 	private MyPanel backPanel = new MyPanel("Background");
 	private MyPanel facePanel = new MyPanel("ForeGround");
 
-	@SuppressWarnings("unused")
-	private Boolean active;
 
 	/**
 	 * Initializes the UI
 	 */
 	public UI() {
 		super("Super Sexy Research Program -- Original");
-
+		
 		buildMenuBar();
-		setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
-		setSize(2 * Settings.WIDTH, 2 * Settings.HEIGHT);
+		setDefaultCloseOperation(CanvasFrame.HIDE_ON_CLOSE);
+		setSize(Settings.WIDTH, Settings.HEIGHT);
 		setVisible(true);
 	}
 
@@ -115,7 +113,14 @@ public class UI extends CanvasFrame implements ActionListener {
 		facePanel.putFrame(face);
 
 	}
-
+	
+	public void destroy(){
+		origPanel.dispose();
+		backPanel.dispose();
+		facePanel.dispose();
+		this.dispose();
+	}
+	
 	/**
 	 * Action listener
 	 */
