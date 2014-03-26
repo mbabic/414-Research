@@ -2,6 +2,7 @@ package Project;
 
 import java.io.File;
 
+import com.googlecode.javacv.CanvasFrame;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
@@ -15,6 +16,14 @@ public class launcher {
 		Analyzer analyzer;
 		FrameGrabber frameGrabber;
 		IplImage origImage, backImage, faceImage ;
+		
+		
+		/////////////////////////////////
+		CanvasFrame f = new CanvasFrame("merged");
+		IplImage mergImage;
+		/////////////////////////////////
+		
+		
 		try {
 			
 			frameGrabber = transmitter.receiveStream();
@@ -23,6 +32,11 @@ public class launcher {
 			transmitter.initializeRecorders(outb, outf, origImage);
 			backImage = origImage.clone();
 			faceImage = origImage.clone();
+			
+			/////////////////////
+			mergImage = origImage.clone();
+			/////////////////////
+			
 
 			while(gui.isVisible()){
 				origImage = frameGrabber.grab();
@@ -30,8 +44,13 @@ public class launcher {
 				analyzer.separateStreams(origImage, backImage, faceImage);
 				gui.putFrame(origImage, backImage, faceImage);
 				transmitter.videoBuilder(backImage, faceImage);
+				
+				//////////////////////////////////////////////
+				analyzer.recombineVideo(mergImage, backImage, faceImage);
+				f.showImage(mergImage);
+				//////////////////////////////////////////////
 			}
-
+	
 			gui.destroy();
 			transmitter.close();
 			return;

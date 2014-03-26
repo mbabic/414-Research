@@ -99,9 +99,8 @@ public class Analyzer {
 	 * This function takes in the two split video streams and recombines them in
 	 * to one video stream.
 	 */
-	@SuppressWarnings("unused")
-	private void recombineVideo() {
-
+	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage) {
+		cvAbsDiff(bImage, fImage, cImage);
 	}
 
 }
