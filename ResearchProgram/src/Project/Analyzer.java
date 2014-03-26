@@ -1,12 +1,5 @@
 package Project;
 
-//import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
-//import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
-//import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
-//import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
-//import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
-//import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
-//import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
 import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
 import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
 import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
@@ -57,7 +50,7 @@ public class Analyzer {
 	 *            The original unedited image
 	 * @return The location of all the faces
 	 */
-	public CvSeq detectFaces(IplImage input) {
+	private CvSeq detectFaces(IplImage input) {
 		CvSeq rects = cvHaarDetectObjects(input, faceCascade, storage, 1.5, 3,
 				CV_HAAR_DO_CANNY_PRUNING);
 		cvClearMemStorage(storage);
@@ -91,7 +84,7 @@ public class Analyzer {
 	 * @param rect
 	 *            The rectangle that will be drawn
 	 */
-	public void blackOutFaces(IplImage input, CvSeq rects) {
+	private void blackOutFaces(IplImage input, CvSeq rects) {
 		int total_Faces = rects.total();
 		for (int i = 0; i < total_Faces; i++) {
 			CvRect r = new CvRect(cvGetSeqElem(rects, i));
@@ -106,7 +99,8 @@ public class Analyzer {
 	 * This function takes in the two split video streams and recombines them in
 	 * to one video stream.
 	 */
-	public void recombineVideo() {
+	@SuppressWarnings("unused")
+	private void recombineVideo() {
 
 	}
 

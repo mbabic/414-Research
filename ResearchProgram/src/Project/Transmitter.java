@@ -2,11 +2,12 @@ package Project;
 
 import java.io.File;
 
+import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.OpenCVFrameGrabber;
-import com.googlecode.javacv.OpenCVFrameRecorder;
+import com.googlecode.javacv.cpp.avcodec;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
@@ -18,7 +19,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class Transmitter {
 
 	private FrameRecorder recorderBackGround;
-	private FrameRecorder recorderFacial;
+	private FFmpegFrameRecorder recorderFacial;
 	private FrameGrabber grabber;
 
 	/**
@@ -30,13 +31,45 @@ public class Transmitter {
 	 * @param fFile
 	 *            file location for the facial stream.
 	 */
-	public Transmitter(File bFile, File fFile) {
+	public Transmitter() {
 
-		recorderBackGround = new OpenCVFrameRecorder(bFile, Settings.WIDTH,
-				Settings.HEIGHT);
-		recorderFacial = new OpenCVFrameRecorder(fFile, Settings.WIDTH,
-				Settings.HEIGHT);
+	}
 
+	/**
+	 * Initializes the video recorders. Using the first image grabbed to set the
+	 * dimension.
+	 * 
+	 * @param bFile
+	 *            Background save file.
+	 * @param fFile
+	 *            Foreground save file.
+	 * @param img
+	 *            The image that is used to set recording parameters
+	 * @throws Exception
+	 */
+	public void initializeRecorders(File bFile, File fFile, IplImage img)
+			throws Exception {
+		recorderBackGround = new FFmpegFrameRecorder(bFile, img.width(),
+				img.height());
+		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
+		recorderBackGround.setFormat("yuv");
+
+		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
+				img.height());
+		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
+		recorderFacial.setFormat("yuv");
+
+		recorderBackGround.start();
+		recorderFacial.start();
+	}
+
+	public void close() throws com.googlecode.javacv.FrameGrabber.Exception,
+			Exception {
+		recorderBackGround.stop();
+		recorderFacial.stop();
+		recorderBackGround.release();
+		recorderFacial.release();
+		grabber.release();
 	}
 
 	/**
@@ -44,9 +77,10 @@ public class Transmitter {
 	 * device
 	 * 
 	 * @return A video stream
-	 * @throws InterruptedException
+	 * @throws com.googlecode.javacv.FrameGrabber.Exception
 	 */
-	public FrameGrabber receiveStream() {
+	public FrameGrabber receiveStream()
+			throws com.googlecode.javacv.FrameGrabber.Exception {
 		return receiveStream(0);
 	}
 
@@ -57,16 +91,12 @@ public class Transmitter {
 	 * @param fileloc
 	 *            Location of the file to be loaded
 	 * @return A video stream
-	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
+	 * @throws com.googlecode.javacv.FrameGrabber.Exception
 	 */
-	public FrameGrabber receiveStream(String fileloc) {
+	public FrameGrabber receiveStream(String fileloc)
+			throws com.googlecode.javacv.FrameGrabber.Exception {
 		grabber = new OpenCVFrameGrabber(fileloc);
-		try {
-			grabber.start();
-		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
-			System.err.println("FrameGrabber failed to start.");
-			e.printStackTrace();
-		}
+		grabber.start();
 		return grabber;
 
 	}
@@ -79,17 +109,13 @@ public class Transmitter {
 	 * @param input
 	 *            The number corresponding to the device being loaded
 	 * @return A video stream
-	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
+	 * @throws com.googlecode.javacv.FrameGrabber.Exception
 	 */
-	public FrameGrabber receiveStream(int input) {
+	public FrameGrabber receiveStream(int input)
+			throws com.googlecode.javacv.FrameGrabber.Exception {
 
 		grabber = new OpenCVFrameGrabber(input);
-		try {
-			grabber.start();
-		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
-			System.err.println("FrameGrabber failed to start.");
-			e.printStackTrace();
-		}
+		grabber.start();
 		return grabber;
 	}
 
@@ -100,25 +126,11 @@ public class Transmitter {
 	 *            Background frame to record
 	 * @param fImage
 	 *            Facial data frame to record
-	 */
-	public void videoBuilder(IplImage bImage, IplImage fImage) {
-		try {
-			recorderBackGround.record(bImage);
-			recorderFacial.record(fImage);
-		} catch (Exception e) {
-			System.err.println("Failed to write frame to recorder");
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * TransmitStream will send the video stream out to a file or viewer.
-	 * 
 	 * @throws Exception
 	 */
-	public void transmitStream() throws Exception {
-		recorderBackGround.stop();
-		recorderFacial.stop();
+	public void videoBuilder(IplImage bImage, IplImage fImage) throws Exception {
+		recorderBackGround.record(bImage);
+		recorderFacial.record(fImage);
 	}
 
 	/**
