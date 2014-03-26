@@ -103,8 +103,9 @@ public class Analyzer {
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage) {
 		// For now, return image ipl as recombined for face tracking testing.
-		cImage = fImage.clone();
-//		cvAbsDiff(bImage, fImage, cImage);
+//		cImage = fImage.clone();
+		cvAbsDiff(fImage, fImage, cImage);
 	}
+
 
 }
