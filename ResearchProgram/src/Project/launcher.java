@@ -19,8 +19,8 @@ public class launcher {
 		
 		
 		/////////////////////////////////
-		CanvasFrame f = new CanvasFrame("merged");
-		IplImage mergImage;
+//		CanvasFrame f = new CanvasFrame("merged");
+//		IplImage mergImage;
 		/////////////////////////////////
 		
 		
@@ -34,7 +34,7 @@ public class launcher {
 			faceImage = origImage.clone();
 			
 			/////////////////////
-			mergImage = origImage.clone();
+//			mergImage = origImage.clone();
 			/////////////////////
 			
 
@@ -46,14 +46,14 @@ public class launcher {
 				transmitter.videoBuilder(backImage, faceImage);
 				
 				//////////////////////////////////////////////
-				analyzer.recombineVideo(mergImage, backImage, faceImage);
-				f.showImage(mergImage);
+//				analyzer.recombineVideo(mergImage, backImage, faceImage);
+//				f.showImage(mergImage);
 				//////////////////////////////////////////////
 			}
 	
 			gui.destroy();
 			transmitter.close();
-			return;
+			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 			gui.destroy();
