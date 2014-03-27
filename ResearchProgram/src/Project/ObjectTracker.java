@@ -5,7 +5,12 @@ import static com.googlecode.javacv.cpp.opencv_core.*;
 import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 import static com.googlecode.javacv.cpp.opencv_video.*;
 
-
+/**
+ * 
+ * @author Marko Babic, Marcus Karpoff
+ * Based on the C++ code available at:
+ * https://gist.github.com/lamberta/231696
+ */
 public class ObjectTracker {
 
 	
@@ -49,7 +54,6 @@ public class ObjectTracker {
 		// Create histogram representation for the object.
 		cvSetImageROI(_obj._hue, rect);
 		cvSetImageROI(_obj._mask, rect);
-		
 		IplImage[] hues = {_obj._hue};
 		cvCalcHist(hues, _obj._hist, 0, _obj._mask);
 		cvGetMinMaxHistValue(_obj._hist, minVal, maxVal, tmp1, tmp2);
@@ -61,7 +65,6 @@ public class ObjectTracker {
 		);
 		cvResetImageROI(_obj._hue);
 		cvResetImageROI(_obj._mask);
-		
 		_obj._pRect = rect;		
 	}
 	
@@ -95,7 +98,7 @@ public class ObjectTracker {
 		updateHueImage(img);
 		
 		// Create a probability image based on the face histogram.
-		IplImage[] imgs = {img};
+		IplImage[] imgs = {_obj._hue};
 		cvCalcBackProject(imgs, _obj._prob,	_obj._hist);
 		cvAnd(_obj._prob, _obj._mask, _obj._prob, null);
 		

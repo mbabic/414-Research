@@ -66,7 +66,11 @@ public class Analyzer {
 			flag = 1;
 		} else if (flag == 1) {
 			CvRect cvr = new CvRect(cvGetSeqElem(rects, 0));
-			CvRect newCvr = _tracker.camshiftTrack(input, cvr);
+			System.out.println(cvr);
+			if (!cvr.isNull()) {
+				_tracker._obj._pRect = cvr;
+			}
+			CvRect newCvr = _tracker.track(input);
 			CvSeq newRects = cvCreateSeq(0, Loader.sizeof(CvSeq.class), Loader.sizeof(CvRect.class), storage);
 			cvSeqPush(newRects, newCvr);
 			return newRects;
