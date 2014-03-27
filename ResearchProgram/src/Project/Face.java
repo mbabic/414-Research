@@ -8,6 +8,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 
 /**
+ * @deprecated
  * Contains information necesary to track face using CAMshift
  * algorithm.
  * TODO: better description

@@ -28,6 +28,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 
 /**
+ * @deprecated
  * Implements CAMshift algorithm for the tracking of ONE Face object.
  * @author Marko Babic, Marcus Karpoff
  *

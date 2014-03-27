@@ -8,7 +8,6 @@ import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class launcher {
-	public static IplImage stupid;
 	public static void main(String[] args) {
 		System.loadLibrary("opencv_java248");
 		UI gui = new UI();
@@ -50,12 +49,9 @@ public class launcher {
 				
 				//////////////////////////////////////////////
 				analyzer.recombineVideo(mergImage, backImage, faceImage);
-				if (stupid == null || stupid.isNull()) {
-					f.showImage(faceImage);
-				} else {
-					f.showImage(stupid);
-				}
-					//////////////////////////////////////////////
+//				f.showImage(faceImage);
+				f.showImage(mergImage);
+				//////////////////////////////////////////////
 			}
 	
 			gui.destroy();

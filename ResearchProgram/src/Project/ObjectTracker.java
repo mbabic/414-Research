@@ -13,17 +13,24 @@ import static com.googlecode.javacv.cpp.opencv_video.*;
  */
 public class ObjectTracker {
 
-	
+	/**
+	 * The object which this instance of ObjectTracker tracks.
+	 */
 	TrackedObject _obj;
 	
+	/**
+	 * Constructor.  Init object to be tracked.
+	 */
 	public ObjectTracker() {
 		_obj = new TrackedObject();
 	}
 	
 	/**
 	 * 
-	 * @param img
+	 * @param img 
+	 * 		The frame in which the object to be tracked exists.
 	 * @param rect
+	 *  	Bounding rect of object to be tracked (ROI).
 	 */
 	public void trackNewObject(IplImage img, CvRect rect) {
 		float[][] ranges = {_obj._histRange};
@@ -68,6 +75,12 @@ public class ObjectTracker {
 		_obj._pRect = rect;		
 	}
 	
+	/**
+	 * Update hue channel image for tracked object given current frame.
+	 * TODO: move to TrackedObject?
+	 * @param img
+	 *  	The image from which to update tracked object's hue image.
+	 */
 	private void updateHueImage(IplImage img) {
 		int vmin = 65, vmax = 256, smin = 55;
 		
@@ -89,11 +102,16 @@ public class ObjectTracker {
 		cvSplit(_obj._hsv, _obj._hue, null, null, null);
 	}
 	
+	/**
+	 * 
+	 * @param img
+	 *  	The image in which to find the object being tracked.
+	 * @return
+	 * 		Bounding rect of image if found in object.  If object not found,
+	 * 		rect with 0 width and height returned.
+	 */
 	public CvRect track(IplImage img) {
 		CvConnectedComp components = new CvConnectedComp();
-		
-		
-		
 		// Create new hue image.
 		updateHueImage(img);
 		
@@ -107,17 +125,31 @@ public class ObjectTracker {
 		cvCamShift(
 			_obj._prob,
 			_obj._pRect,
+			// TODO: make thorough examination of termination criteria
+			// object
 			cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1),
 			components,
 			_obj._currBox
 		);
-		
-//		launcher.stupid = _obj._prob.clone();
-		
-		_obj._pRect = new CvRect(components.rect().x(), components.rect().y(), components.rect().width(), components.rect().height());
-		_obj._currRect = new CvRect(components.rect().x(), components.rect().y(), components.rect().width(), components.rect().height());
+				
+		// Create new CvRect as reference to components is destroyed at next
+		// iteration of the algorithm and _pRect will be set to null before 
+		// application of camshift algorithm.
+		_obj._pRect = new CvRect(
+			components.rect().x(), 
+			components.rect().y(), 
+			components.rect().width(), 
+			components.rect().height()
+		);
 		System.out.println("box2d: " + _obj._currBox);
-		System.out.println("currRect: " + _obj._currRect);
-		return new CvRect(components.rect().x(), components.rect().y(), components.rect().width(), components.rect().height());
+		
+		// TODO: test if creation of new CvRect is necessary or if we can simply
+		// return reference to _obj._pRect
+		return new CvRect(
+			components.rect().x(), 
+			components.rect().y(), 
+			components.rect().width(), 
+			components.rect().height()
+		);
 	}
 }

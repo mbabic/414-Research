@@ -48,6 +48,9 @@ public class Analyzer {
 		_tracker = new ObjectTracker();
 	}
 
+	// TODO: use better mechanism than flag.
+	// Probably it will be the case that each instance of objectTracker will
+	// have its own flag.
 	public static int flag = 0;
 	
 	/**
@@ -73,6 +76,10 @@ public class Analyzer {
 				_tracker._obj._pRect = cvr;
 			}
 			CvRect newCvr = _tracker.track(input);
+			if (newCvr.width() == 0) {
+				// Tracker has lost object, reset flag.
+				flag = 0;
+			}
 			CvSeq newRects = cvCreateSeq(0, Loader.sizeof(CvSeq.class), Loader.sizeof(CvRect.class), storage);
 			cvSeqPush(newRects, newCvr);
 			return newRects;
