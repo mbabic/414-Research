@@ -1,6 +1,6 @@
 package Project;
 
-import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+import static com.googlecode.javacv.cpp.opencv_core.*;
 import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
 import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
@@ -10,6 +10,9 @@ import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
+import org.opencv.core.Rect;
+
+import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.cpp.opencv_core;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
@@ -45,6 +48,8 @@ public class Analyzer {
 		_tracker = new FaceTracker();
 	}
 
+	public static int flag = 0;
+	
 	/**
 	 * This will look for faces and return the coordinates of the faces
 	 * 
@@ -55,6 +60,18 @@ public class Analyzer {
 	private CvSeq detectFaces(IplImage input) {
 		CvSeq rects = cvHaarDetectObjects(input, faceCascade, storage, 1.5, 3,
 				CV_HAAR_DO_CANNY_PRUNING);
+		if ((rects.total() > 0) && (flag == 0)) {
+			CvRect cvr = new CvRect(cvGetSeqElem(rects, 0));
+			_tracker.trackNewObject(input, cvr);
+			flag = 1;
+		} else if (flag == 1) {
+			CvRect cvr = new CvRect(cvGetSeqElem(rects, 0));
+			CvRect newCvr = _tracker.camshiftTrack(input, cvr);
+			CvSeq newRects = cvCreateSeq(0, Loader.sizeof(CvSeq.class), Loader.sizeof(CvRect.class), storage);
+			cvSeqPush(newRects, newCvr);
+			return newRects;
+		}
+		
 		cvClearMemStorage(storage);
 		return rects;
 
@@ -74,7 +91,7 @@ public class Analyzer {
 	 *            Where the facial image will go
 	 */
 	public void separateStreams(IplImage orig, IplImage back, IplImage face) {
-		blackOutFaces(back, _tracker.detectFaces(orig));
+		blackOutFaces(back, detectFaces(orig));
 		cvAbsDiff(orig, back, face);
 	}
 
