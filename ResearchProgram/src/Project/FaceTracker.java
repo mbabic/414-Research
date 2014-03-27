@@ -129,18 +129,8 @@ public class FaceTracker {
 		for (int i = 0; i < rows; i ++) {
 			for (int j = 0; j < cols; j++) {
 				int index = i * img.widthStep() + j * img.nChannels();
-				double val1 = buffer.get(index) & 0xFF;
-				double val2 = buffer.get(index + 1) & 0xFF;
-				double val3 = buffer.get(index + 2) & 0xFF;
-				
-				if (i == 100 && j == 100) {
-					System.out.println(val1);
-					System.out.println(val2);
-					System.out.println(val3);
-
-				}
-				
-				mat.put(i, j, val1, val2, val3);
+							
+				mat.put(i, j, buffer.get(index) & 0xFF, buffer.get(index+1) & 0xFF, buffer.get(index+2) & 0xFF);
 			}
 		}
 		System.out.println(mat);
@@ -158,11 +148,7 @@ public class FaceTracker {
 	 *  	Rectangle bounding the object to be tracked.
 	 */
 	public void trackNewObject(IplImage img, CvRect cvr) {
-
-		this.trackNewObject(
-			imgToMat(img), 
-			new Rect(cvr.x(), cvr.y(), cvr.width(), cvr.height())
-		);
+		
 	}
 	
 	/**
@@ -241,20 +227,19 @@ public class FaceTracker {
 	public CvRect camshiftTrack(IplImage img, CvRect cvr) {
 		System.out.println(cvr);
 		Rect r = (cvr.isNull() != true) ? new Rect(cvr.x(), cvr.y(), cvr.width(), cvr.height()) : _face._pRect;
-		Rect ret =
-			this.camshiftTrack(
-				imgToMat(img),
-				r
+		_face._pRect = r;
+		Rect ret = this.camshiftTrack(
+				imgToMat(img)
 			);
 		System.out.println("Ret: " + ret);
 		return new CvRect(ret.x, ret.y, ret.width, ret.height);
 	}
 	
-	public Rect camshiftTrack(Mat mrgba, Rect rect) {
+	public Rect camshiftTrack(Mat rgb) {
 		
 		MatOfFloat ranges = new MatOfFloat(0.f, 256.f);
 		
-		this.updateHueImage(mrgba);
+		this.updateHueImage(rgb);
 		
 		Imgproc.calcBackProject(
 			_face._hueList,
@@ -265,6 +250,20 @@ public class FaceTracker {
 			255
 		);
 		
+		int rows = _face._prob.rows(), cols = _face._prob.cols();
+		launcher.stupid = IplImage.create(cols, rows, IPL_DEPTH_8U, 1);
+		byte[] data = new byte[rows * cols];
+		for (int i = 0; i < rows; i ++) {
+			for (int j = 0; j < cols; j ++) {
+//				int index = i * _face._prob.depth() + j * _face._prob.channels();
+				byte[] temp = new byte[1];
+				_face._prob.get(i, j, temp);
+				data[j + (i * rows)] = temp[0];
+			}
+		}
+		launcher.stupid.getByteBuffer().put(data);
+		
+
 		Core.bitwise_and(
 			_face._prob,	// src1
 			_face._mask,	// src2
@@ -274,7 +273,6 @@ public class FaceTracker {
 		
 		// Now that we have constructed a histogram, we can use it in
 		// camshift algorithm to track object.
-		
 		_face._currBox = Video.CamShift(
 			_face._prob, 
 			_face._pRect, 
