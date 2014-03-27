@@ -252,7 +252,7 @@ public class FaceTracker {
 		);
 		
 		int rows = _face._prob.rows(), cols = _face._prob.cols();
-		launcher.stupid = IplImage.create(cols, rows, IPL_DEPTH_8U, 1);
+//		launcher.stupid = IplImage.create(cols, rows, IPL_DEPTH_8U, 1);
 		byte[] data = new byte[rows * cols];
 		for (int i = 0; i < rows; i ++) {
 			for (int j = 0; j < cols; j ++) {
@@ -262,7 +262,7 @@ public class FaceTracker {
 				data[j + (i * rows)] = temp[0];
 			}
 		}
-		launcher.stupid.getByteBuffer().put(data);
+//		launcher.stupid.getByteBuffer().put(data);
 		
 
 		Core.bitwise_and(

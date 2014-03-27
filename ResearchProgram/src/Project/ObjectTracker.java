@@ -26,6 +26,11 @@ public class ObjectTracker {
 	}
 	
 	/**
+	 * NOT GOOD O-O
+	 */
+	public boolean _isPaired;
+	
+	/**
 	 * 
 	 * @param img 
 	 * 		The frame in which the object to be tracked exists.
@@ -151,5 +156,21 @@ public class ObjectTracker {
 			components.rect().width(), 
 			components.rect().height()
 		);
+	}
+	
+	public boolean hasLostObject() {
+		if (_obj._pRect.x() == 0 && _obj._pRect.y() == 0 &&
+			_obj._pRect.width() == 0 && _obj._pRect.height() == 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean equals(ObjectTracker x) {
+		if (x == null) return false;
+		CvRect xRect = x._obj._pRect, thisRect = _obj._pRect;
+		if ((xRect.x() == thisRect.x()) && 
+			(xRect.y() == thisRect.y())) return true;
+		return false;
 	}
 }

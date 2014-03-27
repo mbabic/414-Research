@@ -16,7 +16,6 @@ public class launcher {
 		Transmitter transmitter = new Transmitter();
 		Analyzer analyzer;
 		FrameGrabber frameGrabber;
-		FaceTracker faceTracker;
 		IplImage origImage, backImage, faceImage ;
 		
 		/////////////////////////////////
@@ -29,7 +28,6 @@ public class launcher {
 			
 			frameGrabber = transmitter.receiveStream();
 			analyzer = new Analyzer();
-			faceTracker = new FaceTracker();
 			origImage = frameGrabber.grab();
 			transmitter.initializeRecorders(outb, outf, origImage);
 			backImage = origImage.clone();
