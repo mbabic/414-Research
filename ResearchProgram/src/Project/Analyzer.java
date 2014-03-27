@@ -30,7 +30,7 @@ import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 public class Analyzer {
 	private CvHaarClassifierCascade faceCascade;
 	private CvMemStorage storage;
-	private FaceTracker _tracker;
+	private ObjectTracker _tracker;
 
 	/**
 	 * Constructor for the analyzer.
@@ -45,7 +45,7 @@ public class Analyzer {
 		if (faceCascade.isNull()) {
 			throw new ClassiferLoadFailure(classifierDir);
 		}
-		_tracker = new FaceTracker();
+		_tracker = new ObjectTracker();
 	}
 
 	public static int flag = 0;
