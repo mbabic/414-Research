@@ -20,7 +20,6 @@ public class launcher {
 		FaceTracker faceTracker;
 		IplImage origImage, backImage, faceImage ;
 		
-		
 		/////////////////////////////////
 		CanvasFrame f = new CanvasFrame("merged");
 		IplImage mergImage;

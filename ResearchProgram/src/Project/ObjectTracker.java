@@ -97,6 +97,8 @@ public class ObjectTracker {
 		// Create new hue image.
 		updateHueImage(img);
 		
+		System.out.println("_obj._pRect = " + _obj._pRect);
+		
 		// Create a probability image based on the face histogram.
 		IplImage[] imgs = {_obj._hue};
 		cvCalcBackProject(imgs, _obj._prob,	_obj._hist);
@@ -110,9 +112,12 @@ public class ObjectTracker {
 			_obj._currBox
 		);
 		
-		_obj._pRect = components.rect();
-		_obj._currRect = components.rect();
-		System.out.println(_obj._currRect);
-		return _obj._currRect;
+//		launcher.stupid = _obj._prob.clone();
+		
+		_obj._pRect = new CvRect(components.rect().x(), components.rect().y(), components.rect().width(), components.rect().height());
+		_obj._currRect = new CvRect(components.rect().x(), components.rect().y(), components.rect().width(), components.rect().height());
+		System.out.println("box2d: " + _obj._currBox);
+		System.out.println("currRect: " + _obj._currRect);
+		return new CvRect(components.rect().x(), components.rect().y(), components.rect().width(), components.rect().height());
 	}
 }

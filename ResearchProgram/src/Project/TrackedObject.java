@@ -15,6 +15,9 @@ public class TrackedObject {
 	public CvRect _currRect;
 	
 	public TrackedObject() {
-		
+		_pRect = new CvRect();
+		_currRect = new CvRect();
+		_currBox = new CvBox2D();
+	
 	}
 }

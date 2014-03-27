@@ -60,14 +60,16 @@ public class Analyzer {
 	private CvSeq detectFaces(IplImage input) {
 		CvSeq rects = cvHaarDetectObjects(input, faceCascade, storage, 1.5, 3,
 				CV_HAAR_DO_CANNY_PRUNING);
+		
 		if ((rects.total() > 0) && (flag == 0)) {
 			CvRect cvr = new CvRect(cvGetSeqElem(rects, 0));
 			_tracker.trackNewObject(input, cvr);
+			System.out.println("setting flag.  cvr = " + cvr);
 			flag = 1;
 		} else if (flag == 1) {
 			CvRect cvr = new CvRect(cvGetSeqElem(rects, 0));
 			System.out.println(cvr);
-			if (!cvr.isNull()) {
+			if (cvr.isNull() != true) {
 				_tracker._obj._pRect = cvr;
 			}
 			CvRect newCvr = _tracker.track(input);
@@ -75,7 +77,6 @@ public class Analyzer {
 			cvSeqPush(newRects, newCvr);
 			return newRects;
 		}
-		
 		cvClearMemStorage(storage);
 		return rects;
 
