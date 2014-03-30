@@ -299,16 +299,16 @@ public class Analyzer {
 	/**
 	 * This function takes in the two split video streams and recombines them in
 	 * to one video stream.
-	 * IDEA: cvAbsDiff works by taking abs diff between two images ...
-	 * so may it is that at border both images have same value, so write your
-	 * own custom absDiff that says if (diff == 0) return value of whichever
-	 * pixel.  May not work in after encoding/decoding, but might produce
-	 * good results for now.
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {
-		
-		CvScalar b1, b2, f1, f2;
+		// TODO: change which recombinator called based on 
+		naiveRecombination(cImage, bImage, fImage, rects);
+	}
+	
+	public void naiveRecombination(IplImage cImage, IplImage bImage, IplImage fImage,
+			ArrayList<CvRect> rects) {	
+		CvScalar b, f;
 		int x, y, width, height, widthStep, nChannels;
 		
 		cvAbsDiff(bImage, fImage, cImage);
@@ -320,19 +320,36 @@ public class Analyzer {
 			height = cvr.height();
 			width = cvr.width();
 			
-			// Interpolate along lefthand edge of rect
+			// Do pixel replacement along lefthand edge of rect
 			for (int j = y; j < y + height; j++) {
 				// TODO: worry about when pixel is outside frame!
-				b1 = cvGet2D(bImage, j, x-3);
-				b2 = cvGet2D(bImage, j, x-2);
-				f1 = cvGet2D(fImage, j, x+2);
-				f2 = cvGet2D(fImage, j, x+3);
-				cvSet2D(cImage, j, x-1, b1);
-				cvSet2D(cImage, j, x, b2);
-				cvSet2D(cImage, j, x+1, f1);
-				cvSet2D(cImage, j, x+2, f2);
+				b = cvGet2D(bImage, j, x-2);
+				f = cvGet2D(fImage, j, x+2);				
+
+				if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+					cvSet2D(cImage, j, x-1, b);
+					cvSet2D(cImage, j, x, b);
+				}
+				if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+					cvSet2D(cImage, j, x+1, f);
+				}
 			}
-		}		
+			
+			// Do pixel replacement along right edge.
+			for (int j = y; j < y + height; j++) {
+				System.out.println(j + " " + (x+width));
+				b = cvGet2D(bImage, j, x + width + 2);
+				f = cvGet2D(fImage, j, x + width - 2);
+
+				if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+					cvSet2D(cImage, j, x + width, b);
+					cvSet2D(cImage, j, x + width + 1, b);
+				}
+				if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+					cvSet2D(cImage, j, x + width - 1, f);
+				}
+
+			}
+		}			
 	}
-	
 }
