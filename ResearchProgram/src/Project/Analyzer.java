@@ -7,6 +7,8 @@ import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
 import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_imgproc.*;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
@@ -309,7 +311,7 @@ public class Analyzer {
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {
 		// TODO: change which recombinator called based on param set ... somewhere
-		linearInterpolationRecombination(cImage, bImage, fImage, rects);
+		hsvInterpolationRecombination(cImage, bImage, fImage, rects);
 	}
 	
 	/**
@@ -432,11 +434,11 @@ public class Analyzer {
 					f = cvGet2D(fImage, j, x+2);				
 
 					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
-						cvSet2D(cImage, j, x-1, interpolate(b, f, 0.25));
-						cvSet2D(cImage, j, x, interpolate(b, f, 0.5));
+						cvSet2D(cImage, j, x-1, interpolateRGB(b, f, 0.25));
+						cvSet2D(cImage, j, x, interpolateRGB(b, f, 0.5));
 					}
 					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
-						cvSet2D(cImage, j, x+1, interpolate(b, f, 0.75));
+						cvSet2D(cImage, j, x+1, interpolateRGB(b, f, 0.75));
 					}
 					
 					// Interpolate along right hand edge.
@@ -444,11 +446,11 @@ public class Analyzer {
 					f = cvGet2D(fImage, j, x + width - 2);
 
 					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
-						cvSet2D(cImage, j, x + width, interpolate(b, f, 0.5));
-						cvSet2D(cImage, j, x + width + 1, interpolate(b, f, 0.25));
+						cvSet2D(cImage, j, x + width, interpolateRGB(b, f, 0.5));
+						cvSet2D(cImage, j, x + width + 1, interpolateRGB(b, f, 0.25));
 					}
 					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
-						cvSet2D(cImage, j, x + width - 1, interpolate(b, f, 0.75));
+						cvSet2D(cImage, j, x + width - 1, interpolateRGB(b, f, 0.75));
 					}
 				}
 			}	
@@ -461,22 +463,22 @@ public class Analyzer {
 					f = cvGet2D(fImage, y + 2, i);
 					
 					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
-						cvSet2D(cImage, y - 1, i, interpolate(b, f, 0.25));
-						cvSet2D(cImage, y, i, interpolate(b, f, 0.5));
+						cvSet2D(cImage, y - 1, i, interpolateRGB(b, f, 0.25));
+						cvSet2D(cImage, y, i, interpolateRGB(b, f, 0.5));
 					}
 					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
-						cvSet2D(cImage, y + 1, i, interpolate(b, f, 0.75));
+						cvSet2D(cImage, y + 1, i, interpolateRGB(b, f, 0.75));
 					}	
 					
 					// Interpolate along bottom edge.
 					b = cvGet2D(bImage, y + height + 2, i);
 					f = cvGet2D(fImage, y + height - 2, i);
 					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
-						cvSet2D(cImage, y + height + 1, i, interpolate(b, f, 0.25));
-						cvSet2D(cImage, y + height, i, interpolate(b, f, 0.5));
+						cvSet2D(cImage, y + height + 1, i, interpolateRGB(b, f, 0.25));
+						cvSet2D(cImage, y + height, i, interpolateRGB(b, f, 0.5));
 					}
 					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
-						cvSet2D(cImage, y + height - 1, i, interpolate(b, f, 0.75));
+						cvSet2D(cImage, y + height - 1, i, interpolateRGB(b, f, 0.75));
 					}
 				}
 			}
@@ -484,16 +486,154 @@ public class Analyzer {
 	}
 	
 	/**
-	 * 
-	 * @param l
-	 * @param y
+	 * Return an interpolated CvScalar in the RGB color space based on 
+	 * parameters passed.
+	 * @param v0
+	 * 		The first CvScalar on the interpolation line.
+	 * @param v1
+	 * 		The second CvScalar on the interpolation line.
 	 * @param t
+	 * 		Value indicating position at line whose interpolated scalar
+	 * 		values we want to calculate (0 <= t < 0. 5 => closer to v0,
+	 * 		0.5 < t <= 1 => closer to v1)
 	 * @return
+	 * 		A CvScalar in the BGR color space with values set as per the
+	 * 		result of the interpolation operation.
 	 */
-	private CvScalar interpolate(CvScalar v0, CvScalar v1, double t) {
+	private CvScalar interpolateRGB(CvScalar v0, CvScalar v1, double t) {
 		double	r = Math.floor(v0.val(2) + (v1.val(2) - v0.val(2))*t),
 				g = Math.floor(v0.val(1) + (v1.val(1) - v0.val(1))*t),
 				b = Math.floor(v0.val(0) + (v1.val(0) - v0.val(0))*t);
 		return new CvScalar(b, g, r, 1f); 
+	}
+	
+	/**
+	 * Returns an interpolated CvScalar in the HSV color space based on 
+	 * parameters passed.
+	 * @param v0
+	 *  	The first CvScalar on the interpolation line.
+	 * @param v1
+	 *  	The second CvScalar on the interpolation line.
+	 * @param t
+	 * 		Value indicating position at line whose interpolated scalar
+	 * 		values we want to calculate (0 <= t < 0. 5 => closer to v0,
+	 * 		0.5 < t <= 1 => closer to v1)
+	 * @return
+	 * 		A CvScalar in the HSV color space with Hue, Saturation, and Value
+	 * 		values set as per the result of the interpolation operation.
+	 */
+	private CvScalar interpolateHSV(CvScalar v0, CvScalar v1, double t) {
+		return new CvScalar(
+			Math.floor(v0.val(0) + (v1.val(0) - v0.val(0))*t),
+			Math.floor(v0.val(1) + (v1.val(1) - v0.val(1))*t),
+			Math.floor(v0.val(2) + (v1.val(2) - v0.val(2))*t),
+			1f
+		);
+	}
+	
+	/**
+	 * Combine the given foreground image (fImage) and background image
+	 * (bImage) into cImage by taking the absolute difference between the 
+	 * images, transform the image to the HSV color space, interpolating
+	 * along the lines defines by the rectangles in rects, and re-converting
+	 * to the RGB color space.
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 */
+	private void hsvInterpolationRecombination(
+			IplImage cImage, IplImage bImage, IplImage fImage, 
+			ArrayList<CvRect> rects) {
+			
+			IplImage bgrImg = cvCreateImage(cvGetSize(cImage), 8, 3);
+			IplImage fHsv = cvCreateImage(cvGetSize(cImage), 8, 3);
+			IplImage bHsv = cvCreateImage(cvGetSize(cImage), 8, 3);
+			IplImage cHsv = cvCreateImage(cvGetSize(cImage), 8, 3);
+		
+			CvScalar b, f;
+			int x, y, width, height;
+			int imgWidth = cImage.width();
+			int imgHeight = cImage.height();	
+			
+			// Take absolute difference.
+			cvAbsDiff(bImage, fImage, cImage);
+			
+			// Convert image to BGR, then to HSV
+			cvCvtColor(fImage, bgrImg, CV_RGB2BGR);
+			cvCvtColor(bgrImg, fHsv, CV_BGR2HSV);
+			cvCvtColor(bImage, bgrImg, CV_RGB2BGR);
+			cvCvtColor(bgrImg, bHsv, CV_BGR2HSV);
+			cvCvtColor(cImage, bgrImg, CV_RGB2BGR);
+			cvCvtColor(bgrImg, cHsv, CV_BGR2HSV);
+
+			for (CvRect cvr: rects) {
+				x = cvr.x();
+				y = cvr.y();
+				height = cvr.height();
+				width = cvr.width();
+				
+				// Interpolate along left and right hand edges.
+				for (int j = y; j < y + height; j++) {
+					// Handle boundary conditions
+					if ((0 <= j && j <= imgHeight) && (2 <= x && x <= imgWidth - 2)) {
+						// Replace along left hand edge.
+						b = cvGet2D(bHsv, j, x-2);
+						f = cvGet2D(fHsv, j, x+2);				
+
+						if (!(b.val(0) == 0)) {
+							cvSet2D(cHsv, j, x-1, interpolateHSV(b, f, 0.25));
+							cvSet2D(cHsv, j, x, interpolateHSV(b, f, 0.5));
+						}
+						if (!(f.val(0) == 0)) {
+							cvSet2D(cHsv, j, x+1, interpolateHSV(b, f, 0.75));
+						}
+						
+						// Interpolate along right hand edge.
+						b = cvGet2D(bHsv, j, x + width + 2);
+						f = cvGet2D(fHsv, j, x + width - 2);
+
+						if (!(b.val(0) == 0)) {
+							cvSet2D(cHsv, j, x + width, interpolateHSV(b, f, 0.5));
+							cvSet2D(cHsv, j, x + width + 1, interpolateHSV(b, f, 0.25));
+						}
+						if (!(f.val(0) == 0)) {
+							cvSet2D(cHsv, j, x + width - 1, interpolateHSV(b, f, 0.75));
+						}
+					}
+				}	
+			
+				// Interpolate along top and bottom edges.
+				for (int i = x; i < x + width; i++) {
+					// Handle boundary conditions
+					if ((0 <= i && i <= imgWidth) && (2 <= y && y <= imgHeight - 2)) {
+						// Interpolate along top edge.
+						b = cvGet2D(bHsv, y - 2, i);
+						f = cvGet2D(fHsv, y + 2, i);
+						
+						if (!(b.val(0) == 0)) {
+							cvSet2D(cHsv, y - 1, i, interpolateHSV(b, f, 0.25));
+							cvSet2D(cHsv, y, i, interpolateHSV(b, f, 0.5));
+						}
+						if (!(f.val(0) == 0)) {
+							cvSet2D(cHsv, y + 1, i, interpolateHSV(b, f, 0.75));
+						}	
+						
+						// Interpolate along bottom edge.
+						b = cvGet2D(bHsv, y + height + 2, i);
+						f = cvGet2D(fHsv, y + height - 2, i);
+						if (!(b.val(0) == 0)) {
+							cvSet2D(cHsv, y + height + 1, i, interpolateHSV(b, f, 0.25));
+							cvSet2D(cHsv, y + height, i, interpolateHSV(b, f, 0.5));
+						}
+						if (!(f.val(0) == 0)) {
+							cvSet2D(cHsv, y + height - 1, i, interpolateHSV(b, f, 0.75));
+						}
+					}
+				}
+			}
+		// Convert back to RGB scale
+		cvCvtColor(cHsv, bgrImg, CV_HSV2BGR);
+		cvCvtColor(bgrImg, cImage, CV_BGR2RGB);
 	}
 }

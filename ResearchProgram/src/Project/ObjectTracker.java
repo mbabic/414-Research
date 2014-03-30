@@ -92,7 +92,7 @@ public class ObjectTracker {
 		cvCvtColor(img, _obj._bgr, CV_RGB2BGR);
 		
 		// Convert image to HSV colour model.
-		cvCvtColor(img, _obj._hsv, CV_BGR2HSV);
+		cvCvtColor(_obj._bgr, _obj._hsv, CV_BGR2HSV);
 		
 		// Mask out-of-range values.
 		cvInRangeS(
