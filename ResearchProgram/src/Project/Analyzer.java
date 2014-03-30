@@ -307,54 +307,32 @@ public class Analyzer {
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {
+		
+		CvScalar b1, b2, f1, f2;
+		int x, y, width, height, widthStep, nChannels;
+		
 		cvAbsDiff(bImage, fImage, cImage);
-//		ByteBuffer buf = cImage.getByteBuffer();
 		for (CvRect cvr: rects) {
-			int index, x = cvr.x(), y = cvr.y(), widthStep = cImage.widthStep(),
-			nChannels = cImage.nChannels(), height = cvr.height(), 
+			x = cvr.x();
+			y = cvr.y();
+			widthStep = cImage.widthStep();
+			nChannels = cImage.nChannels();
+			height = cvr.height();
 			width = cvr.width();
+			
 			// Interpolate along lefthand edge of rect
 			for (int j = y; j < y + height; j++) {
-				// For now, just grab pixel to left
 				// TODO: worry about when pixel is outside frame!
-				index = (j * widthStep) + (x * nChannels);
-				CvScalar b1 = cvGet2D(bImage, j, x-3);
-				CvScalar b2 = cvGet2D(bImage, j, x-2);
-				CvScalar f1 = cvGet2D(fImage, j, x+2);
-				CvScalar f2 = cvGet2D(fImage, j, x+3);
+				b1 = cvGet2D(bImage, j, x-3);
+				b2 = cvGet2D(bImage, j, x-2);
+				f1 = cvGet2D(fImage, j, x+2);
+				f2 = cvGet2D(fImage, j, x+3);
 				cvSet2D(cImage, j, x-1, b1);
 				cvSet2D(cImage, j, x, b2);
 				cvSet2D(cImage, j, x+1, f1);
-//				cvSet2D(cImage, j, x+2, f2);
-				System.out.println("-------------");
-				System.out.println(cvGet2D(cImage, j, x));
-				System.out.println(b1);
-				System.out.println(f1);
-//				buf.put(index, 		(byte) ((int) fPixel.val(0) & 0xFF));
-//				buf.put(index + 1, 	(byte) ((int) fPixel.val(1) & 0xFF));
-//				buf.put(index + 2, 	(byte) ((int) fPixel.val(2) & 0xFF));
+				cvSet2D(cImage, j, x+2, f2);
 			}
-		}
-		
-		// Interpolate left hand edge.
-		
-		
-		// Attempt to remove black lines
-//		int rows = cImage.height(), cols = cImage.width();
-//		ByteBuffer buf = cImage.getByteBuffer();
-//		for (int i = 0; i < rows; i++) {
-//			for (int j = 0; j < cols; j++) {
-//				CvScalar cPixel = cvGet2D(cImage, i, j);
-//				if (cPixel.val(0) == 0 && cPixel.val(1) == 0 && cPixel.val(2) == 0) {
-////					CvScalar fPixel = cvGet2D(fImage, i, j);
-//					int index = (i * cImage.widthStep()) + (cImage.nChannels() * j);
-//					buf.put(index, (byte) 255);
-//					buf.put(index + 1, (byte)255);
-//					buf.put(index + 2, (byte)255);
-//				}
-//				
-//			}
-//		}
+		}		
 	}
 	
 }
