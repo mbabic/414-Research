@@ -310,6 +310,8 @@ public class Analyzer {
 			ArrayList<CvRect> rects) {	
 		CvScalar b, f;
 		int x, y, width, height, widthStep, nChannels;
+		int imgWidth = cImage.width();
+		int imgHeight = cImage.height();
 		
 		cvAbsDiff(bImage, fImage, cImage);
 		for (CvRect cvr: rects) {
@@ -320,35 +322,62 @@ public class Analyzer {
 			height = cvr.height();
 			width = cvr.width();
 			
-			// Do pixel replacement along lefthand edge of rect
+			// Do pixel replacement along left and right hand edges.
 			for (int j = y; j < y + height; j++) {
-				// TODO: worry about when pixel is outside frame!
-				b = cvGet2D(bImage, j, x-2);
-				f = cvGet2D(fImage, j, x+2);				
+				// Handle boundary conditions
+				if ((0 <= j && j <= imgHeight) && (2 <= x && x <= imgWidth - 2)) {
+					// Replace along left hand edge.
+					b = cvGet2D(bImage, j, x-2);
+					f = cvGet2D(fImage, j, x+2);				
 
-				if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
-					cvSet2D(cImage, j, x-1, b);
-					cvSet2D(cImage, j, x, b);
-				}
-				if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
-					cvSet2D(cImage, j, x+1, f);
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, j, x-1, b);
+						cvSet2D(cImage, j, x, b);
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, j, x+1, f);
+					}
+					
+					// Replace along right hand edge.
+					b = cvGet2D(bImage, j, x + width + 2);
+					f = cvGet2D(fImage, j, x + width - 2);
+
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, j, x + width, b);
+						cvSet2D(cImage, j, x + width + 1, b);
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, j, x + width - 1, f);
+					}
 				}
 			}
 			
-			// Do pixel replacement along right edge.
-			for (int j = y; j < y + height; j++) {
-				System.out.println(j + " " + (x+width));
-				b = cvGet2D(bImage, j, x + width + 2);
-				f = cvGet2D(fImage, j, x + width - 2);
-
-				if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
-					cvSet2D(cImage, j, x + width, b);
-					cvSet2D(cImage, j, x + width + 1, b);
+			// Do pixel replacement along top and bottom edges.
+			for (int i = x; i < x + width; i++) {
+				// Replace along top edge.
+				if ((0 <= i && i <= imgWidth) && (2 <= y && y <= imgHeight - 2)) {
+					b = cvGet2D(bImage, y - 2, i);
+					f = cvGet2D(fImage, y + 2, i);
+					
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, y - 1, i, b);
+						cvSet2D(cImage, y, i, b);
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, y + 1, i, f);
+					}	
+					
+					// Replace along bottom edge.
+					b = cvGet2D(bImage, y + height + 2, i);
+					f = cvGet2D(fImage, y + height - 2, i);
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, y + height + 1, i, b);
+						cvSet2D(cImage, y + height, i, b);
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, y + height - 1, i, f);
+					}
 				}
-				if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
-					cvSet2D(cImage, j, x + width - 1, f);
-				}
-
 			}
 		}			
 	}
