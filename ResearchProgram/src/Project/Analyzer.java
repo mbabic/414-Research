@@ -486,11 +486,19 @@ public class Analyzer {
 	}
 	
 	/**
-	 * 
-	 * @param l
-	 * @param y
+	 * Return an interpolated CvScalar in the RGB color space based on 
+	 * parameters passed.
+	 * @param v0
+	 * 		The first CvScalar on the interpolation line.
+	 * @param v1
+	 * 		The second CvScalar on the interpolation line.
 	 * @param t
+	 * 		Value indicating position at line whose interpolated scalar
+	 * 		values we want to calculate (0 <= t < 0. 5 => closer to v0,
+	 * 		0.5 < t <= 1 => closer to v1)
 	 * @return
+	 * 		A CvScalar in the BGR color space with values set as per the
+	 * 		result of the interpolation operation.
 	 */
 	private CvScalar interpolateRGB(CvScalar v0, CvScalar v1, double t) {
 		double	r = Math.floor(v0.val(2) + (v1.val(2) - v0.val(2))*t),
@@ -499,6 +507,21 @@ public class Analyzer {
 		return new CvScalar(b, g, r, 1f); 
 	}
 	
+	/**
+	 * Returns an interpolated CvScalar in the HSV color space based on 
+	 * parameters passed.
+	 * @param v0
+	 *  	The first CvScalar on the interpolation line.
+	 * @param v1
+	 *  	The second CvScalar on the interpolation line.
+	 * @param t
+	 * 		Value indicating position at line whose interpolated scalar
+	 * 		values we want to calculate (0 <= t < 0. 5 => closer to v0,
+	 * 		0.5 < t <= 1 => closer to v1)
+	 * @return
+	 * 		A CvScalar in the HSV color space with Hue, Saturation, and Value
+	 * 		values set as per the result of the interpolation operation.
+	 */
 	private CvScalar interpolateHSV(CvScalar v0, CvScalar v1, double t) {
 		return new CvScalar(
 			Math.floor(v0.val(0) + (v1.val(0) - v0.val(0))*t),
@@ -508,6 +531,17 @@ public class Analyzer {
 		);
 	}
 	
+	/**
+	 * Combine the given foreground image (fImage) and background image
+	 * (bImage) into cImage by taking the absolute difference between the 
+	 * images, transform the image to the HSV color space, interpolating
+	 * along the lines defines by the rectangles in rects, and re-converting
+	 * to the RGB color space.
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 */
 	private void hsvInterpolationRecombination(
 			IplImage cImage, IplImage bImage, IplImage fImage, 
 			ArrayList<CvRect> rects) {
