@@ -397,6 +397,16 @@ public class Analyzer {
 		}			
 	}
 	
+	/**
+	 * Combine the given foreground image (fImage) and background image
+	 * (bImage) into cImage by taking the absolute difference between the 
+	 * images and interpolating RGB components linearly and separately along
+	 * each line defined by the given rects.
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 */
 	private void linearInterpolationRecombination(
 		IplImage cImage, IplImage bImage, IplImage fImage, 
 		ArrayList<CvRect> rects) {
