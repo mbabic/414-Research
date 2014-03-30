@@ -37,9 +37,6 @@ public class launcher {
 			/////////////////////
 			mergImage = origImage.clone();
 			/////////////////////
-//			FaceStream fs = FaceStream.fromFile();
-//			System.out.println(fs);
-
 			while(gui.isVisible()){
 				origImage = frameGrabber.grab();
 				backImage = origImage.clone();

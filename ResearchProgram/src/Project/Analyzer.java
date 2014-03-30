@@ -1,26 +1,21 @@
 package Project;
 
-import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+import static com.googlecode.javacv.cpp.opencv_core.*;
 import static com.googlecode.javacv.cpp.opencv_core.CV_FILLED;
 import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
-import static com.googlecode.javacv.cpp.opencv_core.cvCreateSeq;
-import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
 import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
-import static com.googlecode.javacv.cpp.opencv_core.cvSeqPush;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -313,17 +308,36 @@ public class Analyzer {
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {
 		cvAbsDiff(bImage, fImage, cImage);
-
+//		ByteBuffer buf = cImage.getByteBuffer();
 		for (CvRect cvr: rects) {
-			cvRectangle(
-				cImage, 
-				cvPoint(cvr.x(), cvr.y()),
-				cvPoint(cvr.x() + cvr.width(), cvr.y() + cvr.height()),
-				CvScalar.RED, 
-				1, 8, 0
-			);
-					
+			int index, x = cvr.x(), y = cvr.y(), widthStep = cImage.widthStep(),
+			nChannels = cImage.nChannels(), height = cvr.height(), 
+			width = cvr.width();
+			// Interpolate along lefthand edge of rect
+			for (int j = y; j < y + height; j++) {
+				// For now, just grab pixel to left
+				// TODO: worry about when pixel is outside frame!
+				index = (j * widthStep) + (x * nChannels);
+				CvScalar b1 = cvGet2D(bImage, j, x-3);
+				CvScalar b2 = cvGet2D(bImage, j, x-2);
+				CvScalar f1 = cvGet2D(fImage, j, x+2);
+				CvScalar f2 = cvGet2D(fImage, j, x+3);
+				cvSet2D(cImage, j, x-1, b1);
+				cvSet2D(cImage, j, x, b2);
+				cvSet2D(cImage, j, x+1, f1);
+//				cvSet2D(cImage, j, x+2, f2);
+				System.out.println("-------------");
+				System.out.println(cvGet2D(cImage, j, x));
+				System.out.println(b1);
+				System.out.println(f1);
+//				buf.put(index, 		(byte) ((int) fPixel.val(0) & 0xFF));
+//				buf.put(index + 1, 	(byte) ((int) fPixel.val(1) & 0xFF));
+//				buf.put(index + 2, 	(byte) ((int) fPixel.val(2) & 0xFF));
+			}
 		}
+		
+		// Interpolate left hand edge.
+		
 		
 		// Attempt to remove black lines
 //		int rows = cImage.height(), cols = cImage.width();
@@ -343,17 +357,4 @@ public class Analyzer {
 //		}
 	}
 	
-	/**
-	 * TODO: better name
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public boolean isWithinThreshold(CvRect a, CvRect b) {
-		return _minDist < Math.sqrt(
-			(a.x() - b.x())^2 + (a.y() - b.y())
-		);
-	}
-
-
 }
