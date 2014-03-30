@@ -9,7 +9,6 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class launcher {
 	public static void main(String[] args) {
-		System.loadLibrary("opencv_java248");
 		UI gui = new UI();
 		File outb = new File("out/outb.yuv");
 		File outf = new File("out/outf.yuv");
@@ -17,6 +16,7 @@ public class launcher {
 		Analyzer analyzer;
 		FrameGrabber frameGrabber;
 		IplImage origImage, backImage, faceImage ;
+		FaceStream stream = new FaceStream();
 		
 		/////////////////////////////////
 		CanvasFrame f = new CanvasFrame("merged");
@@ -36,21 +36,18 @@ public class launcher {
 			/////////////////////
 			mergImage = origImage.clone();
 			/////////////////////
-			
-
 			while(gui.isVisible()){
 				origImage = frameGrabber.grab();
 				backImage = origImage.clone();
-				analyzer.separateStreams(origImage, backImage, faceImage);
+				analyzer.separateStreams(origImage, backImage, faceImage, stream);
 				gui.putFrame(origImage, backImage, faceImage);
 				transmitter.videoBuilder(backImage, faceImage);
-				
 				//////////////////////////////////////////////
-				analyzer.recombineVideo(mergImage, backImage, faceImage);
+				analyzer.recombineVideo(mergImage, backImage, faceImage, stream.getNextRectList());
 				f.showImage(mergImage);
 				//////////////////////////////////////////////
 			}
-	
+			stream.toFile();
 			gui.destroy();
 			transmitter.close();
 			return;
