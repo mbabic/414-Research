@@ -102,10 +102,15 @@ public class Analyzer {
 	}
 	
 	/**
-	 * 
+	 * Get ObjectTracker instance whose _obj._pRect is closest to the given
+	 * rectangle.
 	 * @param trackers
+	 * 		The list of trackers.
 	 * @param rect
+	 * 		The CvRect for which we want to determine which tracker is closest.
 	 * @return
+	 * 		The closest tracker as per the criterion above.  Null if no 
+	 * 		tracker is within _minDist of the given rect.
 	 */
 	public ObjectTracker getNearestTracker(List<ObjectTracker> trackers, CvRect rect) {
 		ObjectTracker nearestNeighbour = null;
