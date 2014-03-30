@@ -501,9 +501,9 @@ public class Analyzer {
 	
 	private CvScalar interpolateHSV(CvScalar v0, CvScalar v1, double t) {
 		return new CvScalar(
-			Math.floor(v0.val(0) + (v1.val(0) - v0.val(0)*t)),
-			v0.val(1),
-			v0.val(2),
+			Math.floor(v0.val(0) + (v1.val(0) - v0.val(0))*t),
+			Math.floor(v0.val(1) + (v1.val(1) - v0.val(1))*t),
+			Math.floor(v0.val(2) + (v1.val(2) - v0.val(2))*t),
 			1f
 		);
 	}
