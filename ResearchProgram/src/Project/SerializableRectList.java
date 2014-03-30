@@ -1,8 +1,11 @@
 package Project;
 
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+
 import java.util.ArrayList;
 
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvSeq;
 
 /**
  * Serializable list of SerializableRects.  Used at stream recombination to
@@ -22,6 +25,14 @@ public class SerializableRectList implements java.io.Serializable {
 		_rects = new ArrayList<SerializableRect>();
 	}
 	
+	public SerializableRectList(CvSeq seq) {
+		_rects = new ArrayList<SerializableRect>();
+		for (int i = 0; i < seq.total(); i++) {
+			CvRect cvr = new CvRect(cvGetSeqElem(seq, i));
+			_rects.add(new SerializableRect(cvr));
+		}	
+	}
+	
 	public void add(SerializableRect r) {
 		_rects.add(r);
 	}
@@ -33,5 +44,5 @@ public class SerializableRectList implements java.io.Serializable {
 		}
 		return ret;
 	}
-	
+
 }

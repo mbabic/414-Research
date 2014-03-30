@@ -118,9 +118,7 @@ public class ObjectTracker {
 		CvConnectedComp components = new CvConnectedComp();
 		// Create new hue image.
 		updateHueImage(img);
-		
-		System.out.println("_obj._pRect = " + _obj._pRect);
-		
+				
 		// Create a probability image based on the face histogram.
 		IplImage[] imgs = {_obj._hue};
 		cvCalcBackProject(imgs, _obj._prob,	_obj._hist);
@@ -145,7 +143,6 @@ public class ObjectTracker {
 			components.rect().width(), 
 			components.rect().height()
 		);
-		System.out.println("box2d: " + _obj._currBox);
 		
 		// TODO: test if creation of new CvRect is necessary or if we can simply
 		// return reference to _obj._pRect

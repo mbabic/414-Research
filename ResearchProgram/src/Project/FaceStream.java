@@ -38,7 +38,7 @@ public class FaceStream implements java.io.Serializable {
 	public void add(SerializableRectList faces) {
 		_stream.add(faces);
 	}
-	
+		
 	public ArrayList<CvRect> getNextRectList() {
 		return _stream.get(_frame++).toCvRectList();
 	}

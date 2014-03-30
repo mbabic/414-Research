@@ -29,6 +29,22 @@ public class SerializableRect implements java.io.Serializable {
 		_height = cvr.height();
 	}
 	
+	public int x() {
+		return _x;
+	}
+	
+	public int y() {
+		return _y;
+	}
+	
+	public int width() {
+		return _width;
+	}
+	
+	public int height() {
+		return _height;
+	}
+	
 	/**
 	 * Convert the given instance of SerializableRect to a CvRect.
 	 * @return

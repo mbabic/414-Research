@@ -1,14 +1,19 @@
 package Project;
 
 import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+import static com.googlecode.javacv.cpp.opencv_core.CV_FILLED;
 import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
+import static com.googlecode.javacv.cpp.opencv_core.cvCreateSeq;
+import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
 import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_core.cvSeqPush;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +21,6 @@ import java.util.List;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.googlecode.javacpp.Loader;
-import static com.googlecode.javacv.cpp.opencv_core.*;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -88,14 +92,14 @@ public class Analyzer {
 	/**
 	 * Converts the given CvSeq of CvRects to a list of CvRects.
 	 * @param seq
-	 * 		The CvSeq of CvRects to be convereted to a list.
+	 * 		The CvSeq of CvRects to be converted to a list.
 	 * @return
-	 * 		The convereted ArrayList of CvRects.
+	 * 		The converted ArrayList of CvRects.
 	 */
 	private ArrayList<CvRect> cvSeqToList(CvSeq seq) {
 		ArrayList<CvRect> rects = new ArrayList<CvRect>();
 		for (int i = 0; i < seq.total(); i++) {
-			CvRect cvr = new CvRect(cvGetSeqElem(seq, 0));
+			CvRect cvr = new CvRect(cvGetSeqElem(seq, i));
 			rects.add(cvr);
 		}
 		return rects;
@@ -219,41 +223,42 @@ public class Analyzer {
 	
 	private CvSeq getFaces(IplImage img) {
 		CvSeq facesDetected = detectFaces(img);
-		CvSeq faces = cvCreateSeq(
-			0, 
-			Loader.sizeof(CvSeq.class), 
-			Loader.sizeof(CvRect.class), 
-			storage
-		);
-
-		Multimap<CvRect, ObjectTracker> pairs = getFaceTrackerPairs(img, facesDetected);
-		
-		// For trackers for which no face was within _minDist of the tracker:
-		// If the tracker has lost the object we destroy it.  
-		// Else, we push the face returned by the tracker.
-		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
-		while (iter.hasNext()) {
-			ObjectTracker tracker = iter.next();
-			if (tracker.hasLostObject()) {
-				_trackers.remove(tracker);
-			} else {
-				cvSeqPush(faces, tracker.track(img));
-			}
-		}
-		
-		for (int i = 0; i < _faces.size(); i++) {
-			ObjectTracker tracker = pairs.get(_faces.get(i)).iterator().next();
-			tracker._obj._pRect = new CvRect(
-				_faces.get(i).x(),
-				_faces.get(i).y(),
-				_faces.get(i).width(),
-				_faces.get(i).height()
-			);
-			// Update object tracker pRect, but push face returned by
-			// haar classifier.
-			cvSeqPush(faces, _faces.get(i));
-		}
-		return faces;
+		return facesDetected;
+//		CvSeq faces = cvCreateSeq(
+//			0, 
+//			Loader.sizeof(CvSeq.class), 
+//			Loader.sizeof(CvRect.class), 
+//			storage
+//		);
+//
+//		Multimap<CvRect, ObjectTracker> pairs = getFaceTrackerPairs(img, facesDetected);
+//		
+//		// For trackers for which no face was within _minDist of the tracker:
+//		// If the tracker has lost the object we destroy it.  
+//		// Else, we push the face returned by the tracker.
+//		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
+//		while (iter.hasNext()) {
+//			ObjectTracker tracker = iter.next();
+//			if (tracker.hasLostObject()) {
+//				_trackers.remove(tracker);
+//			} else {
+//				cvSeqPush(faces, tracker.track(img));
+//			}
+//		}
+//		
+//		for (int i = 0; i < _faces.size(); i++) {
+//			ObjectTracker tracker = pairs.get(_faces.get(i)).iterator().next();
+//			tracker._obj._pRect = new CvRect(
+//				_faces.get(i).x(),
+//				_faces.get(i).y(),
+//				_faces.get(i).width(),
+//				_faces.get(i).height()
+//			);
+//			// Update object tracker pRect, but push face returned by
+//			// haar classifier.
+//			cvSeqPush(faces, _faces.get(i));
+//		}
+//		return faces;
 	}
 
 	/**
@@ -269,8 +274,11 @@ public class Analyzer {
 	 * @param face
 	 *            Where the facial image will go
 	 */
-	public void separateStreams(IplImage orig, IplImage back, IplImage face) {
-		blackOutFaces(back, getFaces(orig));
+	public void separateStreams(IplImage orig, IplImage back, IplImage face,
+			FaceStream fs) {
+		CvSeq faces = getFaces(orig);
+		fs.add(new SerializableRectList(faces));
+		blackOutFaces(back, faces);
 		cvAbsDiff(orig, back, face);
 	}
 
@@ -287,7 +295,7 @@ public class Analyzer {
 		for (int i = 0; i < total_Faces; i++) {
 			CvRect r = new CvRect(cvGetSeqElem(rects, i));
 			cvRectangle(input,
-					cvPoint(r.x(), r.y() - (int) (r.height() * .25)),
+					cvPoint(r.x(), r.y()),
 					cvPoint(r.width() + r.x(), r.height() + r.y()),
 					CvScalar.BLACK, CV_FILLED, CV_AA, 0);
 		}
@@ -302,8 +310,37 @@ public class Analyzer {
 	 * pixel.  May not work in after encoding/decoding, but might produce
 	 * good results for now.
 	 */
-	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage) {
+	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
+			ArrayList<CvRect> rects) {
 		cvAbsDiff(bImage, fImage, cImage);
+
+		for (CvRect cvr: rects) {
+			cvRectangle(
+				cImage, 
+				cvPoint(cvr.x(), cvr.y()),
+				cvPoint(cvr.x() + cvr.width(), cvr.y() + cvr.height()),
+				CvScalar.RED, 
+				1, 8, 0
+			);
+					
+		}
+		
+		// Attempt to remove black lines
+//		int rows = cImage.height(), cols = cImage.width();
+//		ByteBuffer buf = cImage.getByteBuffer();
+//		for (int i = 0; i < rows; i++) {
+//			for (int j = 0; j < cols; j++) {
+//				CvScalar cPixel = cvGet2D(cImage, i, j);
+//				if (cPixel.val(0) == 0 && cPixel.val(1) == 0 && cPixel.val(2) == 0) {
+////					CvScalar fPixel = cvGet2D(fImage, i, j);
+//					int index = (i * cImage.widthStep()) + (cImage.nChannels() * j);
+//					buf.put(index, (byte) 255);
+//					buf.put(index + 1, (byte)255);
+//					buf.put(index + 2, (byte)255);
+//				}
+//				
+//			}
+//		}
 	}
 	
 	/**

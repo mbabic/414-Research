@@ -7,7 +7,6 @@ import com.googlecode.javacv.cpp.opencv_imgproc.CvHistogram;
  * Instance of an object to be tracked by ObjectTracker class.
  * @author Marko Babic, Marcus Karpoff
  * @version 0.1
- *
  */
 public class TrackedObject {
 	
@@ -33,8 +32,8 @@ public class TrackedObject {
 	public IplImage _mask;
 	
 	/**
-	 * Probability coded image in which object appears.  Each pixel's grayscale
-	 * value corresponds to the likelyhood that that particular pixel belongs
+	 * Probability coded image in which object appears.  Each pixel's gray scale
+	 * value corresponds to the likelihood that that particular pixel belongs
 	 * to the object.
 	 */
 	public IplImage _prob;
@@ -66,6 +65,9 @@ public class TrackedObject {
 	 */
 	public CvBox2D _currBox;
 	
+	/** 
+	 * Constructor.
+	 */
 	public TrackedObject() {
 		_pRect = new CvRect();
 		_currBox = new CvBox2D();
