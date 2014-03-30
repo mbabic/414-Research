@@ -308,8 +308,8 @@ public class Analyzer {
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {
-		// TODO: change which recombinator called based on 
-		naiveRecombination(cImage, bImage, fImage, rects);
+		// TODO: change which recombinator called based on param set ... somewhere
+		linearInterpolationRecombination(cImage, bImage, fImage, rects);
 	}
 	
 	/**
@@ -395,5 +395,94 @@ public class Analyzer {
 				}
 			}
 		}			
+	}
+	
+	private void linearInterpolationRecombination(
+		IplImage cImage, IplImage bImage, IplImage fImage, 
+		ArrayList<CvRect> rects) {
+		
+		CvScalar b, f;
+		int x, y, width, height;
+		int imgWidth = cImage.width();
+		int imgHeight = cImage.height();
+		
+		cvAbsDiff(bImage, fImage, cImage);
+		for (CvRect cvr: rects) {
+			x = cvr.x();
+			y = cvr.y();
+			height = cvr.height();
+			width = cvr.width();
+			
+			// Interpolate along left and right hand edges.
+			for (int j = y; j < y + height; j++) {
+				// Handle boundary conditions
+				if ((0 <= j && j <= imgHeight) && (2 <= x && x <= imgWidth - 2)) {
+					// Replace along left hand edge.
+					b = cvGet2D(bImage, j, x-2);
+					f = cvGet2D(fImage, j, x+2);				
+
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, j, x-1, interpolate(b, f, 0.25));
+						cvSet2D(cImage, j, x, interpolate(b, f, 0.5));
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, j, x+1, interpolate(b, f, 0.75));
+					}
+					
+					// Replace along right hand edge.
+					b = cvGet2D(bImage, j, x + width + 2);
+					f = cvGet2D(fImage, j, x + width - 2);
+
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, j, x + width, interpolate(b, f, 0.5));
+						cvSet2D(cImage, j, x + width + 1, interpolate(b, f, 0.25));
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, j, x + width - 1, interpolate(b, f, 0.75));
+					}
+				}
+			}	
+			// Do pixel replacement along top and bottom edges.
+			for (int i = x; i < x + width; i++) {
+				// Replace along top edge.
+				if ((0 <= i && i <= imgWidth) && (2 <= y && y <= imgHeight - 2)) {
+					b = cvGet2D(bImage, y - 2, i);
+					f = cvGet2D(fImage, y + 2, i);
+					
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, y - 1, i, interpolate(b, f, 0.25));
+						cvSet2D(cImage, y, i, interpolate(b, f, 0.5));
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, y + 1, i, interpolate(b, f, 0.75));
+					}	
+					
+					// Replace along bottom edge.
+					b = cvGet2D(bImage, y + height + 2, i);
+					f = cvGet2D(fImage, y + height - 2, i);
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, y + height + 1, i, interpolate(b, f, 0.25));
+						cvSet2D(cImage, y + height, i, interpolate(b, f, 0.5));
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, y + height - 1, i, interpolate(b, f, 0.75));
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param l
+	 * @param y
+	 * @param t
+	 * @return
+	 */
+	private CvScalar interpolate(CvScalar v0, CvScalar v1, double t) {
+		double	r = Math.floor(v0.val(2) + (v1.val(2) - v0.val(2))*t),
+				g = Math.floor(v0.val(1) + (v1.val(1) - v0.val(1))*t),
+				b = Math.floor(v0.val(0) + (v1.val(0) - v0.val(0))*t);
+		return new CvScalar(b, g, r, 1f); 
 	}
 }
