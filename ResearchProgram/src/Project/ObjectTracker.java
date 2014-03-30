@@ -1,12 +1,11 @@
 package Project;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_core.*;
 import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 import static com.googlecode.javacv.cpp.opencv_video.*;
 
 /**
- * 
+ * Tracks a ROI of an IplImage using the camshift tracking algorithm.
  * @author Marko Babic, Marcus Karpoff
  * Based on the C++ code available at:
  * https://gist.github.com/lamberta/231696
@@ -24,6 +23,11 @@ public class ObjectTracker {
 	public ObjectTracker() {
 		_obj = new TrackedObject();
 	}
+	
+	/**
+	 * NOT GOOD O-O
+	 */
+	public boolean _isPaired;
 	
 	/**
 	 * 
@@ -151,5 +155,40 @@ public class ObjectTracker {
 			components.rect().width(), 
 			components.rect().height()
 		);
+	}
+	
+	/**
+	 * Uses the following criterion to determine if the object tracker instance
+	 * has lost the object it was meant to be tracking.
+	 * - If _obj._pRect has 0 length/width, then the object has been lost.
+	 * - If _obj._prect has width > 5 * height or height > 10 * width, the 
+	 *   object is considered to have been lost.
+	 * @return
+	 */
+	public boolean hasLostObject() {
+		if (_obj._pRect.x() == 0 && _obj._pRect.y() == 0 &&
+			_obj._pRect.width() == 0 && _obj._pRect.height() == 0) {
+			return true;
+		} else if (_obj._pRect.width() > (5 * _obj._pRect.height())){
+			
+		}
+		return false;
+	}
+	
+	/**
+	 * Determines this instance of ObjectTracker is "equal" to the one passed.
+	 * Equality is determined by whether or not they are tracking the same 
+	 * object.
+	 * @param x
+	 * 		The ObjectTracker instance against which equality is to be checked.
+	 * @return
+	 * 		True if the two instance are equal.  False otherwise.
+	 */
+	public boolean equals(ObjectTracker x) {
+		if (x == null) return false;
+		CvRect xRect = x._obj._pRect, thisRect = _obj._pRect;
+		if ((xRect.x() == thisRect.x()) && 
+			(xRect.y() == thisRect.y())) return true;
+		return false;
 	}
 }

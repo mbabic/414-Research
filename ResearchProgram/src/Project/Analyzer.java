@@ -1,8 +1,7 @@
 package Project;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
 import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
-import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
@@ -10,10 +9,14 @@ import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
-import org.opencv.core.Rect;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.opencv_core;
+import static com.googlecode.javacv.cpp.opencv_core.*;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -24,13 +27,32 @@ import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 /**
  * Does the facial recognition
  * 
- * @author Marcus
+ * @author Marko Babic, Marcus Karpoff
  * 
  */
 public class Analyzer {
+	/** 
+	 * Haar classifier cascade used in face detection algorithm.
+	 */
 	private CvHaarClassifierCascade faceCascade;
+	/**
+	 * Storage used in construction of CvSeq returning by face detector.
+	 */
 	private CvMemStorage storage;
-	private ObjectTracker _tracker;
+	/**
+	 * ArrayList of active object trackers.
+	 */
+	private List<ObjectTracker> _trackers;
+	/**
+	 * ArrayList of CvRects used in pairing.
+	 */
+	private ArrayList<CvRect> _faces;
+	
+	/**
+	 * Threshold distance used in the determination if a face has been
+	 * seen before or if it is new in the frame.
+	 */
+	private int _minDist = 25*25;
 
 	/**
 	 * Constructor for the analyzer.
@@ -45,13 +67,8 @@ public class Analyzer {
 		if (faceCascade.isNull()) {
 			throw new ClassiferLoadFailure(classifierDir);
 		}
-		_tracker = new ObjectTracker();
+		_trackers = new ArrayList<ObjectTracker>();
 	}
-
-	// TODO: use better mechanism than flag.
-	// Probably it will be the case that each instance of objectTracker will
-	// have its own flag.
-	public static int flag = 0;
 	
 	/**
 	 * This will look for faces and return the coordinates of the faces
@@ -60,33 +77,178 @@ public class Analyzer {
 	 *            The original unedited image
 	 * @return The location of all the faces
 	 */
-	private CvSeq detectFaces(IplImage input) {
-		CvSeq rects = cvHaarDetectObjects(input, faceCascade, storage, 1.5, 3,
+	private CvSeq detectFaces(IplImage img) {
+		CvSeq rects = cvHaarDetectObjects(img, faceCascade, storage, 1.5, 3,
 				CV_HAAR_DO_CANNY_PRUNING);
 		
-		if ((rects.total() > 0) && (flag == 0)) {
-			CvRect cvr = new CvRect(cvGetSeqElem(rects, 0));
-			_tracker.trackNewObject(input, cvr);
-			System.out.println("setting flag.  cvr = " + cvr);
-			flag = 1;
-		} else if (flag == 1) {
-			CvRect cvr = new CvRect(cvGetSeqElem(rects, 0));
-			System.out.println(cvr);
-			if (cvr.isNull() != true) {
-				_tracker._obj._pRect = cvr;
-			}
-			CvRect newCvr = _tracker.track(input);
-			if (newCvr.width() == 0) {
-				// Tracker has lost object, reset flag.
-				flag = 0;
-			}
-			CvSeq newRects = cvCreateSeq(0, Loader.sizeof(CvSeq.class), Loader.sizeof(CvRect.class), storage);
-			cvSeqPush(newRects, newCvr);
-			return newRects;
+		return rects;		
+	}
+	
+	
+	/**
+	 * Converts the given CvSeq of CvRects to a list of CvRects.
+	 * @param seq
+	 * 		The CvSeq of CvRects to be convereted to a list.
+	 * @return
+	 * 		The convereted ArrayList of CvRects.
+	 */
+	private ArrayList<CvRect> cvSeqToList(CvSeq seq) {
+		ArrayList<CvRect> rects = new ArrayList<CvRect>();
+		for (int i = 0; i < seq.total(); i++) {
+			CvRect cvr = new CvRect(cvGetSeqElem(seq, 0));
+			rects.add(cvr);
 		}
-		cvClearMemStorage(storage);
 		return rects;
+	}
+	
+	/**
+	 * 
+	 * @param trackers
+	 * @param rect
+	 * @return
+	 */
+	public ObjectTracker getNearestTracker(List<ObjectTracker> trackers, CvRect rect) {
+		ObjectTracker nearestNeighbour = null;
+		int min = Integer.MAX_VALUE, dist = 0;
+		for (int i = 0; i < trackers.size(); i++) {
+			dist =  (int) Math.pow((trackers.get(i)._obj._pRect.x() - rect.x()), 2) + 
+					(int) Math.pow((trackers.get(i)._obj._pRect.y() - rect.y()), 2);
+			if ((dist < min) && (dist <= _minDist)) {
+				min = dist;
+				nearestNeighbour = trackers.get(i);
+			}
+		}
+		return nearestNeighbour;
+	}
+	
+	/**
+	 * Determine which rectangle is the nearest to the _pRect of the object
+	 * which the given tracker is tracking.
+	 * @param rects
+	 * 		List of CvRects.
+	 * @param tracker
+	 * 		The tracker for which we want to determine which rect is closest.
+	 * @return
+	 * 		The CvRect amongst rects which is closest to tracker.  Null if no
+	 * 		rect is within _minDist of the tracker's _obj._pRect.
+	 */
+	public CvRect getNearestRect(List<CvRect> rects, ObjectTracker tracker) {
+		CvRect nearestNeighbour = null;
+		int min = Integer.MAX_VALUE, dist = 0;
+		for (int i = 0; i < rects.size(); i++) {
+			dist =  (int) Math.pow((rects.get(i).x() - tracker._obj._pRect.x()), 2) + 
+					(int) Math.pow((rects.get(i).y() - tracker._obj._pRect.y()), 2);
+			if ((dist < min) && (dist <= _minDist)) {
+				min = dist;
+				nearestNeighbour = rects.get(i);
+			}
+		}
+		return nearestNeighbour;
+	}
+	
+	/**
+	 * Set up new tracker pairs.
+	 * @param img 
+	 * 		The frame in which the faces to be tracked appears.
+	 * @param facesDetected
+	 *  	The CvSeq of CvRects returned by haar cascade classifier.
+	 * @return
+	 *  	Associative map such that:
+	 *  		keys 	-> CvRects in which a face appears
+	 *  		values 	-> An instance of object tracker which is tracking
+	 *   				   the given face.
+	 *   	The null key maps to a Collection of all trackers for which there
+	 *      was no face within _minDist of the last known position of the face
+	 *      that tracker was tracking.
+	 */
+	private Multimap<CvRect, ObjectTracker> getFaceTrackerPairs(IplImage img, CvSeq facesDetected) {
+		// Initialize ret value.
+		Multimap<CvRect, ObjectTracker> pairs = HashMultimap.create();
+		
+		// Transform CvSeq into ArrayList as the latter is easier to work with.
+		_faces = cvSeqToList(facesDetected);
+		
+		// Temporary list of trackers used to ensure no tracker is considered
+		// a second time after having been matched in the process below.
+		ArrayList<ObjectTracker> trackers = new ArrayList<ObjectTracker>();
+		
+		ObjectTracker nearestTracker = null;
+		CvRect rect = null, nearestRect = null;
+		
+		for (ObjectTracker ot: _trackers) trackers.add(ot);
+		
+		for (int i = 0; i < _faces.size(); i++) {
+			rect = _faces.get(i);
+			nearestTracker = getNearestTracker(trackers, rect);
+			if (nearestTracker == null) {
+				nearestTracker = new ObjectTracker();
+				nearestTracker.trackNewObject(img, rect);
+				nearestTracker._obj._pRect = 
+					new CvRect(rect.x(), rect.y(), rect.width(), rect.height());
+				pairs.put(rect, nearestTracker);
+				_trackers.add(nearestTracker);		
+				continue;
+			} 
+						
+			nearestRect = getNearestRect(_faces, nearestTracker);
+			
+			if (nearestRect.equals(rect)) {
+				pairs.put(rect, nearestTracker);
+				trackers.remove(nearestTracker);
+			} else {
+				nearestTracker = new ObjectTracker();
+				nearestTracker.trackNewObject(img, rect);
+				nearestTracker._obj._pRect = 
+					new CvRect(rect.x(), rect.y(), rect.width(), rect.height());
+				pairs.put(rect, nearestTracker);
+				_trackers.add(nearestTracker);	
+			}
+		}
+		
+		// For all unmatched trackers, pair them with key == null
+		for (int i = 0; i < trackers.size(); i++) {
+			pairs.put(null, trackers.get(i));
+		}
+		return pairs;
+	}
+	
+	private CvSeq getFaces(IplImage img) {
+		CvSeq facesDetected = detectFaces(img);
+		CvSeq faces = cvCreateSeq(
+			0, 
+			Loader.sizeof(CvSeq.class), 
+			Loader.sizeof(CvRect.class), 
+			storage
+		);
 
+		Multimap<CvRect, ObjectTracker> pairs = getFaceTrackerPairs(img, facesDetected);
+		
+		// For trackers for which no face was within _minDist of the tracker:
+		// If the tracker has lost the object we destroy it.  
+		// Else, we push the face returned by the tracker.
+		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
+		while (iter.hasNext()) {
+			ObjectTracker tracker = iter.next();
+			if (tracker.hasLostObject()) {
+				_trackers.remove(tracker);
+			} else {
+				cvSeqPush(faces, tracker.track(img));
+			}
+		}
+		
+		for (int i = 0; i < _faces.size(); i++) {
+			ObjectTracker tracker = pairs.get(_faces.get(i)).iterator().next();
+			tracker._obj._pRect = new CvRect(
+				_faces.get(i).x(),
+				_faces.get(i).y(),
+				_faces.get(i).width(),
+				_faces.get(i).height()
+			);
+			// Update object tracker pRect, but push face returned by
+			// haar classifier.
+			cvSeqPush(faces, _faces.get(i));
+		}
+		return faces;
 	}
 
 	/**
@@ -103,7 +265,7 @@ public class Analyzer {
 	 *            Where the facial image will go
 	 */
 	public void separateStreams(IplImage orig, IplImage back, IplImage face) {
-		blackOutFaces(back, detectFaces(orig));
+		blackOutFaces(back, getFaces(orig));
 		cvAbsDiff(orig, back, face);
 	}
 
@@ -122,16 +284,33 @@ public class Analyzer {
 			cvRectangle(input,
 					cvPoint(r.x(), r.y() - (int) (r.height() * .25)),
 					cvPoint(r.width() + r.x(), r.height() + r.y()),
-					CvScalar.BLACK, opencv_core.CV_FILLED, CV_AA, 0);
+					CvScalar.BLACK, CV_FILLED, CV_AA, 0);
 		}
 	}
 
 	/**
 	 * This function takes in the two split video streams and recombines them in
 	 * to one video stream.
+	 * IDEA: cvAbsDiff works by taking abs diff between two images ...
+	 * so may it is that at border both images have same value, so write your
+	 * own custom absDiff that says if (diff == 0) return value of whichever
+	 * pixel.  May not work in after encoding/decoding, but might produce
+	 * good results for now.
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage) {
 		cvAbsDiff(bImage, fImage, cImage);
+	}
+	
+	/**
+	 * TODO: better name
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public boolean isWithinThreshold(CvRect a, CvRect b) {
+		return _minDist < Math.sqrt(
+			(a.x() - b.x())^2 + (a.y() - b.y())
+		);
 	}
 
 
