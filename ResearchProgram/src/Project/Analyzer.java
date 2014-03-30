@@ -219,6 +219,12 @@ public class Analyzer {
 	private CvSeq getFaces(IplImage img) {
 		CvSeq facesDetected = detectFaces(img);
 		return facesDetected;
+		
+// OBJECT TRACKING DISABLED DURING DEVELOPMENT OF RECOMBINATOR METHODS FOR
+// SIMPLICITY OF IMPLEMENTATION
+// IT IS LIKELY THE CASE THAT THE RECTANGLES RETURNED BY THIS PROCEDURE WILL
+// HAVE TO BE SIMPLIFIED IN SOME WAY
+		
 //		CvSeq faces = cvCreateSeq(
 //			0, 
 //			Loader.sizeof(CvSeq.class), 
@@ -306,10 +312,21 @@ public class Analyzer {
 		naiveRecombination(cImage, bImage, fImage, rects);
 	}
 	
+	/**
+	 * Recombine the foreground image (fImage) with the background image 
+	 * (bImage) storing the result in cImage in a naive way:
+	 * Replace pixels falling along the rectangles in rects with the values
+	 * of its neighbouring pixels (without interpolation, simple value
+	 * replacement)
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 */
 	public void naiveRecombination(IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {	
 		CvScalar b, f;
-		int x, y, width, height, widthStep, nChannels;
+		int x, y, width, height;
 		int imgWidth = cImage.width();
 		int imgHeight = cImage.height();
 		
@@ -317,8 +334,6 @@ public class Analyzer {
 		for (CvRect cvr: rects) {
 			x = cvr.x();
 			y = cvr.y();
-			widthStep = cImage.widthStep();
-			nChannels = cImage.nChannels();
 			height = cvr.height();
 			width = cvr.width();
 			

@@ -17,7 +17,6 @@ public class launcher {
 		FrameGrabber frameGrabber;
 		IplImage origImage, backImage, faceImage ;
 		FaceStream stream = new FaceStream();
-		SerializableRectList rects;
 		
 		/////////////////////////////////
 		CanvasFrame f = new CanvasFrame("merged");
