@@ -429,7 +429,7 @@ public class Analyzer {
 						cvSet2D(cImage, j, x+1, interpolate(b, f, 0.75));
 					}
 					
-					// Replace along right hand edge.
+					// Interpolate along right hand edge.
 					b = cvGet2D(bImage, j, x + width + 2);
 					f = cvGet2D(fImage, j, x + width - 2);
 
@@ -442,10 +442,11 @@ public class Analyzer {
 					}
 				}
 			}	
-			// Do pixel replacement along top and bottom edges.
+			// Interpolate along top and bottom edges.
 			for (int i = x; i < x + width; i++) {
-				// Replace along top edge.
+				// Handle boundary conditions
 				if ((0 <= i && i <= imgWidth) && (2 <= y && y <= imgHeight - 2)) {
+					// Interpolate along top edge.
 					b = cvGet2D(bImage, y - 2, i);
 					f = cvGet2D(fImage, y + 2, i);
 					
@@ -457,7 +458,7 @@ public class Analyzer {
 						cvSet2D(cImage, y + 1, i, interpolate(b, f, 0.75));
 					}	
 					
-					// Replace along bottom edge.
+					// Interpolate along bottom edge.
 					b = cvGet2D(bImage, y + height + 2, i);
 					f = cvGet2D(fImage, y + height - 2, i);
 					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
