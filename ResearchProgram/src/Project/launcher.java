@@ -47,7 +47,6 @@ public class launcher {
 				
 				//////////////////////////////////////////////
 				analyzer.recombineVideo(mergImage, backImage, faceImage);
-//				f.showImage(faceImage);
 				f.showImage(mergImage);
 				//////////////////////////////////////////////
 			}
