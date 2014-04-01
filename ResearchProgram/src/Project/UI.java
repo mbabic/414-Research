@@ -44,6 +44,11 @@ class MyPanel extends CanvasFrame {
 	public void putFrame(IplImage img) {
 		this.showImage(img);
 	}
+
+	public void destroy() {
+		this.dispose();
+		System.exit(0);
+	}
 }
 
 /**
@@ -117,10 +122,11 @@ public class UI extends CanvasFrame implements ActionListener {
 	 * Destroys the UI panel and all the pop out panels.
 	 */
 	public void destroy() {
-		origPanel.dispose();
-		backPanel.dispose();
-		facePanel.dispose();
+		origPanel.destroy();
+		backPanel.destroy();
+		facePanel.destroy();
 		this.dispose();
+		System.exit(0);
 	}
 
 	/**
