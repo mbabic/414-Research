@@ -6,7 +6,7 @@ import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
-public class launcher {
+public class CaptureLancher {
 	public static void main(String[] args) {
 		UI gui = new UI();
 		File outb = new File("out/outb.yuv");
