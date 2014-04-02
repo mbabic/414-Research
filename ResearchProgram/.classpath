@@ -8,6 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Javacv"/>
-	<classpathentry kind="lib" path="C:/Users/Marcus/Documents/School/Cmput-414/Re/ResearchProgram/res/guava-16.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/OpenCV/guava-16.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
