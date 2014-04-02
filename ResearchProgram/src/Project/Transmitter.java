@@ -52,12 +52,9 @@ public class Transmitter {
 		recorderBackGround = new FFmpegFrameRecorder(bFile, img.width(),
 				img.height());
 		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
-		recorderBackGround.setFormat("yuv");
-
 		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
 				img.height());
 		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
-		recorderFacial.setFormat("yuv");
 
 		recorderBackGround.start();
 		recorderFacial.start();

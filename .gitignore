@@ -2,8 +2,7 @@
 ResearchProject/bin/*
 
 # Ignore output video files.
-ResearchProject/out/*.yuv
-ResearchProject/out/*.ser
+ResearchProject/out/*
 
 # Ignore classpath file.
 ResearchProject/.classpath
