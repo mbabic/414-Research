@@ -53,32 +53,73 @@ public class FaceStream implements java.io.Serializable {
 	}
 	
 	public void toFile() {
+		OutputStream file = null;
+		OutputStream buf  = null;
+		ObjectOutput out  = null;
 		try {
-			OutputStream file 	= new FileOutputStream(Settings.FACESTREAM_OUT);
-			OutputStream buf 	= new BufferedOutputStream(file);
-			ObjectOutput out 	= new ObjectOutputStream(buf);
-			out.writeObject(this);
-			out.close(); // Closes the output file
+			file = new FileOutputStream(Settings.FACESTREAM_OUT);
+			buf  = new BufferedOutputStream(file);
+			out  = new ObjectOutputStream(buf);
+			out.writeObject(this);			
 		} catch (IOException ioe) {
 			System.err.println(ioe.toString());
+			ioe.printStackTrace();
 			System.exit(1);
+		} finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				buf.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				file.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	public static FaceStream fromFile() {
+		InputStream file = null;
+		InputStream buf = null;
+		ObjectInput in = null;
 		try {
-			InputStream file 	= new FileInputStream(Settings.FACESTREAM_OUT);
-			InputStream buf 	= new BufferedInputStream(file);
-			ObjectInput in 		= new ObjectInputStream(buf);
+			file = new FileInputStream(Settings.FACESTREAM_OUT);
+			buf	= new BufferedInputStream(file);
+			//TODO This needs a way to be closed
+			in = new ObjectInputStream(buf);
 			return (FaceStream) in.readObject();
 		} catch (ClassNotFoundException cnfe) {
 			System.err.println(cnfe.toString());
+			cnfe.printStackTrace();
 			System.exit(1);
 		} catch (IOException ioe) {
 			System.err.println(ioe.toString());
+			ioe.printStackTrace();
 			System.exit(1);
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				buf.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				file.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		// Not reached.
-		return null;
+		return null; 
 	}
 }

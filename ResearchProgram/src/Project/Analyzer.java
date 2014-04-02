@@ -282,6 +282,8 @@ public class Analyzer {
 	 *            Where the background images will go
 	 * @param face
 	 *            Where the facial image will go
+	 * @param fs
+	 * 			  Where the stream of FaceStreams will go
 	 */
 	public void separateStreams(IplImage orig, IplImage back, IplImage face,
 			FaceStream fs) {

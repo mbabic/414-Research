@@ -14,9 +14,9 @@ public class CaptureLancher {
 		Transmitter transmitter = new Transmitter();
 		Analyzer analyzer = null;
 		FrameGrabber frameGrabber = null;
-		IplImage origImage, backImage, faceImage ;
+		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
-		
+
 		try {
 			frameGrabber = transmitter.receiveStream();
 		} catch (Exception e1) {
@@ -34,9 +34,7 @@ public class CaptureLancher {
 			System.exit(-1);
 		}
 		try {
-			
-			
-			
+
 			origImage = frameGrabber.grab();
 			transmitter.initializeRecorders(outb, outf, origImage);
 			backImage = origImage.clone();
@@ -44,27 +42,33 @@ public class CaptureLancher {
 			analyzer.separateStreams(origImage, backImage, faceImage, stream);
 			gui.putFrame(origImage, backImage, faceImage);
 			transmitter.videoBuilder(backImage, faceImage);
-			while(gui.isVisible()){
+			while (gui.isVisible()) {
 				origImage = frameGrabber.grab();
 				backImage = origImage.clone();
-				analyzer.separateStreams(origImage, backImage, faceImage, stream);
+				analyzer.separateStreams(origImage, backImage, faceImage,
+						stream);
 				gui.putFrame(origImage, backImage, faceImage);
 				transmitter.videoBuilder(backImage, faceImage);
 
 			}
-			stream.toFile();
-			gui.destroy();
-			transmitter.close();
-			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();
-			gui.destroy();
 		} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				transmitter.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+				e.printStackTrace();
+			}
+			stream.toFile();
 			gui.destroy();
+			System.exit(0);
+
 		}
 
 	}
-
 
 }
