@@ -1,9 +1,11 @@
 package Project;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameGrabber.Exception;
+import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class MergerLauncher {
@@ -16,7 +18,8 @@ public class MergerLauncher {
 		Analyzer analyzer = null;
 		FrameGrabber backFrameGrabber = null, faceFrameGrabber = null;
 		IplImage mergImage, backImage, faceImage;
-		
+//		FaceStream stream = FaceStream.fromFile();
+		ArrayList<CvRect> rects;
 		try {
 			backFrameGrabber = transmitter.receiveStream(inb);
 			faceFrameGrabber = transmitter.receiveStream(inf);
@@ -49,7 +52,8 @@ public class MergerLauncher {
 				}
 				mergImage = backImage.clone();
 				//TODO Figure out how to get the recs
-//				analyzer.recombineVideo(mergImage, backImage, faceImage, null);
+//				rects = stream.getNextRectList();
+//				analyzer.recombineVideo(mergImage, backImage, faceImage, rects);
 				gui.putFrame(mergImage, backImage, faceImage);
 			}
 			transmitter.close();

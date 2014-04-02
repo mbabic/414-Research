@@ -5,7 +5,6 @@ import java.io.File;
 import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.OpenCVFrameGrabber;
 import com.googlecode.javacv.cpp.avcodec;
@@ -19,7 +18,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
  */
 public class Transmitter {
 
-	private FrameRecorder recorderBackGround;
+	private FFmpegFrameRecorder recorderBackGround;
 	private FFmpegFrameRecorder recorderFacial;
 
 	/**

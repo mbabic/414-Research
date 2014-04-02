@@ -47,7 +47,6 @@ class MyPanel extends CanvasFrame {
 
 	public void destroy() {
 		this.dispose();
-		System.exit(0);
 	}
 }
 
@@ -126,7 +125,6 @@ public class UI extends CanvasFrame implements ActionListener {
 		backPanel.destroy();
 		facePanel.destroy();
 		this.dispose();
-		System.exit(0);
 	}
 
 	/**
