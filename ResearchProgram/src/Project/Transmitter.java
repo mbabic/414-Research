@@ -2,6 +2,7 @@ package Project;
 
 import java.io.File;
 
+import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameRecorder;
@@ -95,7 +96,7 @@ public class Transmitter {
 	 */
 	public FrameGrabber receiveStream(String fileloc)
 			throws com.googlecode.javacv.FrameGrabber.Exception {
-		grabber = new OpenCVFrameGrabber(fileloc);
+		grabber = new FFmpegFrameGrabber(fileloc);
 		grabber.start();
 		return grabber;
 
@@ -145,5 +146,10 @@ public class Transmitter {
 	 */
 	public void decodeHEVC() {
 
+	}
+
+	public FrameGrabber loadStream(File inf) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
