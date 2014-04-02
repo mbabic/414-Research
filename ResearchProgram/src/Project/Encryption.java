@@ -1,11 +1,13 @@
 package Project;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.AlgorithmParameters;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidParameterSpecException;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -106,5 +108,24 @@ public class Encryption {
 			System.exit(1);
 		}
 		return null;
+	}
+	
+	/**
+	 * Convert the given java.Object to a series of bytes (in preperation
+	 * for encryption/decryption).
+	 * @param obj
+	 * 		The object to be written to a byte array.
+	 * @return
+	 * 		Byte representation of the object passed.
+	 */
+	public static byte[] toByteArray(Object obj) {
+		try {
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bytes);		
+			oos.writeObject(obj);
+			return bytes.toByteArray();
+		} catch(IOException ioe) {
+			return null;
+		}
 	}
 }
