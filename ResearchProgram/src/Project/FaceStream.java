@@ -58,6 +58,7 @@ public class FaceStream implements java.io.Serializable {
 			OutputStream buf 	= new BufferedOutputStream(file);
 			ObjectOutput out 	= new ObjectOutputStream(buf);
 			out.writeObject(this);
+			out.close(); // Closes the output file
 		} catch (IOException ioe) {
 			System.err.println(ioe.toString());
 			System.exit(1);
@@ -80,5 +81,4 @@ public class FaceStream implements java.io.Serializable {
 		// Not reached.
 		return null;
 	}
-	
 }

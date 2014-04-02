@@ -1,18 +1,24 @@
 package Project;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
 import static com.googlecode.javacv.cpp.opencv_core.CV_FILLED;
 import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
+import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
+import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
 import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
+import static com.googlecode.javacv.cpp.opencv_core.cvSet2D;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2BGR;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -2,6 +2,7 @@ package Project;
 
 import java.io.File;
 
+import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameRecorder;
@@ -20,7 +21,6 @@ public class Transmitter {
 
 	private FrameRecorder recorderBackGround;
 	private FFmpegFrameRecorder recorderFacial;
-	private FrameGrabber grabber;
 
 	/**
 	 * This initializes all the recorders. Must be called before transmitting
@@ -52,12 +52,9 @@ public class Transmitter {
 		recorderBackGround = new FFmpegFrameRecorder(bFile, img.width(),
 				img.height());
 		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
-		recorderBackGround.setFormat("yuv");
-
 		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
 				img.height());
 		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
-		recorderFacial.setFormat("yuv");
 
 		recorderBackGround.start();
 		recorderFacial.start();
@@ -69,7 +66,6 @@ public class Transmitter {
 		recorderFacial.stop();
 		recorderBackGround.release();
 		recorderFacial.release();
-		grabber.release();
 	}
 
 	/**
@@ -95,12 +91,27 @@ public class Transmitter {
 	 */
 	public FrameGrabber receiveStream(String fileloc)
 			throws com.googlecode.javacv.FrameGrabber.Exception {
-		grabber = new OpenCVFrameGrabber(fileloc);
+		FrameGrabber grabber = new FFmpegFrameGrabber(fileloc);
 		grabber.start();
 		return grabber;
 
 	}
 
+	/**
+	 * receiveStream takes a file name opens it and returns a FrameGrabber
+	 * stream.
+	 * 
+	 * @param file
+	 *            The file to be loaded
+	 * @return A video stream
+	 * @throws com.googlecode.javacv.FrameGrabber.Exception
+	 */
+	public FrameGrabber receiveStream(File file) throws com.googlecode.javacv.FrameGrabber.Exception {
+		FrameGrabber grabber = new FFmpegFrameGrabber(file);
+		grabber.start();
+		return grabber;
+	}
+	
 	/**
 	 * receiveStream takes a number corresponding to the video capture device
 	 * that the user desires to use and initializes a video stream from that
@@ -113,8 +124,7 @@ public class Transmitter {
 	 */
 	public FrameGrabber receiveStream(int input)
 			throws com.googlecode.javacv.FrameGrabber.Exception {
-
-		grabber = new OpenCVFrameGrabber(input);
+		FrameGrabber grabber = new OpenCVFrameGrabber(input);
 		grabber.start();
 		return grabber;
 	}
