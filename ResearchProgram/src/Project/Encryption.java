@@ -2,10 +2,12 @@ package Project;
 
 import java.io.UnsupportedEncodingException;
 import java.security.AlgorithmParameters;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.Arrays;
+import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -26,7 +28,16 @@ public class Encryption {
 	
 	Cipher _cipher;
 	
+	IvParameterSpec _ivSpec;
+	
 	SecretKeySpec _keySpec;
+
+	private static byte[] iv(){
+	    byte[] iv = new byte [16]; // should be 16
+	    Random random = new Random();
+	    random.nextBytes(iv);
+	    return iv;
+	}
 	
 	/**
 	 * @param password
@@ -47,11 +58,11 @@ public class Encryption {
 			_key = (salt + password).getBytes("UTF-8");
 			sha = MessageDigest.getInstance("SHA-1");
 			_key = sha.digest(_key);
-			_key = Arrays.copyOf(_key, 32);
+			_key = Arrays.copyOf(_key, 16);
 			_keySpec = new SecretKeySpec(_key, "AES");
-			_cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			_params = _cipher.getParameters();
-			_iv = _params.getParameterSpec(IvParameterSpec.class).getIV();
+			_cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+			_iv = iv();
+			_ivSpec = new IvParameterSpec(_iv);
 		} catch (UnsupportedEncodingException uee) {
 			System.err.println(uee.toString());
 			System.exit(1);
@@ -61,10 +72,7 @@ public class Encryption {
 		} catch (NoSuchPaddingException nspe) {
 			System.err.println(nspe.toString());
 			System.exit(1);			
-		} catch (InvalidParameterSpecException ipse) {
-			System.err.println(ipse.toString());
-			System.exit(1);	
-		}
+		} 
 	}
 
 	/**
@@ -86,8 +94,17 @@ public class Encryption {
 	 * This will take an encrypted video stream and return an video stream
 	 */
 	public byte[] decrypt(byte[] in) {
-		
-		
+		try {
+			_cipher.init(Cipher.DECRYPT_MODE, _keySpec);
+			return _cipher.doFinal(in);
+		} catch (InvalidKeyException ike) {
+			// Bad key, do not decrypt.
+			return null;
+		} catch (Exception e) {
+			System.err.println(e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
 		return null;
 	}
 }
