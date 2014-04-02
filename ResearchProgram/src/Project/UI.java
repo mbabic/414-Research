@@ -70,6 +70,11 @@ public class UI extends CanvasFrame implements ActionListener {
 	private JMenuItem mi2_1;
 	private JMenuItem mi2_2;
 	private JMenuItem mi2_3;
+	
+	private JRadioButton mi3_1;
+	private JRadioButton mi3_2;
+	
+	private boolean videoOn = true;
 
 	private MyPanel origPanel = new MyPanel("Original");
 	private MyPanel backPanel = new MyPanel("Background");
@@ -98,23 +103,24 @@ public class UI extends CanvasFrame implements ActionListener {
 	 *            The extracted foreground IplImage
 	 */
 	public void putFrame(IplImage orig, IplImage back, IplImage face) {
-		switch (selected) {
-		case 1:
-			showImage(orig);
-			break;
-		case 2:
-			showImage(back);
-			break;
-		case 3:
-			showImage(face);
-			break;
-		default:
-			break;
+		if (videoOn) {
+			switch (selected) {
+			case 1:
+				showImage(orig);
+				break;
+			case 2:
+				showImage(back);
+				break;
+			case 3:
+				showImage(face);
+				break;
+			default:
+				break;
+			}
+			origPanel.putFrame(orig);
+			backPanel.putFrame(back);
+			facePanel.putFrame(face);
 		}
-		origPanel.putFrame(orig);
-		backPanel.putFrame(back);
-		facePanel.putFrame(face);
-
 	}
 
 	/**
@@ -148,6 +154,10 @@ public class UI extends CanvasFrame implements ActionListener {
 			backPanel.setVisible(true);
 		} else if (source == mi2_3) {
 			facePanel.setVisible(true);
+		} else if (source == mi3_1) {
+			videoOn = true;
+		} else if (source == mi3_2) {
+			videoOn = false;
 		}
 	}
 
@@ -159,24 +169,24 @@ public class UI extends CanvasFrame implements ActionListener {
 
 		JMenu menu1 = new JMenu("Mode");
 		menu1.setMnemonic(KeyEvent.VK_M);
-		ButtonGroup bg = new ButtonGroup();
+		ButtonGroup buttonGroup1 = new ButtonGroup();
 
 		mi1_1 = new JRadioButton("Original", true);
 		mi1_1.setMnemonic(KeyEvent.VK_O);
 		mi1_1.addActionListener(this);
-		bg.add(mi1_1);
+		buttonGroup1.add(mi1_1);
 		menu1.add(mi1_1);
 
 		mi1_2 = new JRadioButton("Background");
 		mi1_2.setMnemonic(KeyEvent.VK_B);
 		mi1_2.addActionListener(this);
-		bg.add(mi1_2);
+		buttonGroup1.add(mi1_2);
 		menu1.add(mi1_2);
 
 		mi1_3 = new JRadioButton("Foreground");
 		mi1_3.setMnemonic(KeyEvent.VK_F);
 		mi1_3.addActionListener(this);
-		bg.add(mi1_3);
+		buttonGroup1.add(mi1_3);
 		menu1.add(mi1_3);
 
 		JMenu menu2 = new JMenu("Popout");
@@ -197,8 +207,26 @@ public class UI extends CanvasFrame implements ActionListener {
 		mi2_3.addActionListener(this);
 		menu2.add(mi2_3);
 
+		JMenu menu3 = new JMenu("Video");
+		menu3.setMnemonic(KeyEvent.VK_V);
+		
+		ButtonGroup buttonGroup3 = new ButtonGroup();
+		
+		mi3_1 = new JRadioButton("On", true);
+		mi3_1.setMnemonic(KeyEvent.VK_O);
+		mi3_1.addActionListener(this);
+		buttonGroup3.add(mi3_1);
+		menu3.add(mi3_1);
+		
+		mi3_2 = new JRadioButton("Off");
+		mi3_2.setMnemonic(KeyEvent.VK_F);
+		mi3_2.addActionListener(this);
+		buttonGroup3.add(mi3_2);
+		menu3.add(mi3_2);
+		
 		menuBar.add(menu1);
 		menuBar.add(menu2);
+		menuBar.add(menu3);
 		setJMenuBar(menuBar);
 	}
 }
