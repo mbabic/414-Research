@@ -16,15 +16,10 @@ public class CaptureLancher {
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
-<<<<<<< Updated upstream
-
-=======
-		
 		File inf = new File("tests/test.avi");
 		
->>>>>>> Stashed changes
 		try {
-			frameGrabber = transmitter.receiveStream();
+			frameGrabber = transmitter.receiveStream(inf);
 		} catch (Exception e1) {
 			System.err.println("Faile to load FrameGrabber");
 			e1.printStackTrace();

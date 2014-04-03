@@ -18,7 +18,7 @@ public class MergerLauncher {
 		Analyzer analyzer = null;
 		FrameGrabber backFrameGrabber = null, faceFrameGrabber = null;
 		IplImage mergImage, backImage, faceImage;
-//		FaceStream stream = FaceStream.fromFile();
+		FaceStream stream = FaceStream.fromFile();
 		ArrayList<CvRect> rects;
 		try {
 			backFrameGrabber = transmitter.receiveStream(inb);
@@ -41,31 +41,28 @@ public class MergerLauncher {
 			while (gui.isVisible()) {
 				backImage = backFrameGrabber.grab();
 				faceImage = faceFrameGrabber.grab();
+				
 				if (backImage == null || faceImage == null) {
 					backFrameGrabber.restart();
-					faceFrameGrabber.release();
+					faceFrameGrabber.restart();
+					stream.restart();
 					backFrameGrabber.start();
 					faceFrameGrabber.start();
 					backImage = backFrameGrabber.grab();
 					faceImage = faceFrameGrabber.grab();
-
 				}
 				mergImage = backImage.clone();
-				//TODO Figure out how to get the recs
-//				rects = stream.getNextRectList();
-//				analyzer.recombineVideo(mergImage, backImage, faceImage, rects);
+				rects = stream.getNextRectList();
+				analyzer.recombineVideo(mergImage, backImage, faceImage, rects);
 				gui.putFrame(mergImage, backImage, faceImage);
 			}
-			transmitter.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			gui.destroy();
 			System.exit(0);
-			
-		} catch (Exception e) {
+		}
 		
-			e.printStackTrace();
-		} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
-			e.printStackTrace();
-		}		
 	}
 
 }
