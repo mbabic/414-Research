@@ -13,9 +13,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 
+ * Responsible for encoding an input video to a hevc compliant bitstream.
+ * SEE testEncode() IN EncoderTests FOR SAMPLE USAGE 
  * @author Marko Babic, Marcus Karpoff
- *
  */
 public class Encoder {
 
@@ -31,10 +31,11 @@ public class Encoder {
 	/** The number of frames in the video to be encoded. */
 	private int _frames;
 	
-	/** The path to the input file. */
+	/** The _path_ to the input file. */
 	private String _in;
 	
-	/** The path to the YUV file to be encoded */
+	/** The path to the YUV file to be encoded.  Set based on Settings.OUT
+	 * and Encoder._out. */
 	private String _yuv;
 	
 	/** The name of the output file to be generated. */
@@ -150,21 +151,23 @@ public class Encoder {
 		}
 	}
 	
-	
+	/**
+	 * Produce an encoded file based on instance attribute values.
+	 */
 	public void encode() {
 		toYUV();
 		compress();
 	}
 	
-	
 	/**
-	 * Convert to YUV.
+	 * Convert given input file to a YUV420p compliant bitstream.
 	 */
 	public void toYUV() {
 		ExecutorService exec = Executors.newSingleThreadExecutor();
 		exec.submit(new ToYUVTask());
 		try {
 			exec.shutdown();
+			// Wait for thread to exit, but do not terminate prematurely.
 			exec.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -173,6 +176,12 @@ public class Encoder {
 		
 	}
 	
+	/**
+	 * Implements Callabe interface such that results of conversion to .yuv
+	 * done by external process "ffmpeg" can be waited on before calling another
+	 * external process to perfrom encoding to hevc bitstream.
+	 * @author Marko Babic, Marcus Karpoff
+	 */
 	private class ToYUVTask implements Callable<Integer> {
 		public ToYUVTask() {
 			
@@ -241,16 +250,15 @@ public class Encoder {
 		}
 	}
 	
-	
-	
 	/**
-	 *
+	 * Compress _yuv to an hevc compliant bitstream.
 	 */
 	public void compress() {
 		ExecutorService exec = Executors.newSingleThreadExecutor();
 		exec.submit(new EncodingTask());
 		try {
 			exec.shutdown();
+			// Wait for thread to exit, but do not terminate prematurely.
 			exec.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -260,8 +268,10 @@ public class Encoder {
 	}
 
 	/**
-	 * 
-	 * @author Marko Babic
+	 * Implements Callable interface such that results of encoding process
+	 * can be waited on or the external process can be terminated after certain
+	 * amount of time.
+	 * @author Marko Babic, Marcus Karpoff
 	 *
 	 */
 	private class EncodingTask implements Callable<Integer> {
