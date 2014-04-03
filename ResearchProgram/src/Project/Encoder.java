@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * NOT READY TO INTERFACE WITH REST OF PROJECT
+ * 
  * @author Marko Babic, Marcus Karpoff
  *
  */
@@ -109,6 +109,24 @@ public class Encoder {
 	 * or any tricks like that)
 	 */
 	public void writeConfigurationFile() {
+		// Delete files of the same name as one we are going to create if they
+		// exist and hevc encoder doesn't like this.
+		String hevcOut = Settings.OUT + _out + ".hevc";
+		File hevcFile = new File(hevcOut);
+		if (hevcFile.exists()) {
+			hevcFile.delete();
+		}
+		// No need to close file, java.io.File opens no streams
+
+	
+		String hevcReconOut = Settings.OUT + "_out" + "_recon.yuv";
+		File reconFile = new File(hevcReconOut);
+		if (reconFile.exists()) {
+			reconFile.delete();
+		}
+		// No need to close file, java.io.File opens no streams
+		
+		
 		try {
 			File f = new File(Settings.CFG + _out);
 			Writer writer = new OutputStreamWriter(
@@ -123,8 +141,8 @@ public class Encoder {
 			writer.write("FramesToBeEncoded: " + _frames + "\r\n");
 			writer.write("Level: 6\r\n");
 			writer.write("QP: 27\r\n");
-			writer.write("BitstreamFile: " + Settings.OUT + _out + ".hevc");
-			writer.write("ReconFile: " + Settings.OUT + _out + ".yuv");
+			writer.write("BitstreamFile: " + Settings.OUT + _out + "\r\n");
+			writer.write("ReconFile: " + hevcReconOut + "\r\n\r\n");
 			writer.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -135,7 +153,6 @@ public class Encoder {
 	
 	public void encode() {
 		toYUV();
-		System.out.println("asdfffdddddddddddddddd");
 		compress();
 	}
 	
@@ -168,6 +185,11 @@ public class Encoder {
 			String ffmpegPath = ffmpegFile.getAbsolutePath();
 			
 			File inFile = new File(_in);
+			
+			if (inFile.exists()) {
+				inFile.delete();
+			}
+			
 			String inputVideoPath = inFile.getAbsolutePath();
 			// TODO: make determination as to what the input codec
 			// will be.  For now, assuming .avi with h264 codec.
@@ -201,7 +223,7 @@ public class Encoder {
 				Process proc = rt.exec(ffmpegArgs);
 				
 				// Get and print errors produced by running program
-				InputStream stdin = proc.getInputStream();
+				InputStream stdin = proc.getErrorStream();
 				InputStreamReader isr = new InputStreamReader(stdin);
 				BufferedReader br = new BufferedReader(isr);
 				String in = null;
@@ -225,7 +247,6 @@ public class Encoder {
 	 *
 	 */
 	public void compress() {
-		System.out.println("HEY HEY HO HO");
 		ExecutorService exec = Executors.newSingleThreadExecutor();
 		exec.submit(new EncodingTask());
 		try {
@@ -250,6 +271,9 @@ public class Encoder {
 		
 		@Override
 		public Integer call() {
+	
+			// Create configuration file needed to encode this video.
+			writeConfigurationFile();			
 			
 			// Set up encoder
 			File encoderFile = new File(Settings.ENCODER);
@@ -257,8 +281,7 @@ public class Encoder {
 			String encoder = encoderFile.getAbsolutePath();
 			String inputVideoPath = inFile.getAbsolutePath();
 
-			// Create configuration file needed to encode this video.
-			writeConfigurationFile();
+
 			
 			String[] hevcArgs = {
 				// Path to executable
@@ -278,7 +301,6 @@ public class Encoder {
 			};		
 			
 			try {
-				System.out.println("YEAH!!!!!!!!!");
 				Runtime rt = Runtime.getRuntime();
 				
 				// Execute encoder with given arguments.
