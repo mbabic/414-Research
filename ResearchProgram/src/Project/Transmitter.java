@@ -5,9 +5,11 @@ import java.io.File;
 import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
+import com.googlecode.javacv.FrameGrabber.ImageMode;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.OpenCVFrameGrabber;
 import com.googlecode.javacv.cpp.avcodec;
+import com.googlecode.javacv.cpp.avutil;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
@@ -107,6 +109,14 @@ public class Transmitter {
 	 */
 	public FrameGrabber receiveStream(File file) throws com.googlecode.javacv.FrameGrabber.Exception {
 		FrameGrabber grabber = new FFmpegFrameGrabber(file);
+//		grabber.setFormat(avcodec.AV_CODEC_ID_RAWVIDEO);
+		grabber.setFormat("mp4");
+		grabber.setFrameRate(30);
+		grabber.setFrameNumber(300);
+		grabber.setImageWidth(352);
+		grabber.setImageHeight(288);
+		System.out.println(grabber.getSampleFormat());
+		System.out.println(grabber.getPixelFormat());
 		grabber.start();
 		return grabber;
 	}

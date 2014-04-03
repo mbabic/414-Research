@@ -60,7 +60,7 @@ public class TrackedObject {
 	public CvRect _pRect;
 	
 	/**
-	 * The CvBOX2d (e.g., rotated rectangle) in which the tracking algorithm
+	 * The CvBOX2d (i.e., rotated rectangle) in which the tracking algorithm
 	 * has determined the object is in.
 	 */
 	public CvBox2D _currBox;
