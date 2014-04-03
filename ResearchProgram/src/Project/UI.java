@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -71,8 +72,7 @@ public class UI extends CanvasFrame implements ActionListener {
 	private JMenuItem mi2_2;
 	private JMenuItem mi2_3;
 	
-	private JRadioButton mi3_1;
-	private JRadioButton mi3_2;
+	private JCheckBoxMenuItem mi3;
 	
 	private boolean videoOn = true;
 
@@ -154,10 +154,8 @@ public class UI extends CanvasFrame implements ActionListener {
 			backPanel.setVisible(true);
 		} else if (source == mi2_3) {
 			facePanel.setVisible(true);
-		} else if (source == mi3_1) {
-			videoOn = true;
-		} else if (source == mi3_2) {
-			videoOn = false;
+		} else if (source == mi3) {
+			videoOn =  !videoOn;
 		}
 	}
 
@@ -210,23 +208,15 @@ public class UI extends CanvasFrame implements ActionListener {
 		JMenu menu3 = new JMenu("Video");
 		menu3.setMnemonic(KeyEvent.VK_V);
 		
-		ButtonGroup buttonGroup3 = new ButtonGroup();
+		mi3 = new JCheckBoxMenuItem("Video", true);
+		mi3.setMnemonic(KeyEvent.VK_V);
+		mi3.addActionListener(this);
 		
-		mi3_1 = new JRadioButton("On", true);
-		mi3_1.setMnemonic(KeyEvent.VK_O);
-		mi3_1.addActionListener(this);
-		buttonGroup3.add(mi3_1);
-		menu3.add(mi3_1);
-		
-		mi3_2 = new JRadioButton("Off");
-		mi3_2.setMnemonic(KeyEvent.VK_F);
-		mi3_2.addActionListener(this);
-		buttonGroup3.add(mi3_2);
-		menu3.add(mi3_2);
+
 		
 		menuBar.add(menu1);
 		menuBar.add(menu2);
-		menuBar.add(menu3);
+		menuBar.add(mi3);
 		setJMenuBar(menuBar);
 	}
 }

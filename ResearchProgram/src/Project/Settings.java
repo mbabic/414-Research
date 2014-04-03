@@ -37,4 +37,7 @@ public class Settings {
 	/** Main configuration file used in all encodings. */
 	public static final String MAIN_CFG = "cfg/main.cfg";
 	
+	/** Folder in which to store intermediate conversion files */
+	public static final String OUT = "out/";
+	
 }

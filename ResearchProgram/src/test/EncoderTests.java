@@ -25,12 +25,22 @@ public class EncoderTests {
 	
 	@Test
 	public void testEncode() {
-		Encoder e1 = new Encoder("tests/aaa.yuv", "asdf");
-		e1.setImgHeight(288);
-		e1.setImgWidth(352);
-		e1.setFps(30);
-		e1.setFrames(10);
-		e1.encode();
+		Encoder e = new Encoder("tests/test.avi", "testResult");
+		e.setFps(50);
+		e.setImgWidth(1280);
+		e.setImgHeight(720);
+		e.setFrames(10);
+		e.encode();
 	}
+	
+//	@Test
+//	public void testCompress() {
+//		Encoder e1 = new Encoder("tests/aaa.yuv", "asdf");
+//		e1.setImgHeight(288);
+//		e1.setImgWidth(352);
+//		e1.setFps(30);
+//		e1.setFrames(10);
+//		e1.compress();
+//	} 
 
 }

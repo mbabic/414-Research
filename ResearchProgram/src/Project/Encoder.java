@@ -7,9 +7,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Class responsible for receiving a 
+ * NOT READY TO INTERFACE WITH REST OF PROJECT
  * @author Marko Babic, Marcus Karpoff
  *
  */
@@ -30,6 +34,9 @@ public class Encoder {
 	/** The path to the input file. */
 	private String _in;
 	
+	/** The path to the YUV file to be encoded */
+	private String _yuv;
+	
 	/** The name of the output file to be generated. */
 	private String _out;
 	
@@ -45,6 +52,7 @@ public class Encoder {
 		_fps = Settings.DEFAULT_FPS;
 		_in = in;
 		_out = out;
+		_yuv = Settings.OUT + _out + ".yuv";
 	}
 
 	public int getImgHeight() {
@@ -115,6 +123,8 @@ public class Encoder {
 			writer.write("FramesToBeEncoded: " + _frames + "\r\n");
 			writer.write("Level: 6\r\n");
 			writer.write("QP: 27\r\n");
+			writer.write("BitstreamFile: " + Settings.OUT + _out + ".hevc");
+			writer.write("ReconFile: " + Settings.OUT + _out + ".yuv");
 			writer.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -122,63 +132,174 @@ public class Encoder {
 		}
 	}
 	
-	/**
-	 * TODO: make this run in own Runnable thread.
-	 */
+	
 	public void encode() {
-		// Set up encoder
-		File encoderFile = new File(Settings.ENCODER);
-		File inFile = new File(_in);
-		String encoder = encoderFile.getAbsolutePath();
-		String inputVideoPath = inFile.getAbsolutePath();
-
-		// Create configuration file needed to encode this video.
-		writeConfigurationFile();
-		
-		String[] args = {
-			// Input video
-			encoder, 
-			"-i", 			
-			inputVideoPath,
-			// Output .yuv (TODO: useless file in my experience)
-			"-o",			
-			"out/" + _out,
-			// Output .hevc file
-			"-b",			
-			"out/" + _out + ".hevc",
-			// Configuration file
-			"-c", 			
-			Settings.MAIN_CFG,
-			// Configuration File
-			"-c",			
-			Settings.CFG + _out + ".cfg"
-		};
-		
+		toYUV();
+		System.out.println("asdfffdddddddddddddddd");
+		compress();
+	}
+	
+	
+	/**
+	 * Convert to YUV.
+	 */
+	public void toYUV() {
+		ExecutorService exec = Executors.newSingleThreadExecutor();
+		exec.submit(new ToYUVTask());
 		try {
-			Runtime rt = Runtime.getRuntime();
-			
-			// Execute encoder with given arguments.
-			Process proc = rt.exec(args);
-			
-			// Get and print errors produced by running program
-//			InputStream stderr = proc.getErrorStream();
-			InputStream stderr = proc.getInputStream();
-			InputStreamReader isr = new InputStreamReader(stderr);
-			BufferedReader br = new BufferedReader(isr);
-			String err = null;
-			System.err.println("ERROR ---------------------------------");
-			while ((err = br.readLine()) != null) {
-				System.err.println(err);
-			}
-			
-			
-			
-			int exitVal = proc.waitFor();
-			System.out.println("Process exited with : " + exitVal);
-		} catch (Throwable t) {
-			t.printStackTrace();
+			exec.shutdown();
+			exec.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 		
+	}
+	
+	private class ToYUVTask implements Callable<Integer> {
+		public ToYUVTask() {
+			
+		}
+		
+		@Override
+		public Integer call() {
+			
+			File ffmpegFile = new File(Settings.FFMPEG);
+			String ffmpegPath = ffmpegFile.getAbsolutePath();
+			
+			File inFile = new File(_in);
+			String inputVideoPath = inFile.getAbsolutePath();
+			// TODO: make determination as to what the input codec
+			// will be.  For now, assuming .avi with h264 codec.
+			String[] ffmpegArgs = {
+				// Path to executable
+				ffmpegPath,
+					
+				// Input video file
+				"-i",
+				_in,
+				// Pixel format of output stream
+				"-pix_fmt",
+				"yuv420p",
+				
+				// Number of frames to place in output stream
+				"-vframes",
+				Integer.toString(_frames),
+				
+				// Ouput stream video codec
+				"-vcodec",
+				"rawvideo",
+				
+				// Output file
+				_yuv
+			};
+			
+			try {
+				Runtime rt = Runtime.getRuntime();
+				
+				// Execute encoder with given arguments.
+				Process proc = rt.exec(ffmpegArgs);
+				
+				// Get and print errors produced by running program
+				InputStream stdin = proc.getInputStream();
+				InputStreamReader isr = new InputStreamReader(stdin);
+				BufferedReader br = new BufferedReader(isr);
+				String in = null;
+				while ((in = br.readLine()) != null) {
+					System.out.println(in);
+				}
+				
+				int exitVal = proc.waitFor();
+				return exitVal;
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+			
+			return -1;
+		}
+	}
+	
+	
+	
+	/**
+	 *
+	 */
+	public void compress() {
+		System.out.println("HEY HEY HO HO");
+		ExecutorService exec = Executors.newSingleThreadExecutor();
+		exec.submit(new EncodingTask());
+		try {
+			exec.shutdown();
+			exec.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @author Marko Babic
+	 *
+	 */
+	private class EncodingTask implements Callable<Integer> {
+		
+		public EncodingTask() {
+		}
+		
+		@Override
+		public Integer call() {
+			
+			// Set up encoder
+			File encoderFile = new File(Settings.ENCODER);
+			File inFile = new File(_yuv);
+			String encoder = encoderFile.getAbsolutePath();
+			String inputVideoPath = inFile.getAbsolutePath();
+
+			// Create configuration file needed to encode this video.
+			writeConfigurationFile();
+			
+			String[] hevcArgs = {
+				// Path to executable
+				encoder, 
+
+				// Input video
+				"-i", 			
+				inputVideoPath,
+				
+				// Configuration file
+				"-c", 			
+				Settings.MAIN_CFG,
+				
+				// Configuration File
+				"-c",			
+				Settings.CFG + _out + ".cfg"
+			};		
+			
+			try {
+				System.out.println("YEAH!!!!!!!!!");
+				Runtime rt = Runtime.getRuntime();
+				
+				// Execute encoder with given arguments.
+				Process proc = rt.exec(hevcArgs);
+				
+				// Get and print errors produced by running program
+				InputStream stdin = proc.getInputStream();
+				InputStreamReader isr = new InputStreamReader(stdin);
+				BufferedReader br = new BufferedReader(isr);
+				String in = null;
+				while ((in = br.readLine()) != null) {
+					System.out.println(in);
+				}
+				int exitVal = proc.waitFor();
+				return exitVal;
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+			
+			return -1;
+		}
 	}
 	
 }

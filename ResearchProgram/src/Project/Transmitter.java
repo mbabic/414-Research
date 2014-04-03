@@ -113,12 +113,12 @@ public class Transmitter {
 	public FrameGrabber receiveStream(File file) throws com.googlecode.javacv.FrameGrabber.Exception {
 		FrameGrabber grabber = new FFmpegFrameGrabber(file);
 //		grabber.setFormat(avcodec.AV_CODEC_ID_RAWVIDEO);
-		grabber.setFormat("rawvideo");
-		grabber.setFrameRate(30);
-		grabber.setFrameNumber(300);
-		grabber.setImageWidth(352);
-		grabber.setImageHeight(288);
-		grabber.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
+//		grabber.setFormat("rawvideo");
+//		grabber.setFrameRate(30);
+//		grabber.setFrameNumber(300);
+//		grabber.setImageWidth(352);
+//		grabber.setImageHeight(288);
+//		grabber.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
 		grabber.start();
 		return grabber;
 	}
