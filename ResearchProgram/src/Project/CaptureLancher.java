@@ -15,10 +15,11 @@ public class CaptureLancher {
 		Analyzer analyzer = null;
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
-		FaceStream stream = new FaceStream();
-		File inf = new File("tests/test.avi");
-		
+		FaceStream stream = new FaceStream();		
+
+
 		try {
+			File inf = new File("tests/test.avi");
 			frameGrabber = transmitter.receiveStream(inf);
 		} catch (Exception e1) {
 			System.err.println("Faile to load FrameGrabber");
@@ -51,18 +52,26 @@ public class CaptureLancher {
 						stream);
 				gui.putFrame(origImage, backImage, faceImage);
 				transmitter.videoBuilder(backImage, faceImage);
-
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
 			e.printStackTrace();
 		} finally {
+			
 			try {
 				transmitter.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				frameGrabber.stop();
+				frameGrabber.release();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			stream.toFile();
