@@ -1,0 +1,8 @@
+InputBitDepth: 8
+FrameRate: 30
+FrameSkip: 0
+SourceWidth: 400
+SourceHeight: 400
+FramesToBeEncoded: 0
+Level: 6
+QP: 27
