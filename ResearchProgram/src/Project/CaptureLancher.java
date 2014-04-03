@@ -18,7 +18,7 @@ public class CaptureLancher {
 		FaceStream stream = new FaceStream();
 //		File inf = new File("test/test.avi");
 		
-		File inf = new File("test/out.mp4");
+		File inf = new File("tests/bbb.avi");
 		
 		try {
 			frameGrabber = transmitter.receiveStream(inf);

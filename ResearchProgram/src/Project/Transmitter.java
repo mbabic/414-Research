@@ -53,6 +53,9 @@ public class Transmitter {
 		recorderBackGround = new FFmpegFrameRecorder(bFile, img.width(),
 				img.height());
 		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
+		recorderBackGround.setFrameRate(30);
+		recorderBackGround.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
+		recorderBackGround.setFormat("rawvideo");
 		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
 				img.height());
 		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
@@ -110,13 +113,12 @@ public class Transmitter {
 	public FrameGrabber receiveStream(File file) throws com.googlecode.javacv.FrameGrabber.Exception {
 		FrameGrabber grabber = new FFmpegFrameGrabber(file);
 //		grabber.setFormat(avcodec.AV_CODEC_ID_RAWVIDEO);
-		grabber.setFormat("mp4");
+		grabber.setFormat("rawvideo");
 		grabber.setFrameRate(30);
 		grabber.setFrameNumber(300);
 		grabber.setImageWidth(352);
 		grabber.setImageHeight(288);
-		System.out.println(grabber.getSampleFormat());
-		System.out.println(grabber.getPixelFormat());
+		grabber.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
 		grabber.start();
 		return grabber;
 	}

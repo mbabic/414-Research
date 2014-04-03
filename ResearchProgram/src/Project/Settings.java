@@ -13,7 +13,7 @@ public class Settings {
 	public static final String CLASSIFIER_DIR = "res/haarcascades/";
 
 	public static final String OUTF = "out/outf.avi";
-	public static final String OUTB = "out/outb.avi";
+	public static final String OUTB = "out/outb.yuv";
 	public static final String FACESTREAM_OUT = "out/face_stream.ser";
 	public static final String DEFAULT_PASSWORD = "password";
 
@@ -34,5 +34,7 @@ public class Settings {
 	/** Folder in which configuration files for encoding/decoding are to be
 	 * store */
 	public static final String CFG = "cfg/";
+	/** Main configuration file used in all encodings. */
+	public static final String MAIN_CFG = "cfg/main.cfg";
 	
 }

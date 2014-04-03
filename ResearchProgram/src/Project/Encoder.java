@@ -123,14 +123,36 @@ public class Encoder {
 	}
 	
 	/**
-	 * 
+	 * TODO: make this run in own Runnable thread.
 	 */
 	public void encode() {
 		// Set up encoder
 		File encoderFile = new File(Settings.ENCODER);
+		File inFile = new File(_in);
 		String encoder = encoderFile.getAbsolutePath();
-	
-		String[] args = {encoder, "-i", "fake.yuv"};
+		String inputVideoPath = inFile.getAbsolutePath();
+
+		// Create configuration file needed to encode this video.
+		writeConfigurationFile();
+		
+		String[] args = {
+			// Input video
+			encoder, 
+			"-i", 			
+			inputVideoPath,
+			// Output .yuv (TODO: useless file in my experience)
+			"-o",			
+			"out/" + _out,
+			// Output .hevc file
+			"-b",			
+			"out/" + _out + ".hevc",
+			// Configuration file
+			"-c", 			
+			Settings.MAIN_CFG,
+			// Configuration File
+			"-c",			
+			Settings.CFG + _out + ".cfg"
+		};
 		
 		try {
 			Runtime rt = Runtime.getRuntime();
@@ -139,7 +161,8 @@ public class Encoder {
 			Process proc = rt.exec(args);
 			
 			// Get and print errors produced by running program
-			InputStream stderr = proc.getErrorStream();
+//			InputStream stderr = proc.getErrorStream();
+			InputStream stderr = proc.getInputStream();
 			InputStreamReader isr = new InputStreamReader(stderr);
 			BufferedReader br = new BufferedReader(isr);
 			String err = null;
