@@ -16,7 +16,13 @@ public class CaptureLancher {
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
+<<<<<<< Updated upstream
 
+=======
+		
+		File inf = new File("tests/test.avi");
+		
+>>>>>>> Stashed changes
 		try {
 			frameGrabber = transmitter.receiveStream();
 		} catch (Exception e1) {
@@ -25,6 +31,7 @@ public class CaptureLancher {
 			gui.destroy();
 			System.exit(-1);
 		}
+		
 		try {
 			analyzer = new Analyzer();
 		} catch (ClassiferLoadFailure e1) {
