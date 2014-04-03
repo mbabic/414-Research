@@ -35,7 +35,7 @@ public class Encryption {
 	SecretKeySpec _keySpec;
 
 	private static byte[] iv(){
-	    byte[] iv = new byte [16]; // should be 16
+	    byte[] iv = new byte [16];
 	    Random random = new Random();
 	    random.nextBytes(iv);
 	    return iv;

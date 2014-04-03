@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import Project.Encryption;
 
+import org.junit.*;
 
 public class EncryptionTests {
 

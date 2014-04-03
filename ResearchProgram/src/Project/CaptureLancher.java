@@ -9,20 +9,22 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class CaptureLancher {
 	public static void main(String[] args) {
 		UI gui = new UI();
-		File outb = new File("out/outb.avi");
-		File outf = new File("out/outf.avi");
+		File outb = new File(Settings.OUTB);
+		File outf = new File(Settings.OUTF);
 		Transmitter transmitter = new Transmitter();
 		Analyzer analyzer = null;
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
-		FaceStream stream = new FaceStream();		
-
-
+		FaceStream stream = new FaceStream();
+//		File inf = new File("test/test.avi");
+		
+//		File inf = new File("tests/bbb.avi");
+		
 		try {
 			File inf = new File("tests/test.avi");
 			frameGrabber = transmitter.receiveStream(inf);
 		} catch (Exception e1) {
-			System.err.println("Faile to load FrameGrabber");
+			System.err.println("Failed to load FrameGrabber");
 			e1.printStackTrace();
 			gui.destroy();
 			System.exit(-1);
