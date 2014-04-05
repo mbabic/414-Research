@@ -1,8 +1,10 @@
 package Project;
 
 import java.io.File;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FFmpegFrameRecorder;
@@ -10,7 +12,6 @@ import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.OpenCVFrameGrabber;
 import com.googlecode.javacv.cpp.avcodec;
-import com.googlecode.javacv.cpp.avutil;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
@@ -23,6 +24,8 @@ public class Transmitter {
 
 	private FFmpegFrameRecorder recorderBackGround;
 	private FFmpegFrameRecorder recorderFacial;
+	
+	private Encoder _faceEncoder, _bgEncoder;
 
 	/**
 	 * This initializes all the recorders. Must be called before transmitting
@@ -59,6 +62,24 @@ public class Transmitter {
 		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
 				img.height());
 		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
+		
+		// Initialize encoders
+		_bgEncoder = new Encoder(
+			bFile.getAbsolutePath(), 
+			Settings.ENCODED_OUTB_NAME
+		);
+		
+		_faceEncoder = new Encoder(
+			fFile.getAbsolutePath(),
+			Settings.ENCODED_OUTF_NAME
+		);
+
+		// TODO: get and same frame rate from cmd line, for now using default
+		// values defines in Settings.
+		_bgEncoder.setImgWidth(img.width());
+		_bgEncoder.setImgHeight(img.height());		
+		_faceEncoder.setImgWidth(img.width());
+		_faceEncoder.setImgHeight(img.height());
 		
 		recorderBackGround.start();
 		recorderFacial.start();
@@ -112,13 +133,6 @@ public class Transmitter {
 	 */
 	public FrameGrabber receiveStream(File file) throws com.googlecode.javacv.FrameGrabber.Exception {
 		FrameGrabber grabber = new FFmpegFrameGrabber(file);
-//		grabber.setFormat(avcodec.AV_CODEC_ID_RAWVIDEO);
-//		grabber.setFormat("rawvideo");
-//		grabber.setFrameRate(30);
-//		grabber.setFrameNumber(300);
-//		grabber.setImageWidth(352);
-//		grabber.setImageHeight(288);
-//		grabber.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
 		grabber.start();
 		return grabber;
 	}
@@ -155,10 +169,21 @@ public class Transmitter {
 	}
 
 	/**
-	 * Encodes the stream with HEVC standard
+	 * Encodes the files produces by the frame grabbers to HEVC
 	 */
 	public void encodeHECV() {	
-		
+		ExecutorService exec = Executors.newFixedThreadPool(2);
+		exec.submit(new EncodeFaceTask());
+		exec.submit(new EncodeBackgroundTask());
+		try {
+			// Tell executor to accept no more new processes.
+			exec.shutdown();
+			// Wait for thread to exit, but do not terminate prematurely.
+			exec.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
+		}	
 	}
 
 	/**
@@ -166,5 +191,36 @@ public class Transmitter {
 	 */
 	public void decodeHEVC() {
 
+	}
+	
+	private class EncodeFaceTask implements Callable<Integer> {
+		public EncodeFaceTask() {
+			
+		}
+		
+		public Integer call() {
+			Encryption encrypter = new Encryption(null);
+			_faceEncoder.encode();
+			
+			encrypter.encryptFile(
+				Settings.OUT + _faceEncoder.getOut(),
+				Settings.ENCRYPTED_OUTF_NAME
+			);
+			
+			// TODO: clean up outf.avi, encoded_outf.yuv, anything else?
+			
+			return 0;
+		}
+	}
+	
+	private class EncodeBackgroundTask implements Callable<Integer> {
+		public EncodeBackgroundTask() {
+			
+		}
+		
+		public Integer call() {
+			_bgEncoder.encode();
+			return 0;
+		}
 	}
 }
