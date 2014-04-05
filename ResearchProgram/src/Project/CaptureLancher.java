@@ -75,6 +75,7 @@ public class CaptureLancher {
 			}
 			stream.toFile();
 			gui.destroy();
+			transmitter.encodeHECV();
 			System.exit(0);
 
 		}

@@ -51,6 +51,7 @@ public class Encoder {
 		_imgWidth = Settings.WIDTH;
 		_imgHeight = Settings.HEIGHT;
 		_fps = Settings.DEFAULT_FPS;
+		_frames = Settings.DEFAULT_FRAMES;
 		_in = in;
 		_out = out;
 		_yuv = Settings.OUT + _out + ".yuv";
