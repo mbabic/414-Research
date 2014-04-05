@@ -15,6 +15,16 @@ public class MergerLauncher {
 		File inb = new File("out/outb.avi");
 		File inf = new File("out/outf.avi");
 		Transmitter transmitter = new Transmitter();
+		
+		// TODO: get img width/height from command lines, get password from
+		// cmd line
+		transmitter.setUpDecoders(
+			Settings.DECRYPTED_OUTF_NAME,
+			Settings.ENCODED_OUTB_NAME,
+			352, 
+			288
+		);
+		
 		Analyzer analyzer = null;
 		FrameGrabber backFrameGrabber = null, faceFrameGrabber = null;
 		IplImage mergImage, backImage, faceImage;
@@ -51,6 +61,7 @@ public class MergerLauncher {
 					backImage = backFrameGrabber.grab();
 					faceImage = faceFrameGrabber.grab();
 				}
+				
 				mergImage = backImage.clone();
 				rects = stream.getNextRectList();
 				analyzer.recombineVideo(mergImage, backImage, faceImage, rects);

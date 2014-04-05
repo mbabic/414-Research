@@ -28,7 +28,20 @@ public class Settings {
 	 * Name of the encrypted hevc stream corresponding to the video stream 
 	 * containing the face data.
 	 */
-	public static final String ENCRYPTED_OUTF_NAME ="encrypted_outf";
+	public static final String ENCRYPTED_OUTF_NAME = "encrypted_outf";
+	/** 
+	 * Name of the decoded file containing the face data video stream.
+	 */
+	public static final String DECODED_OUTF_NAME = "decoded_outf";
+	/**
+	 * Name of the decoded file containing the background data video stream.
+	 */
+	public static final String DECODED_OUTB_NAME = "decoded_outb";	
+	
+	/**
+	 * Name of the decrypted file containing the face data video stream.
+	 */
+	public static final String DECRYPTED_OUTF_NAME = "decrypted_outf.hevc";
 	
 	public static final String FACESTREAM_OUT = "out/face_stream.ser";
 	public static final String DEFAULT_PASSWORD = "password";

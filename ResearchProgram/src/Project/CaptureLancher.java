@@ -8,6 +8,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class CaptureLancher {
 	public static void main(String[] args) {
+		// TODO: setup mechanism to specify input file and encryption password.
 		UI gui = new UI();
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);

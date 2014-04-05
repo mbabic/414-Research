@@ -25,7 +25,24 @@ public class Transmitter {
 	private FFmpegFrameRecorder recorderBackGround;
 	private FFmpegFrameRecorder recorderFacial;
 	
-	private Encoder _faceEncoder, _bgEncoder;
+	/**
+	 * The encoder to be used to encode the stream containing the face data.
+	 */
+	private Encoder _faceEncoder;
+	/**
+	 * The encoder to be used to encode the stream containing the background
+	 * data.
+	 */
+	private Encoder _bgEncoder;
+	/**
+	 * The decoder to be used to decode the stream containing the face data.
+	 */
+	private Decoder _faceDecoder;
+	/**
+	 * The decoder to be used to decode the stream containing the background
+	 * data.
+	 */
+	private Decoder _bgDecoder;
 
 	/**
 	 * This initializes all the recorders. Must be called before transmitting
@@ -83,6 +100,31 @@ public class Transmitter {
 		
 		recorderBackGround.start();
 		recorderFacial.start();
+	}
+	
+	/**
+	 * Once a frame has been captured, called to pass the width and height
+	 * of a frame to the decoder used by the Transmitter instance.
+	 * @param inf
+	 * 		Path the the encrypted file containing the face stream.
+	 * @param imgWidth
+	 * 		The width of a frame in the streams to be recombined.
+	 * @param imgHeight
+	 * 		The height of a frame in the streams to be recombined.
+	 */
+	public void setUpDecoders(String inf, String inb, int imgWidth, int imgHeight) {
+		_faceDecoder = new Decoder(
+			inf, 
+			Settings.DECODED_OUTF_NAME,
+			imgWidth,
+			imgHeight
+		);
+		_bgDecoder = new Decoder(
+			inb,
+			Settings.DECODED_OUTB_NAME,
+			imgWidth,
+			imgHeight
+		);
 	}
 
 	public void close() throws com.googlecode.javacv.FrameGrabber.Exception,
@@ -187,10 +229,21 @@ public class Transmitter {
 	}
 
 	/**
-	 * Decodes the stream from HEVC
+	 * Decodes the streams from HEVC
 	 */
 	public void decodeHEVC() {
-
+		ExecutorService exec = Executors.newFixedThreadPool(2);
+		exec.submit(new DecodeFaceTask());
+		exec.submit(new DecodeBackgroundTask());
+		try {
+			// Tell executor to accept no more new processes.
+			exec.shutdown();
+			// Wait for thread to exit, but do not terminate prematurely.
+			exec.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	private class EncodeFaceTask implements Callable<Integer> {
@@ -220,6 +273,34 @@ public class Transmitter {
 		
 		public Integer call() {
 			_bgEncoder.encode();
+			return 0;
+		}
+	}
+	
+	private class DecodeFaceTask implements Callable<Integer> {
+		public DecodeFaceTask() {
+			
+		}
+		
+		public Integer call() {
+			
+			Encryption decrypter = new Encryption(null);
+			decrypter.decryptFile(
+				Settings.ENCRYPTED_OUTF_NAME, 
+				_faceDecoder.getIn()
+			);
+			_faceDecoder.decode();
+			return 0;
+		}
+	}
+	
+	private class DecodeBackgroundTask implements Callable<Integer> {
+		public DecodeBackgroundTask() {
+			
+		}
+		
+		public Integer call() {
+			_bgDecoder.decode();
 			return 0;
 		}
 	}
