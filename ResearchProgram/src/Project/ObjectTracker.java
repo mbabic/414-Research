@@ -158,11 +158,12 @@ public class ObjectTracker {
 	 * @return
 	 */
 	public boolean hasLostObject() {
-		if (_obj._pRect.x() == 0 && _obj._pRect.y() == 0 &&
-			_obj._pRect.width() == 0 && _obj._pRect.height() == 0) {
+		if (_obj._pRect.width() == 0 || _obj._pRect.height() == 0) {
 			return true;
 		} else if (_obj._pRect.width() > (5 * _obj._pRect.height())){
-			
+			return true;
+		} else if (_obj._pRect.height() > (5 * _obj._pRect.width())) {
+			return true;
 		}
 		return false;
 	}
