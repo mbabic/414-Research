@@ -111,7 +111,7 @@ public class Encoder {
 	 */
 	public void writeConfigurationFile() {
 		// Delete files of the same name as one we are going to create if they
-		// exist and hevc encoder doesn't like this.
+		// exist as hevc encoder doesn't like this.
 		String hevcOut = Settings.OUT + _out + ".hevc";
 		File hevcFile = new File(hevcOut);
 		if (hevcFile.exists()) {
@@ -194,12 +194,8 @@ public class Encoder {
 			String ffmpegPath = ffmpegFile.getAbsolutePath();
 			
 			File inFile = new File(_in);
-			
-			if (inFile.exists()) {
-				inFile.delete();
-			}
-			
 			String inputVideoPath = inFile.getAbsolutePath();
+			
 			// TODO: make determination as to what the input codec
 			// will be.  For now, assuming .avi with h264 codec.
 			String[] ffmpegArgs = {
@@ -208,7 +204,7 @@ public class Encoder {
 					
 				// Input video file
 				"-i",
-				_in,
+				inputVideoPath,
 				// Pixel format of output stream
 				"-pix_fmt",
 				"yuv420p",
@@ -332,6 +328,5 @@ public class Encoder {
 			
 			return -1;
 		}
-	}
-	
+	}	
 }

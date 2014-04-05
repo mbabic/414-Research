@@ -23,15 +23,26 @@ public class EncoderTests {
 		assert(true);
 	}
 	
+	
 	@Test
-	public void testEncode() {
-		Encoder e = new Encoder("tests/bbb.avi", "testResult");
-		e.setFps(50);
-		e.setImgWidth(1280);
-		e.setImgHeight(720);
-		e.setFrames(20);
+	public void tempTest() {
+		Encoder e = new Encoder("out/outb.avi", "HELLLOOOOOO");
+		e.setFps(30);
+		e.setImgWidth(352);
+		e.setImgHeight(288);
+		e.setFrames(8);
 		e.encode();
 	}
+	
+//	@Test
+//	public void testEncode() {
+//		Encoder e = new Encoder("tests/bbb.avi", "testResult");
+//		e.setFps(50);
+//		e.setImgWidth(1280);
+//		e.setImgHeight(720);
+//		e.setFrames(8);
+//		e.encode();
+//	}
 	
 //	@Test
 //	public void testCompress() {
