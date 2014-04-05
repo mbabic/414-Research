@@ -12,15 +12,15 @@ public class MergerLauncher {
 
 	public static void main(String[] args) {
 		UI gui = new UI();
-		File inb = new File(Settings.OUT + Settings.DECODED_OUTB_NAME);
-		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME);
+		File inb = new File(Settings.OUT + Settings.DECODED_OUTB_NAME + ".avi");
+		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME + ".avi");
 		Transmitter transmitter = new Transmitter();
 		
 		// TODO: get img width/height from command lines, get password from
 		// cmd line
 		transmitter.setUpDecoders(
-			Settings.DECRYPTED_OUTF_NAME,
-			Settings.ENCODED_OUTB_NAME,
+			Settings.OUT + Settings.DECRYPTED_OUTF_NAME,
+			Settings.OUT + Settings.ENCODED_OUTB_NAME,
 			352, 
 			288
 		);

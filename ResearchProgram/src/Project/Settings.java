@@ -18,12 +18,12 @@ public class Settings {
 	 * Name of the hevc encoded stream corresponding to the video stream
 	 * containing the face data.
 	 */
-	public static final String ENCODED_OUTF_NAME = "encoded_outf";
+	public static final String ENCODED_OUTF_NAME = "encoded_outf.hevc";
 	/**
 	 * Name of the hevc encoded stream corresponding to the video stream 
 	 * containing the background data.
 	 */
-	public static final String ENCODED_OUTB_NAME = "encoded_outb";
+	public static final String ENCODED_OUTB_NAME = "encoded_outb.hevc";
 	/**
 	 * Name of the encrypted hevc stream corresponding to the video stream 
 	 * containing the face data.

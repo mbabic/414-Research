@@ -283,11 +283,11 @@ public class Transmitter {
 		}
 		
 		public Integer call() {
-			
+			System.out.println(_faceDecoder.getIn());
 			Encryption decrypter = new Encryption(null);
 			decrypter.decryptFile(
-				Settings.ENCRYPTED_OUTF_NAME, 
-				_faceDecoder.getIn()
+				Settings.OUT + Settings.ENCRYPTED_OUTF_NAME, 
+				(_faceDecoder.getIn()).substring(4)
 			);
 			_faceDecoder.decode();
 			return 0;
