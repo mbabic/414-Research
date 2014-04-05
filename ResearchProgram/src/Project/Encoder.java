@@ -332,6 +332,5 @@ public class Encoder {
 			
 			return -1;
 		}
-	}
-	
+	}	
 }
