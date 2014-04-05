@@ -29,7 +29,7 @@ public class EncoderTests {
 		e.setFps(50);
 		e.setImgWidth(1280);
 		e.setImgHeight(720);
-		e.setFrames(20);
+		e.setFrames(8);
 		e.encode();
 	}
 	
