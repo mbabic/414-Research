@@ -153,16 +153,16 @@ public class ObjectTracker {
 	 * Uses the following criterion to determine if the object tracker instance
 	 * has lost the object it was meant to be tracking.
 	 * - If _obj._pRect has 0 length/width, then the object has been lost.
-	 * - If _obj._prect has width > 5 * height or height > 10 * width, the 
+	 * - If _obj._prect has width > 4 * height or height > 4 * width, the 
 	 *   object is considered to have been lost.
 	 * @return
 	 */
 	public boolean hasLostObject() {
 		if (_obj._pRect.width() == 0 || _obj._pRect.height() == 0) {
 			return true;
-		} else if (_obj._pRect.width() > (5 * _obj._pRect.height())){
+		} else if (_obj._pRect.width() > (4 * _obj._pRect.height())){
 			return true;
-		} else if (_obj._pRect.height() > (5 * _obj._pRect.width())) {
+		} else if (_obj._pRect.height() > (4 * _obj._pRect.width())) {
 			return true;
 		}
 		return false;
