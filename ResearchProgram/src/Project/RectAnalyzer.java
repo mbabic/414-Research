@@ -63,9 +63,6 @@ public class RectAnalyzer {
 	
 	/**
 	 * Returns the minimum bounding rectangle of the two given rectangles.
-	 * @param r1
-	 * @param r2
-	 * @return
 	 */
 	public static CvRect getMinBoundingRect(CvRect r1, CvRect r2) {
 		CvRect ret = new CvRect();
