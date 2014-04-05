@@ -1,16 +1,6 @@
 package Project;
 
-import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
-import static com.googlecode.javacv.cpp.opencv_core.CV_FILLED;
-import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
-import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
-import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
-import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
-import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
-import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
-import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
-import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
-import static com.googlecode.javacv.cpp.opencv_core.cvSet2D;
+import static com.googlecode.javacv.cpp.opencv_core.*;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
@@ -20,10 +10,12 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNIN
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -226,48 +218,52 @@ public class Analyzer {
 	
 	private CvSeq getFaces(IplImage img) {
 		CvSeq facesDetected = detectFaces(img);
-		return facesDetected;
+		ArrayList<CvRect> faceList = new ArrayList<CvRect>();
+		ArrayList<CvRect> simplifiedFaceList;
+//		return facesDetected;
 		
-// OBJECT TRACKING DISABLED DURING DEVELOPMENT OF RECOMBINATOR METHODS FOR
-// SIMPLICITY OF IMPLEMENTATION
-// IT IS LIKELY THE CASE THAT THE RECTANGLES RETURNED BY THIS PROCEDURE WILL
-// HAVE TO BE SIMPLIFIED IN SOME WAY
+		CvSeq faces = cvCreateSeq(
+			0, 
+			Loader.sizeof(CvSeq.class), 
+			Loader.sizeof(CvRect.class), 
+			storage
+		);
+
+		Multimap<CvRect, ObjectTracker> pairs = getFaceTrackerPairs(img, facesDetected);
 		
-//		CvSeq faces = cvCreateSeq(
-//			0, 
-//			Loader.sizeof(CvSeq.class), 
-//			Loader.sizeof(CvRect.class), 
-//			storage
-//		);
-//
-//		Multimap<CvRect, ObjectTracker> pairs = getFaceTrackerPairs(img, facesDetected);
-//		
-//		// For trackers for which no face was within _minDist of the tracker:
-//		// If the tracker has lost the object we destroy it.  
-//		// Else, we push the face returned by the tracker.
-//		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
-//		while (iter.hasNext()) {
-//			ObjectTracker tracker = iter.next();
-//			if (tracker.hasLostObject()) {
-//				_trackers.remove(tracker);
-//			} else {
-//				cvSeqPush(faces, tracker.track(img));
-//			}
-//		}
-//		
-//		for (int i = 0; i < _faces.size(); i++) {
-//			ObjectTracker tracker = pairs.get(_faces.get(i)).iterator().next();
-//			tracker._obj._pRect = new CvRect(
-//				_faces.get(i).x(),
-//				_faces.get(i).y(),
-//				_faces.get(i).width(),
-//				_faces.get(i).height()
-//			);
-//			// Update object tracker pRect, but push face returned by
-//			// haar classifier.
-//			cvSeqPush(faces, _faces.get(i));
-//		}
-//		return faces;
+		// For trackers for which no face was within _minDist of the tracker:
+		// If the tracker has lost the object we destroy it.  
+		// Else, we push the face returned by the tracker.
+		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
+		while (iter.hasNext()) {
+			ObjectTracker tracker = iter.next();
+			if (tracker.hasLostObject()) {
+				_trackers.remove(tracker);
+			} else {
+				faceList.add(tracker.track(img));
+			}
+		}
+		
+		for (int i = 0; i < _faces.size(); i++) {
+			// Update object tracker pRect, but push face returned by
+			// haar classifier.
+			ObjectTracker tracker = pairs.get(_faces.get(i)).iterator().next();
+			tracker._obj._pRect = new CvRect(
+				_faces.get(i).x(),
+				_faces.get(i).y(),
+				_faces.get(i).width(),
+				_faces.get(i).height()
+			);
+			faceList.add(_faces.get(i));
+		}
+		
+		simplifiedFaceList = RectAnalyzer.getBoundingRects(faceList);
+		
+		for (int i = 0; i < simplifiedFaceList.size(); i++) {
+			cvSeqPush(faces, simplifiedFaceList.get(i));
+		}
+		
+		return faces;
 	}
 
 	/**
