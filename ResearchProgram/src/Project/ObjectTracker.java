@@ -25,11 +25,6 @@ public class ObjectTracker {
 	}
 	
 	/**
-	 * NOT GOOD O-O
-	 */
-	public boolean _isPaired;
-	
-	/**
 	 * 
 	 * @param img 
 	 * 		The frame in which the object to be tracked exists.
@@ -76,7 +71,7 @@ public class ObjectTracker {
 		);
 		cvResetImageROI(_obj._hue);
 		cvResetImageROI(_obj._mask);
-		_obj._pRect = rect;		
+		_obj._pRect = new CvRect(rect.x(), rect.y(), rect.width(), rect.height());		
 	}
 	
 	/**
@@ -129,7 +124,7 @@ public class ObjectTracker {
 			_obj._pRect,
 			// TODO: make thorough examination of termination criteria
 			// object
-			cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1),
+			cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 0.1),
 			components,
 			_obj._currBox
 		);
@@ -158,16 +153,17 @@ public class ObjectTracker {
 	 * Uses the following criterion to determine if the object tracker instance
 	 * has lost the object it was meant to be tracking.
 	 * - If _obj._pRect has 0 length/width, then the object has been lost.
-	 * - If _obj._prect has width > 5 * height or height > 10 * width, the 
+	 * - If _obj._prect has width > 4 * height or height > 4 * width, the 
 	 *   object is considered to have been lost.
 	 * @return
 	 */
 	public boolean hasLostObject() {
-		if (_obj._pRect.x() == 0 && _obj._pRect.y() == 0 &&
-			_obj._pRect.width() == 0 && _obj._pRect.height() == 0) {
+		if (_obj._pRect.width() == 0 || _obj._pRect.height() == 0) {
 			return true;
-		} else if (_obj._pRect.width() > (5 * _obj._pRect.height())){
-			
+		} else if (_obj._pRect.width() > (4 * _obj._pRect.height())){
+			return true;
+		} else if (_obj._pRect.height() > (4 * _obj._pRect.width())) {
+			return true;
 		}
 		return false;
 	}

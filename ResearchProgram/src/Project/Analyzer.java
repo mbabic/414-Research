@@ -1,16 +1,6 @@
 package Project;
 
-import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
-import static com.googlecode.javacv.cpp.opencv_core.CV_FILLED;
-import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
-import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
-import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
-import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
-import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
-import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
-import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
-import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
-import static com.googlecode.javacv.cpp.opencv_core.cvSet2D;
+import static com.googlecode.javacv.cpp.opencv_core.*;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
@@ -20,10 +10,12 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNIN
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -60,6 +52,8 @@ public class Analyzer {
 	 * seen before or if it is new in the frame.
 	 */
 	private int _minDist = 25*25;
+	
+	private IplImage _img;
 
 	/**
 	 * Constructor for the analyzer.
@@ -193,25 +187,28 @@ public class Analyzer {
 			rect = _faces.get(i);
 			nearestTracker = getNearestTracker(trackers, rect);
 			if (nearestTracker == null) {
+				// No tracker within _minDist of the face, so set up a new
+				// tracker to track the object.
 				nearestTracker = new ObjectTracker();
 				nearestTracker.trackNewObject(img, rect);
-				nearestTracker._obj._pRect = 
-					new CvRect(rect.x(), rect.y(), rect.width(), rect.height());
 				pairs.put(rect, nearestTracker);
 				_trackers.add(nearestTracker);		
 				continue;
 			} 
 						
+			// Now we determine if the this rect is the closest rect to the
+			// tracker
 			nearestRect = getNearestRect(_faces, nearestTracker);
 			
 			if (nearestRect.equals(rect)) {
 				pairs.put(rect, nearestTracker);
 				trackers.remove(nearestTracker);
 			} else {
+				// Rect is within _minDist of some tracker, but that tracker
+				// is not set up to track this rect.  This means it is needs
+				// to be tracked.
 				nearestTracker = new ObjectTracker();
 				nearestTracker.trackNewObject(img, rect);
-				nearestTracker._obj._pRect = 
-					new CvRect(rect.x(), rect.y(), rect.width(), rect.height());
 				pairs.put(rect, nearestTracker);
 				_trackers.add(nearestTracker);	
 			}
@@ -226,52 +223,50 @@ public class Analyzer {
 	
 	private CvSeq getFaces(IplImage img) {
 		CvSeq facesDetected = detectFaces(img);
-		return facesDetected;
+		ArrayList<CvRect> faceList = new ArrayList<CvRect>();
+		ArrayList<CvRect> simplifiedFaceList;
 		
-// OBJECT TRACKING DISABLED DURING DEVELOPMENT OF RECOMBINATOR METHODS FOR
-// SIMPLICITY OF IMPLEMENTATION
-// IT IS LIKELY THE CASE THAT THE RECTANGLES RETURNED BY THIS PROCEDURE WILL
-// HAVE TO BE SIMPLIFIED IN SOME WAY
+		CvSeq faces = cvCreateSeq(
+			0, 
+			Loader.sizeof(CvSeq.class), 
+			Loader.sizeof(CvRect.class), 
+			storage
+		);
+
+		Multimap<CvRect, ObjectTracker> pairs = getFaceTrackerPairs(img, facesDetected);
 		
-//		CvSeq faces = cvCreateSeq(
-//			0, 
-//			Loader.sizeof(CvSeq.class), 
-//			Loader.sizeof(CvRect.class), 
-//			storage
-//		);
-//
-//		Multimap<CvRect, ObjectTracker> pairs = getFaceTrackerPairs(img, facesDetected);
-//		
-//		// For trackers for which no face was within _minDist of the tracker:
-//		// If the tracker has lost the object we destroy it.  
-//		// Else, we push the face returned by the tracker.
-//		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
-//		while (iter.hasNext()) {
-//			ObjectTracker tracker = iter.next();
-//			if (tracker.hasLostObject()) {
-//				_trackers.remove(tracker);
-//			} else {
-//				cvSeqPush(faces, tracker.track(img));
-//			}
-//		}
-//		
-//		for (int i = 0; i < _faces.size(); i++) {
-//			ObjectTracker tracker = pairs.get(_faces.get(i)).iterator().next();
-//			tracker._obj._pRect = new CvRect(
-//				_faces.get(i).x(),
-//				_faces.get(i).y(),
-//				_faces.get(i).width(),
-//				_faces.get(i).height()
-//			);
-//			// Update object tracker pRect, but push face returned by
-//			// haar classifier.
-//			cvSeqPush(faces, _faces.get(i));
-//		}
-//		return faces;
+		// For trackers for which no face was within _minDist of the tracker:
+		// If the tracker has lost the object we destroy it.  
+		// Else, we push the face returned by the tracker.
+		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
+		while (iter.hasNext()) {
+			ObjectTracker tracker = iter.next();
+			if (tracker.hasLostObject()) {
+				_trackers.remove(tracker);
+			} else {
+				faceList.add(tracker.track(img));
+			}
+		}
+		
+		for (int i = 0; i < _faces.size(); i++) {
+			// Update object tracker pRect, but push face returned by
+			// haar classifier.
+			ObjectTracker tracker = pairs.get(_faces.get(i)).iterator().next();
+			tracker.trackNewObject(img, _faces.get(i));
+			faceList.add(_faces.get(i));
+		}
+		
+		simplifiedFaceList = RectAnalyzer.getBoundingRects(faceList);
+		
+		for (int i = 0; i < simplifiedFaceList.size(); i++) {
+			cvSeqPush(faces, simplifiedFaceList.get(i));
+		}
+		
+		return faces;
 	}
 
 	/**
-	 * * This will return the split video streams. It will take the original
+	 * This will return the split video streams. It will take the original
 	 * video stream and the location of the faces as input. It will return two
 	 * video streams as a tuple. One will have the faces only the other will
 	 * have everything else.
