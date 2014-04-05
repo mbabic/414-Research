@@ -25,11 +25,6 @@ public class ObjectTracker {
 	}
 	
 	/**
-	 * NOT GOOD O-O
-	 */
-	public boolean _isPaired;
-	
-	/**
 	 * 
 	 * @param img 
 	 * 		The frame in which the object to be tracked exists.
@@ -76,7 +71,7 @@ public class ObjectTracker {
 		);
 		cvResetImageROI(_obj._hue);
 		cvResetImageROI(_obj._mask);
-		_obj._pRect = rect;		
+		_obj._pRect = new CvRect(rect.x(), rect.y(), rect.width(), rect.height());		
 	}
 	
 	/**
@@ -129,7 +124,7 @@ public class ObjectTracker {
 			_obj._pRect,
 			// TODO: make thorough examination of termination criteria
 			// object
-			cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1),
+			cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 0.1),
 			components,
 			_obj._currBox
 		);

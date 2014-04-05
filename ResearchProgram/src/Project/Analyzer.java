@@ -52,6 +52,8 @@ public class Analyzer {
 	 * seen before or if it is new in the frame.
 	 */
 	private int _minDist = 25*25;
+	
+	private IplImage _img;
 
 	/**
 	 * Constructor for the analyzer.
@@ -185,25 +187,28 @@ public class Analyzer {
 			rect = _faces.get(i);
 			nearestTracker = getNearestTracker(trackers, rect);
 			if (nearestTracker == null) {
+				// No tracker within _minDist of the face, so set up a new
+				// tracker to track the object.
 				nearestTracker = new ObjectTracker();
 				nearestTracker.trackNewObject(img, rect);
-				nearestTracker._obj._pRect = 
-					new CvRect(rect.x(), rect.y(), rect.width(), rect.height());
 				pairs.put(rect, nearestTracker);
 				_trackers.add(nearestTracker);		
 				continue;
 			} 
 						
+			// Now we determine if the this rect is the closest rect to the
+			// tracker
 			nearestRect = getNearestRect(_faces, nearestTracker);
 			
 			if (nearestRect.equals(rect)) {
 				pairs.put(rect, nearestTracker);
 				trackers.remove(nearestTracker);
 			} else {
+				// Rect is within _minDist of some tracker, but that tracker
+				// is not set up to track this rect.  This means it is needs
+				// to be tracked.
 				nearestTracker = new ObjectTracker();
 				nearestTracker.trackNewObject(img, rect);
-				nearestTracker._obj._pRect = 
-					new CvRect(rect.x(), rect.y(), rect.width(), rect.height());
 				pairs.put(rect, nearestTracker);
 				_trackers.add(nearestTracker);	
 			}
@@ -220,7 +225,6 @@ public class Analyzer {
 		CvSeq facesDetected = detectFaces(img);
 		ArrayList<CvRect> faceList = new ArrayList<CvRect>();
 		ArrayList<CvRect> simplifiedFaceList;
-//		return facesDetected;
 		
 		CvSeq faces = cvCreateSeq(
 			0, 
@@ -248,12 +252,7 @@ public class Analyzer {
 			// Update object tracker pRect, but push face returned by
 			// haar classifier.
 			ObjectTracker tracker = pairs.get(_faces.get(i)).iterator().next();
-			tracker._obj._pRect = new CvRect(
-				_faces.get(i).x(),
-				_faces.get(i).y(),
-				_faces.get(i).width(),
-				_faces.get(i).height()
-			);
+			tracker.trackNewObject(img, _faces.get(i));
 			faceList.add(_faces.get(i));
 		}
 		
@@ -267,7 +266,7 @@ public class Analyzer {
 	}
 
 	/**
-	 * * This will return the split video streams. It will take the original
+	 * This will return the split video streams. It will take the original
 	 * video stream and the location of the faces as input. It will return two
 	 * video streams as a tuple. One will have the faces only the other will
 	 * have everything else.

@@ -197,6 +197,11 @@ public class Encoder {
 			File inFile = new File(_in);
 			String inputVideoPath = inFile.getAbsolutePath();
 			
+			File yuvFile = new File(_yuv);
+			if (yuvFile.exists()) {
+				yuvFile.delete();
+			}
+			
 			// TODO: make determination as to what the input codec
 			// will be.  For now, assuming .avi with h264 codec.
 			String[] ffmpegArgs = {
