@@ -12,8 +12,8 @@ public class MergerLauncher {
 
 	public static void main(String[] args) {
 		UI gui = new UI();
-		File inb = new File("out/outb.avi");
-		File inf = new File("out/outf.avi");
+		File inb = new File(Settings.OUT + Settings.DECODED_OUTB_NAME);
+		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME);
 		Transmitter transmitter = new Transmitter();
 		
 		// TODO: get img width/height from command lines, get password from
@@ -24,6 +24,8 @@ public class MergerLauncher {
 			352, 
 			288
 		);
+		
+		transmitter.decodeHEVC();
 		
 		Analyzer analyzer = null;
 		FrameGrabber backFrameGrabber = null, faceFrameGrabber = null;
