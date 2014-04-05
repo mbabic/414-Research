@@ -87,8 +87,18 @@ public class Encryption {
 	 * 		folder.
 	 */
 	public void encryptFile(String in, String out) {
-		byte[] bytes;
-		
+		byte[] bytes, encrypted;
+		try {
+			bytes = IOUtils.fileToBytes(in);
+			
+			encrypted = encrypt(bytes);
+
+			IOUtils.bytesToFile(encrypted, out);
+
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	

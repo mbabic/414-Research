@@ -36,5 +36,9 @@ public class EncryptionTests {
 			fail("Exception thrown: " + e.toString());
 		}
 	}
+	@Test
+	public void testEncryptFile() {
+		
+	}
 
 }
