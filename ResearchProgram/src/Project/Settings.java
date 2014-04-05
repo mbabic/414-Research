@@ -13,7 +13,7 @@ public class Settings {
 	public static final String CLASSIFIER_DIR = "res/haarcascades/";
 
 	public static final String OUTF = "out/outf.avi";
-	public static final String OUTB = "out/outb.yuv";
+	public static final String OUTB = "out/outb.avi";
 	public static final String FACESTREAM_OUT = "out/face_stream.ser";
 	public static final String DEFAULT_PASSWORD = "password";
 

@@ -54,17 +54,11 @@ public class Transmitter {
 		
 		recorderBackGround = new FFmpegFrameRecorder(bFile, img.width(),
 				img.height());
-		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
-		recorderBackGround.setFrameRate(30);
-		recorderBackGround.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
-		recorderBackGround.setFormat("rawvideo");
+		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
 		
 		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
 				img.height());
-		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_YUV4);
-		recorderFacial.setFrameRate(30);
-		recorderFacial.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
-		recorderFacial.setFormat("rawvideo");
+		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
 		
 		recorderBackGround.start();
 		recorderFacial.start();
