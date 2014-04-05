@@ -97,6 +97,12 @@ public class Decoder {
 			String ffmpeg = ffmpegFile.getAbsolutePath();
 			String inputVideoPath = inFile.getAbsolutePath();
 			
+			String output = Settings.OUT + _out + ".avi";
+			File outFile = new File(output);
+			if (outFile.exists()) {
+				outFile.delete();
+			}
+
 			String[] args = {
 				// Path to ffmpeg
 				ffmpeg,
@@ -114,7 +120,7 @@ public class Decoder {
 				"copy",
 				
 				// Output .avi binary file
-				Settings.OUT + _out + ".avi"
+				output
 			};
 			
 			try {
@@ -172,6 +178,13 @@ public class Decoder {
 			File inFile = new File(_in);
 			String decoder = decoderFile.getAbsolutePath();
 			String inputVideoPath = inFile.getAbsolutePath();
+			
+			// Delete yuv file if it exists, decoder will not run if file
+			// already exists.
+			File yuvFile = new File(_yuv);
+			if (yuvFile.exists()) {
+				yuvFile.delete();
+			}
 			
 			String[] args = {
 				// Path to decoder
