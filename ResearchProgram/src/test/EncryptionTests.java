@@ -2,9 +2,13 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import Project.Encryption;
+import Project.IOUtils;
+import Project.Settings;
 
 import org.junit.*;
 
@@ -35,6 +39,31 @@ public class EncryptionTests {
 		} catch (Exception e) {
 			fail("Exception thrown: " + e.toString());
 		}
+	}
+	@Test
+	public void testEncryptDecryptFile() {
+		Encryption e = new Encryption(null);
+		String testFile = Settings.OUT + "testFile";
+		try {
+			// Get file bytes so we can compare results at byte level
+			byte[] inBytes = IOUtils.fileToBytes(testFile);
+			
+			e.encryptFile(testFile, "testFileEncrypted");
+			
+			e.decryptFile(Settings.OUT + "testFileEncrypted", "testFileDecrypted");
+			
+			byte[] outBytes = Project.IOUtils.fileToBytes(Settings.OUT + "testFileDecrypted");
+			
+			assert(outBytes.length == inBytes.length);
+			for (int i = 0; i < outBytes.length; i++) {
+				assert(outBytes[i] == inBytes[i]);
+			}
+			// Also manually examine file to ensure they are the same.
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			System.exit(1);
+		}
+		
 	}
 
 }

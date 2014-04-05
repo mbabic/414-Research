@@ -87,10 +87,39 @@ public class Encryption {
 	 * 		folder.
 	 */
 	public void encryptFile(String in, String out) {
-		byte[] bytes;
-		
+		byte[] bytes, encrypted;
+		try {
+			bytes = IOUtils.fileToBytes(in);
+			
+			encrypted = encrypt(bytes);
+
+			IOUtils.bytesToFile(encrypted, out);
+
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
+	/**
+	 * Decrypt the file whose path is specified by the provided argument.
+	 * @param in
+	 * 		The path (relative or absolute) to the file to be encrypted.
+	 * @param out
+	 * 		The name of the output file to be generated in the Settings.OUT
+	 * 		folder.
+	 */
+	public void decryptFile(String in, String out) {
+		byte[] encrypted, decrypted;
+		try {
+			encrypted = IOUtils.fileToBytes(in);
+			decrypted = decrypt(encrypted);
+			IOUtils.bytesToFile(decrypted, out);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			System.exit(1);
+		}
+	}
 	
 	/**
 	 * Encrypt the given input key using 
