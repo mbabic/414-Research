@@ -19,7 +19,7 @@ public class CaptureLancher {
 		FaceStream stream = new FaceStream();
 		
 		try {
-			File inf = new File("tests/out.mp4");
+			File inf = new File("tests/foreman_352x288_30.avi");
 			frameGrabber = transmitter.receiveStream(inf);
 		} catch (Exception e1) {
 			System.err.println("Failed to load FrameGrabber");
