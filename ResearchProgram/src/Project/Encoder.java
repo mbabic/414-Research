@@ -177,7 +177,7 @@ public class Encoder {
 	}
 	
 	/**
-	 * Implements Callabe interface such that results of conversion to .yuv
+	 * Implements Callable interface such that results of conversion to .yuv
 	 * done by external process "ffmpeg" can be waited on before calling another
 	 * external process to perfrom encoding to hevc bitstream.
 	 * @author Marko Babic, Marcus Karpoff

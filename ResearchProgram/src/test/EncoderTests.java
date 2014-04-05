@@ -25,7 +25,7 @@ public class EncoderTests {
 	
 	@Test
 	public void testEncode() {
-		Encoder e = new Encoder("tests/test.avi", "testResult");
+		Encoder e = new Encoder("tests/bbb.avi", "testResult");
 		e.setFps(50);
 		e.setImgWidth(1280);
 		e.setImgHeight(720);

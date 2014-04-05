@@ -16,9 +16,6 @@ public class CaptureLancher {
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
-//		File inf = new File("test/test.avi");
-		
-//		File inf = new File("tests/bbb.avi");
 		
 		try {
 			File inf = new File("tests/test.avi");

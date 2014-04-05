@@ -77,6 +77,21 @@ public class Encryption {
 		} 
 	}
 
+	
+	/**
+	 * Encrypt the file whose path is specified by the provided argument.
+	 * @param in
+	 * 		The path (relative or absolute) to the file to be encrypted.
+	 * @param out
+	 * 		The name of the output file to be generated in the Settings.OUT
+	 * 		folder.
+	 */
+	public void encryptFile(String in, String out) {
+		byte[] bytes;
+		
+	}
+	
+	
 	/**
 	 * Encrypt the given input key using 
 	 */

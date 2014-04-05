@@ -1,11 +1,12 @@
 package Project;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.FrameGrabber.ImageMode;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.OpenCVFrameGrabber;
 import com.googlecode.javacv.cpp.avcodec;
@@ -157,8 +158,8 @@ public class Transmitter {
 	/**
 	 * Encodes the stream with HEVC standard
 	 */
-	public void encodeHECV() {
-
+	public void encodeHECV() {	
+		
 	}
 
 	/**
