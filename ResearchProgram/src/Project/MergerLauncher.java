@@ -1,5 +1,8 @@
 package Project;
 
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_GAUSSIAN_5x5;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -53,7 +56,8 @@ public class MergerLauncher {
 			while (gui.isVisible()) {
 				backImage = backFrameGrabber.grab();
 				faceImage = faceFrameGrabber.grab();
-				
+				IplImage bResampled = backImage.clone();
+				IplImage fResampled = faceImage.clone();
 				if (backImage == null || faceImage == null) {
 					backFrameGrabber.restart();
 					faceFrameGrabber.restart();
@@ -64,10 +68,12 @@ public class MergerLauncher {
 					faceImage = faceFrameGrabber.grab();
 				}
 				
-				mergImage = backImage.clone();
+				mergImage = backImage.clone();		
+				cvSmooth(faceImage, fResampled, CV_GAUSSIAN_5x5, 0);
+				cvSmooth(backImage, bResampled, CV_GAUSSIAN_5x5, 0);
 				rects = stream.getNextRectList();
-				analyzer.recombineVideo(mergImage, backImage, faceImage, rects);
-				gui.putFrame(mergImage, backImage, faceImage);
+				analyzer.recombineVideo(mergImage, bResampled, fResampled, rects);
+				gui.putFrame(mergImage, bResampled, fResampled);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

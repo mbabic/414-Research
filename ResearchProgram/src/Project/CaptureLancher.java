@@ -5,6 +5,7 @@ import java.io.File;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 
 public class CaptureLancher {
 	public static void main(String[] args) {
@@ -19,7 +20,7 @@ public class CaptureLancher {
 		FaceStream stream = new FaceStream();
 		
 		try {
-			File inf = new File("tests/foreman_352x288_30.avi");
+			File inf = new File("tests/out.mp4");
 			frameGrabber = transmitter.receiveStream(inf);
 		} catch (Exception e1) {
 			System.err.println("Failed to load FrameGrabber");

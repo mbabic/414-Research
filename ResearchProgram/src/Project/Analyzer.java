@@ -312,13 +312,9 @@ public class Analyzer {
 	 * to one video stream.
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
-			ArrayList<CvRect> rects) {
-		
-		IplImage fUp = fImage.clone();
-		IplImage bUp = bImage.clone();
-				
+			ArrayList<CvRect> rects) {				
 		// TODO: change which recombinator called based on param set ... somewhere
-		linearInterpolationRecombination(cImage, bImage, fUp, rects);
+		hsvInterpolationRecombination(cImage, bImage, fImage, rects);
 	}
 	
 	/**
