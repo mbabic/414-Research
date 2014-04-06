@@ -1,7 +1,7 @@
 package Project;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
+import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2BGR;
@@ -313,8 +313,12 @@ public class Analyzer {
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {
+		
+		IplImage fUp = fImage.clone();
+		IplImage bUp = bImage.clone();
+				
 		// TODO: change which recombinator called based on param set ... somewhere
-		hsvInterpolationRecombination(cImage, bImage, fImage, rects);
+		linearInterpolationRecombination(cImage, bImage, fUp, rects);
 	}
 	
 	/**
