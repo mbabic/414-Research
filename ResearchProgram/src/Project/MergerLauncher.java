@@ -89,7 +89,7 @@ public class MergerLauncher {
 				cvSmooth(backImage, bResampled, CV_BILATERAL, 3);
 				rects = stream.getNextRectList();
 				analyzer.recombineVideo(mergImage, backImage, faceImage, rects);
-				cvSmooth(mergImage, fResampled, CV_GAUSSIAN_5x5, 3);
+//				cvSmooth(mergImage, fResampled, CV_GAUSSIAN_5x5, 3);
 				if (onceThrough) {
 					try {
 						recorder.record(fResampled);
@@ -97,7 +97,7 @@ public class MergerLauncher {
 						t.printStackTrace();
 					}
 				}
-				gui.putFrame(fResampled, backImage, faceImage);
+				gui.putFrame(mergImage, backImage, faceImage);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
