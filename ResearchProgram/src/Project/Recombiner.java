@@ -20,58 +20,10 @@ public class Recombiner {
 		
 	}
 	
-	/**
-	 * 
-	 * @param tl
-	 * @param tr
-	 * @param bl
-	 * @param br
-	 * @param boundaries
-	 * 		CvRect whose four corners are the values the CvScalars
-	 * 		tl, tr, bl, r correspond to.
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	private static CvScalar bilinearRGBInterpolate(
-		CvScalar tl, CvScalar tr, CvScalar bl, CvScalar br,
-		CvRect boundaries, double x, double y
+	public static void bilinearBoundaryInterpolate(
+		IplImage cImage, IplImage bImage, IplImage fImage,
+		ArrayList<CvRect> rects, Interpolator interpolator			
 	) {
-
-		double r, g, b, commonRatio;
-		double  x1 = boundaries.x(), x2 = boundaries.x() + boundaries.width(),
-				y1 = boundaries.y(), y2 = boundaries.y() + boundaries.height();
-		
-		commonRatio = 1f / ((x2 - x1)*(y2 - y1));
-
-		r = commonRatio * (
-			(tl.val(2) * (x2 - x)  * (y2 - y)) +
-			(tr.val(2) * (x - x1)  * (y2 - y)) +
-			(bl.val(2) * (x2 - x) * (y - y1)) +
-			(br.val(2) * (x - x1)  * (y - y1))
-		);
-
-		g = commonRatio * (
-			(tl.val(1) * (x2 - x)  * (y2 - y)) +
-			(tr.val(1) * (x - x1)  * (y2 - y)) +
-			(bl.val(1) * (x2 - x) * (y - y1)) +
-			(br.val(1) * (x - x1)  * (y - y1))
-		);
-		b = commonRatio * (
-			(tl.val(0) * (x2 - x)  * (y2 - y)) +
-			(tr.val(0) * (x - x1)  * (y2 - y)) +
-			(bl.val(0) * (x2 - x)  * (y - y1)) +
-			(br.val(0) * (x - x1)  * (y - y1))
-		);
-		
-		CvScalar ret = new CvScalar(b, g, r, 1f);
-		return ret;
-	}
-	
-	public static void bilinearRGBInterpolation(
-		IplImage cImage, IplImage bImage, IplImage fImage, 
-		ArrayList<CvRect> rects) {
-		
 		CvScalar b, f, tl, tr, bl, br;
 		CvRect boundaries;
 		int x, y, width, height;
@@ -99,19 +51,19 @@ public class Recombiner {
 					cvSet2D(cImage,
 							j,
 							x-1,
-							bilinearRGBInterpolate(tl, tr, bl, br, boundaries,
+							interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries,
 									x - 1, j)
 					);
 					cvSet2D(cImage,
 							j,
 							x,
-							bilinearRGBInterpolate(tl, tr, bl, br, boundaries,
+							interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries,
 									x, j)
 					);
 					cvSet2D(cImage,
 							j,
 							x+1,
-							bilinearRGBInterpolate(tl, tr, bl, br, boundaries,
+							interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries,
 									x + 1, j)
 					);
 
@@ -123,16 +75,16 @@ public class Recombiner {
 					boundaries = new CvRect(x + width - 2, j - 2, 4, 2);
 					cvSet2D(
 						cImage, j, x + width - 1, 
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width - 1, j)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width - 1, j)
 					);
 
 					cvSet2D(
 						cImage, j, x + width, 
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width, j)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width, j)
 					);
 					cvSet2D(
 						cImage, j, x + width + 1, 
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width + 1, j)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width + 1, j)
 					);
 				}
 			}	
@@ -149,17 +101,17 @@ public class Recombiner {
 					cvSet2D(cImage,
 						y - 1,
 						i,
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y-1)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, i, y-1)
 					);
 					cvSet2D(cImage,
 						y,
 						i,
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, i, y)
 					);
 					cvSet2D(cImage,
 						y + 1,
 						i,
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y+1)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, i, y+1)
 					);					
 
 					// Interpolate along bottom edge.
@@ -171,21 +123,27 @@ public class Recombiner {
 					cvSet2D(cImage,
 						y + height - 1,
 						i,
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y + height - 1)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, i, y + height - 1)
 					);
 					cvSet2D(cImage,
 						y + height,
 						i,
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y + height)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, i, y + height)
 					);
 					cvSet2D(cImage,
 						y + height + 1,
 						i,
-						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y + height + 1)
+						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, i, y + height + 1)
 					);
 					
 				}
 			}
 		}
+	}
+	
+	public static void bilinearRGBInterpolation(
+		IplImage cImage, IplImage bImage, IplImage fImage, 
+		ArrayList<CvRect> rects) {
+		bilinearBoundaryInterpolate(cImage, bImage, fImage, rects, new RGBInterpolator());
 	}
 }
