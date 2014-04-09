@@ -57,9 +57,11 @@ public class MergerLauncher {
 				backImage = backFrameGrabber.grab();
 				faceImage = faceFrameGrabber.grab();
 
+				// Set up recording of merged images
+				// TODO: better setup mechanism
 				if (!onceThrough && backImage != null) {
 					recorder = new FFmpegFrameRecorder(new File(
-							"out/HELLLLLOOOO.avi"), backImage.width(),
+							"out/mergedOut.avi"), backImage.width(),
 							backImage.height());
 
 					recorder.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
@@ -82,22 +84,18 @@ public class MergerLauncher {
 					backImage = backFrameGrabber.grab();
 					faceImage = faceFrameGrabber.grab();
 				}
-				IplImage bResampled = backImage.clone();
-				IplImage fResampled = faceImage.clone();
+
 				mergImage = backImage.clone();
-				cvSmooth(faceImage, fResampled, CV_BILATERAL, 3);
-				cvSmooth(backImage, bResampled, CV_BILATERAL, 3);
 				rects = stream.getNextRectList();
 				analyzer.recombineVideo(mergImage, backImage, faceImage, rects);
-				cvSmooth(mergImage, fResampled, CV_GAUSSIAN_5x5, 3);
 				if (onceThrough) {
 					try {
-						recorder.record(fResampled);
+						recorder.record(mergImage);
 					} catch (Throwable t) {
 						t.printStackTrace();
 					}
 				}
-				gui.putFrame(fResampled, backImage, faceImage);
+				gui.putFrame(mergImage, backImage, faceImage);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
