@@ -117,8 +117,10 @@ public class Analyzer {
 		ObjectTracker nearestNeighbour = null;
 		int min = Integer.MAX_VALUE, dist = 0;
 		for (int i = 0; i < trackers.size(); i++) {
-			dist =  (int) Math.pow((trackers.get(i)._obj._pRect.x() - rect.x()), 2) + 
-					(int) Math.pow((trackers.get(i)._obj._pRect.y() - rect.y()), 2);
+			dist =  (int) RectAnalyzer.midpointDist(
+					trackers.get(i)._obj._pRect,
+					rect
+				);
 			if ((dist < min) && (dist <= _minDist)) {
 				min = dist;
 				nearestNeighbour = trackers.get(i);
@@ -142,8 +144,11 @@ public class Analyzer {
 		CvRect nearestNeighbour = null;
 		int min = Integer.MAX_VALUE, dist = 0;
 		for (int i = 0; i < rects.size(); i++) {
-			dist =  (int) Math.pow((rects.get(i).x() - tracker._obj._pRect.x()), 2) + 
-					(int) Math.pow((rects.get(i).y() - tracker._obj._pRect.y()), 2);
+			dist = (int) RectAnalyzer.midpointDist(
+					rects.get(i), 
+					tracker._obj._pRect
+				);
+			
 			if ((dist < min) && (dist <= _minDist)) {
 				min = dist;
 				nearestNeighbour = rects.get(i);

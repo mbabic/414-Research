@@ -114,4 +114,22 @@ public class RectAnalyzer {
 		return ret;
 	}
 	
+	/**
+	 * Returns the square of the distance between the centers of the given
+	 * CvRects.
+	 * @param r1
+	 * 		The first rectangle.
+	 * @param r2
+	 * 		The second rectangle
+	 * @return	
+	 * 		The square of the distance between the centers of the given 
+	 * 		rectangles.
+	 */
+	public static double midpointDist(CvRect r1, CvRect r2) {
+		return 
+		Math.pow(r1.x() + ((float) r1.width() / 2f) - 
+				r2.x() - ((float )r2.width() /2f), 2) +
+		Math.pow(r1.y() +((float) r1.height() / 2f) - 
+				r2.x() - ((float) r2.height() /2f), 2);
+	}
 }
