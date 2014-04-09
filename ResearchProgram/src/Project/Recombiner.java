@@ -286,9 +286,34 @@ public class Recombiner {
 						x + 1,
 						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, x+1, j)
 					);
-					
-					// Interpolate along right hand edge.
-//					tl = cvGet2D(fImage, j - 1, x + width - 2);
+
+					// Interpolate along the right hand edge.
+					v0 = cvGet2D(cImage, j - 1, x + width);
+					v1 = cvGet2D(fImage, j, x + width - 2);
+					v2 = cvGet2D(bImage, j, x + width + 2);
+					x0 = new CvPoint(x + width, j - 1);
+					x1 = new CvPoint(x + width - 2, j);
+					x2 = new CvPoint(x + width + 2, j);		
+					cvSet2D(
+						cImage,
+						j,
+						x + width - 1,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, x+ width -1, j)
+					);
+					cvSet2D(
+						cImage,
+						j,
+						x + width,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, x + width, j)
+					);
+					cvSet2D(
+						cImage,
+						j,
+						x + width + 1,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, x + width + 1, j)
+					);
+
+					//					tl = cvGet2D(fImage, j - 1, x + width - 2);
 //					bl = cvGet2D(fImage, j + 1, x + width - 2);
 //					tr = cvGet2D(bImage, j - 1, x + width + 2);
 //					br = cvGet2D(bImage, j + 1, x + width + 2);
