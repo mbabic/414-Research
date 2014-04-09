@@ -319,6 +319,7 @@ public class Recombiner {
 			for (int i = x; i < x + width; i++) {
 				// Handle boundary conditions
 				if ((0 <= i && i <= imgWidth-2) && (2 <= y && y <= imgHeight - 2)) {
+					// Interpolate along top edge.
 					v0 = cvGet2D(cImage, y, i - 1);
 					v1 = cvGet2D(bImage, y - 2, i);
 					v2 = cvGet2D(fImage, y + 2, i);
@@ -342,6 +343,31 @@ public class Recombiner {
 						y + 1,
 						i,
 						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, i, y + 1)
+					);
+					// Interpolate along bottom edge.
+					v0 = cvGet2D(cImage, y + height, i - 1);
+					v1 = cvGet2D(fImage, y + height - 2, i);
+					v2 = cvGet2D(bImage, y + height + 2, i);
+					x0 = new CvPoint(i - 1, y + height);
+					x1 = new CvPoint(i, y + height - 2);
+					x2 = new CvPoint(i, y + height + 2);
+					cvSet2D(
+						cImage,
+						y + height - 1,
+						i,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, i, y + height - 1)
+					);
+					cvSet2D(
+						cImage,
+						y + height,
+						i,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, i, y + height)
+					);
+					cvSet2D(
+						cImage,
+						y + height + 1,
+						i,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, i, y + height + 1)
 					);
 				}
 			}
