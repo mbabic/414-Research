@@ -319,7 +319,7 @@ public class Analyzer {
 	public void recombineVideo(IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {				
 		// TODO: change which recombinator called based on param set ... somewhere
-		hsvInterpolationRecombination(cImage, bImage, fImage, rects);
+		Recombiner.bilinearRGBInterpolation(cImage, bImage, fImage, rects);
 	}
 	
 	/**
