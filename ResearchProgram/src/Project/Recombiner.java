@@ -65,7 +65,6 @@ public class Recombiner {
 		);
 		
 		CvScalar ret = new CvScalar(b, g, r, 1f);
-		System.out.println(ret);
 		return ret;
 	}
 	
@@ -99,15 +98,16 @@ public class Recombiner {
 						
 					cvSet2D(cImage,
 							j,
+							x-1,
+							bilinearRGBInterpolate(tl, tr, bl, br, boundaries,
+									x - 1, j)
+					);
+					cvSet2D(cImage,
+							j,
 							x,
 							bilinearRGBInterpolate(tl, tr, bl, br, boundaries,
 									x, j)
 					);
-					cvSet2D(cImage,
-							j,
-							x-1,
-							bilinearRGBInterpolate(tl, tr, bl, br, boundaries,
-									x-1, j));
 					cvSet2D(cImage,
 							j,
 							x+1,
@@ -116,56 +116,76 @@ public class Recombiner {
 					);
 
 					// Interpolate along right hand edge.
-//					tl = cvGet2D(fImage, j - 2, x + width - 2);
-//					bl = cvGet2D(fImage, j + 2, x + width - 2);
-//					tr = cvGet2D(bImage, j - 2, x + width + 2);
-//					br = cvGet2D(bImage, j + 2, x + width + 2);
-//					boundaries = new CvRect(j - 2, x + width - 2, 4, 4);
-//					b = cvGet2D(bImage, j, x + width + 2);
-//					f = cvGet2D(fImage, j, x + width - 2);
-//
-//					cvSet2D(
-//						cImage, j, x + width, 
-//						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width, j)
-//					);
-//					cvSet2D(
-//						cImage, j, x + width + 1,
-//						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width + 1, j)
-//					);
-//					cvSet2D(
-//						cImage, j, x + width - 1, 
-//						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width - 1, j)
-//					);
+					tl = cvGet2D(fImage, j - 1, x + width - 2);
+					bl = cvGet2D(fImage, j + 1, x + width - 2);
+					tr = cvGet2D(bImage, j - 1, x + width + 2);
+					br = cvGet2D(bImage, j + 1, x + width + 2);
+					boundaries = new CvRect(x + width - 2, j - 2, 4, 2);
+					cvSet2D(
+						cImage, j, x + width - 1, 
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width - 1, j)
+					);
+
+					cvSet2D(
+						cImage, j, x + width, 
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width, j)
+					);
+					cvSet2D(
+						cImage, j, x + width + 1, 
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, x + width + 1, j)
+					);
 				}
 			}	
 			// Interpolate along top and bottom edges.
-//			for (int i = x; i < x + width; i++) {
-//				// Handle boundary conditions
-//				if ((0 <= i && i <= imgWidth) && (2 <= y && y <= imgHeight - 2)) {
-//					// Interpolate along top edge.
-//					b = cvGet2D(bImage, y - 2, i);
-//					f = cvGet2D(fImage, y + 2, i);
-//					
-//					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
-//						cvSet2D(cImage, y - 1, i, interpolateRGB(b, f, 0.25));
-//						cvSet2D(cImage, y, i, interpolateRGB(b, f, 0.5));
-//					}
-//					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
-//						cvSet2D(cImage, y + 1, i, interpolateRGB(b, f, 0.75));
-//					}	
-//					
-//					// Interpolate along bottom edge.
-//					b = cvGet2D(bImage, y + height + 2, i);
-//					f = cvGet2D(fImage, y + height - 2, i);
-//					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
-//						cvSet2D(cImage, y + height + 1, i, interpolateRGB(b, f, 0.25));
-//						cvSet2D(cImage, y + height, i, interpolateRGB(b, f, 0.5));
-//					}
-//					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
-//						cvSet2D(cImage, y + height - 1, i, interpolateRGB(b, f, 0.75));
-//					}
-//				}
-//			}
+			for (int i = x; i < x + width; i++) {
+				// Handle boundary conditions
+				if ((0 <= i && i <= imgWidth-2) && (2 <= y && y <= imgHeight - 2)) {
+					// Interpolate along top edge.
+					tl = cvGet2D(bImage, y-2, i-1);
+					bl = cvGet2D(fImage, y+2, i-1);
+					tr = cvGet2D(bImage, y-2, i+1);
+					br = cvGet2D(fImage, y+2, i+1);
+					boundaries = new CvRect(i-1, y-2, 2, 4);
+					cvSet2D(cImage,
+						y - 1,
+						i,
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y-1)
+					);
+					cvSet2D(cImage,
+						y,
+						i,
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y)
+					);
+					cvSet2D(cImage,
+						y + 1,
+						i,
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y+1)
+					);					
+
+					// Interpolate along bottom edge.
+					tl = cvGet2D(fImage, y + height - 2, i - 1);
+					bl = cvGet2D(bImage, y + height + 2, i - 1);
+					tr = cvGet2D(fImage, y + height - 2, i + 1);
+					br = cvGet2D(bImage, y + height + 2, i + 1);
+					boundaries = new CvRect(i-1, y + height - 2, 2, 4);
+					cvSet2D(cImage,
+						y + height - 1,
+						i,
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y + height - 1)
+					);
+					cvSet2D(cImage,
+						y + height,
+						i,
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y + height)
+					);
+					cvSet2D(cImage,
+						y + height + 1,
+						i,
+						bilinearRGBInterpolate(tl, tr, bl, br, boundaries, i, y + height + 1)
+					);
+					
+				}
+			}
 		}
 	}
 }
