@@ -1,8 +1,15 @@
 package Project;
 
 import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
+import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvSet2D;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2BGR;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 
 import java.util.ArrayList;
 
@@ -13,11 +20,81 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class Recombiner {
 
 	
-	public static void linearHSVInterpolation(
-			IplImage bImage, IplImage fImage, IplImage cImage) {
-		
-		
-		
+	public static void linearBoundaryInterpolate(
+			IplImage cImage, IplImage bImage, IplImage fImage,
+			ArrayList<CvRect> rects, Interpolator interpolator) {
+
+		CvScalar b, f;
+		int x, y, width, height;
+		int imgWidth = cImage.width();
+		int imgHeight = cImage.height();
+
+		cvAbsDiff(bImage, fImage, cImage);
+		for (CvRect cvr : rects) {
+			x = cvr.x();
+			y = cvr.y();
+			height = cvr.height();
+			width = cvr.width();
+
+			// Interpolate along left and right hand edges.
+			for (int j = y; j < y + height; j++) {
+				// Handle boundary conditions
+				if ((0 <= j && j <= imgHeight) && (2 <= x && x <= imgWidth - 2)) {
+					// Replace along left hand edge.
+					b = cvGet2D(bImage, j, x - 2);
+					f = cvGet2D(fImage, j, x + 2);
+
+					cvSet2D(cImage, j, x - 1, interpolator.linearInterpolate(b, f, 0.25));
+					cvSet2D(cImage, j, x, interpolator.linearInterpolate(b, f, 0.5));
+					cvSet2D(cImage, j, x + 1, interpolator.linearInterpolate(b, f, 0.75));
+
+					// Interpolate along right hand edge.
+					b = cvGet2D(bImage, j, x + width + 2);
+					f = cvGet2D(fImage, j, x + width - 2);
+
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, j, x + width, interpolator.linearInterpolate(b, f, 0.5));
+						cvSet2D(cImage, j, x + width + 1,
+								interpolator.linearInterpolate(b, f, 0.25));
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, j, x + width - 1,
+								interpolator.linearInterpolate(b, f, 0.75));
+					}
+				}
+			}
+			// Interpolate along top and bottom edges.
+			for (int i = x; i < x + width; i++) {
+				// Handle boundary conditions
+				if ((0 <= i && i <= imgWidth) && (2 <= y && y <= imgHeight - 2)) {
+					// Interpolate along top edge.
+					b = cvGet2D(bImage, y - 2, i);
+					f = cvGet2D(fImage, y + 2, i);
+
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, y - 1, i, interpolator.linearInterpolate(b, f, 0.25));
+						cvSet2D(cImage, y, i, interpolator.linearInterpolate(b, f, 0.5));
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, y + 1, i, interpolator.linearInterpolate(b, f, 0.75));
+					}
+
+					// Interpolate along bottom edge.
+					b = cvGet2D(bImage, y + height + 2, i);
+					f = cvGet2D(fImage, y + height - 2, i);
+					if (!(b.val(0) == 0 && b.val(1) == 0 && b.val(2) == 0)) {
+						cvSet2D(cImage, y + height + 1, i,
+								interpolator.linearInterpolate(b, f, 0.25));
+						cvSet2D(cImage, y + height, i,
+								interpolator.linearInterpolate(b, f, 0.5));
+					}
+					if (!(f.val(0) == 0 && f.val(1) == 0 && f.val(2) == 0)) {
+						cvSet2D(cImage, y + height - 1, i,
+								interpolator.linearInterpolate(b, f, 0.75));
+					}
+				}
+			}
+		}
 	}
 	
 	public static void bilinearBoundaryInterpolate(
@@ -139,6 +216,42 @@ public class Recombiner {
 				}
 			}
 		}
+	}
+	
+	public static void linearRGBInterpolation(
+			IplImage cImage, IplImage bImage, IplImage fImage,
+			ArrayList<CvRect> rects) {
+		linearBoundaryInterpolate(cImage, bImage, fImage, rects, new RGBInterpolator());
+	}
+	
+	public static void linearHSVInterpolation(
+			IplImage cImage, IplImage bImage, IplImage fImage,
+			ArrayList<CvRect> rects) {
+		linearBoundaryInterpolate(cImage, bImage, fImage, rects, new HSVInterpolator());
+	}
+	
+	public static void bilinearHSVInterpolation(
+		IplImage cImage, IplImage bImage, IplImage fImage,
+		ArrayList<CvRect> rects) {
+		IplImage bgrImg = cvCreateImage(cvGetSize(cImage), 8, 3);
+		IplImage fHsv	= cvCreateImage(cvGetSize(cImage), 8, 3);
+		IplImage bHsv	= cvCreateImage(cvGetSize(cImage), 8, 3);
+		IplImage cHsv 	= cvCreateImage(cvGetSize(cImage), 8, 3);
+		
+		// Convert images to HSV
+		cvCvtColor(fImage, bgrImg, 	CV_RGB2BGR);
+		cvCvtColor(bgrImg, fHsv, 	CV_BGR2HSV);
+		cvCvtColor(bImage, bgrImg, 	CV_RGB2BGR);
+		cvCvtColor(bgrImg, bHsv, 	CV_BGR2HSV);
+		cvCvtColor(cImage, bgrImg, 	CV_RGB2BGR);
+		cvCvtColor(bgrImg, cHsv, 	CV_BGR2HSV);
+		
+		bilinearBoundaryInterpolate(cHsv, bHsv, fHsv, rects, new HSVInterpolator());
+		
+		// Convert back to RGB scale
+		cvCvtColor(cHsv, bgrImg, 	CV_HSV2BGR);
+		cvCvtColor(bgrImg, cImage, 	CV_BGR2RGB);
+		
 	}
 	
 	public static void bilinearRGBInterpolation(

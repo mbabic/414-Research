@@ -17,7 +17,7 @@ public interface Interpolator {
 	 * @param t
 	 * @return
 	 */
-	public CvScalar linearInterpolate(CvScalar v1, CvScalar v2, double t);
+	public CvScalar linearInterpolate(CvScalar v0, CvScalar v1, double t);
 	
 	/**
 	 * 
