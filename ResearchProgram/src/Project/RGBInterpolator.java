@@ -41,7 +41,7 @@ public class RGBInterpolator implements Interpolator {
 		r = commonRatio * (
 			(tl.val(2) * (x2 - x)  * (y2 - y)) +
 			(tr.val(2) * (x - x1)  * (y2 - y)) +
-			(bl.val(2) * (x2 - x) * (y - y1)) +
+			(bl.val(2) * (x2 - x)  * (y - y1)) +
 			(br.val(2) * (x - x1)  * (y - y1))
 		);
 
@@ -64,7 +64,27 @@ public class RGBInterpolator implements Interpolator {
 	
 	public CvScalar barycentricInterpolate(
 			CvScalar v0, CvScalar v1, CvScalar v2, CvPoint x0, CvPoint x1,
-			CvPoint x3, double x, double y) {
-		return null;
+			CvPoint x2, double x, double y) {
+
+		double lambda0, lambda1, lambda2; 	// barycentric coordinates
+		double DetT;
+		double r, g, b;
+		
+		DetT = ((x1.y() - x2.y())*(x0.x() - x2.x())) + ((x2.x() - x1.x())*(x0.y() - x2.y()));
+		
+		lambda0 = (x1.y() - x2.y())*(x - x2.x()) + (x2.x() - x1.x())*(y - x2.y());
+		lambda0 /= DetT;
+		
+		lambda1 = ((x2.y() - x0.y())*(x - x2.x())) + ((x0.x() - x2.x())*(y - x2.y()));
+		lambda1 /= DetT;
+		
+		lambda2 = 1 - lambda0 - lambda1;
+		
+		// Interpolate
+		b = (lambda0 * v0.val(0)) + (lambda1 * v1.val(0)) + (lambda2 * v2.val(0));
+		g = (lambda0 * v0.val(1)) + (lambda1 * v1.val(1)) + (lambda2 * v2.val(1));
+		r = (lambda0 * v0.val(2)) + (lambda1 * v1.val(2)) + (lambda2 * v2.val(2));
+		
+		return new CvScalar(b, g, r, 1f);
 	}	
 }

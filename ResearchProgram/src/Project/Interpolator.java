@@ -37,5 +37,5 @@ public interface Interpolator {
 	
 	public CvScalar barycentricInterpolate(
 		CvScalar v0, CvScalar v1, CvScalar v2, CvPoint x0, CvPoint x1,
-		CvPoint x3, double x, double y);
+		CvPoint x2, double x, double y);
 }

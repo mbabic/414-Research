@@ -317,7 +317,7 @@ public class Analyzer {
 			IplImage fImage, ArrayList<CvRect> rects) {
 		// TODO: change which recombinator called based on param set ...
 		// somewhere
-		Recombiner.linearHSVInterpolation(cImage, bImage, fImage, rects);
+		Recombiner.barycentricRGBInterpolation(cImage, bImage, fImage, rects);
 	}
 }
 

@@ -69,44 +69,50 @@ public class HSVInterpolator implements Interpolator {
 		double x0x1, x0x2, x1x2; 	// Lengths of sides of interpolation triangle
 		double s;					// half the triangle perimeter
 		double B, G, R;				// Interpolated colour component values
-		
-		a = x0x1 = Math.sqrt(
+				
+		x0x1 = Math.sqrt(
 			Math.pow(x0.x() - x1.x(), 2) + 
 			Math.pow(x0.y() - x1.y(), 2)
 		);
-		b = x1x2 = Math.sqrt(
+		x1x2 = Math.sqrt(
 			Math.pow(x1.x() - x2.x(), 2) + 
 			Math.pow(x1.y() - x2.y(), 2)
 		);
-		c = x0x2 = Math.sqrt(
+		x0x2 = Math.sqrt(
 			Math.pow(x2.x() - x0.x(), 2) + 
 			Math.pow(x2.y() - x0.y(), 2)
 		);
-		
+		x0p = Math.sqrt(
+			Math.pow(x - x0.x(), 2) +
+			Math.pow(y - x0.y(), 2)
+		);
+		x1p = Math.sqrt(
+			Math.pow(x - x1.x(), 2) +
+			Math.pow(y - x1.y(), 2)
+		);		
+		x2p = Math.sqrt(
+			Math.pow(x2.x() - x, 2) +
+			Math.pow(x2.y() - y, 2)
+		);
+		// Calculate A
+		a = x0x1;
+		b = x1x2;
+		c = x0x2;
 		s = (a + b + c) / 2f;
 		
 		A = Math.sqrt(s * (s - a) * (s - b) * (s - c));
 		
-		// Calculate A0, b does not have to be recalculated
-		a = x1p = Math.sqrt(
-			Math.pow(x - x1.x(), 2) +
-			Math.pow(y - x1.y(), 2)
-		);
+		// Calculate A0
+		a = x1p;
 		b = x1x2;
-		c = x2p = Math.sqrt(
-			Math.pow(x2.x() - x, 2) +
-			Math.pow(x2.y() - y, 2)
-		);
+		c = x2p;
 		s = (a + b + c) / 2f;
 		A0 = Math.sqrt(s * (s - a) * (s - b) * (s - c));
 		
 		// Calculate A1
-		a = x0p = Math.sqrt(
-			Math.pow(x - x0.x(), 2) +
-			Math.pow(y - x0.y(), 2)
-		);
-		b = x2p;
-		c = x0x2;
+		a = x2p;
+		b = x0x2;
+		c = x0p;
 		s = (a + b + c) / 2f;
 		A1 = Math.sqrt(s * (s - a) * (s - b) * (s - c));
 		
