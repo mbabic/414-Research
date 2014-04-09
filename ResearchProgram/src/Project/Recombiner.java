@@ -313,28 +313,38 @@ public class Recombiner {
 						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, x + width + 1, j)
 					);
 
-					//					tl = cvGet2D(fImage, j - 1, x + width - 2);
-//					bl = cvGet2D(fImage, j + 1, x + width - 2);
-//					tr = cvGet2D(bImage, j - 1, x + width + 2);
-//					br = cvGet2D(bImage, j + 1, x + width + 2);
-//					boundaries = new CvRect(x + width - 2, j - 2, 4, 2);
-//					cvSet2D(
-//						cImage, j, x + width - 1, 
-//						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width - 1, j)
-//					);
-//
-//					cvSet2D(
-//						cImage, j, x + width, 
-//						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width, j)
-//					);
-//					cvSet2D(
-//						cImage, j, x + width + 1, 
-//						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width + 1, j)
-//					);
 				}
-			}			
-			
-			
+			}
+			// Interpolate along top and bottom edges.
+			for (int i = x; i < x + width; i++) {
+				// Handle boundary conditions
+				if ((0 <= i && i <= imgWidth-2) && (2 <= y && y <= imgHeight - 2)) {
+					v0 = cvGet2D(cImage, y, i - 1);
+					v1 = cvGet2D(bImage, y - 2, i);
+					v2 = cvGet2D(fImage, y + 2, i);
+					x0 = new CvPoint(i - 1, y);
+					x1 = new CvPoint(i, y - 2);
+					x2 = new CvPoint(i, y + 2);
+					cvSet2D(
+						cImage,
+						y - 1,
+						i,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, i, y - 1)
+					);
+					cvSet2D(
+						cImage,
+						y,
+						i,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, i, y)
+					);
+					cvSet2D(
+						cImage,
+						y + 1,
+						i,
+						interpolator.barycentricInterpolate(v0, v1, v2, x0, x1, x2, i, y + 1)
+					);
+				}
+			}
 			
 		}
 					
