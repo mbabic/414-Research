@@ -5,6 +5,7 @@ import java.io.File;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 
 public class CaptureLancher {
 	public static void main(String[] args) {

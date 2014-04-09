@@ -75,10 +75,14 @@ public class Transmitter {
 		recorderBackGround = new FFmpegFrameRecorder(bFile, img.width(),
 				img.height());
 		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
+		// Indicate that we want the encoding to be lossless.
+		recorderBackGround.setVideoQuality(0);
 		
 		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
 				img.height());
 		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
+		// Indicate that we want the encoding to be lossless
+		recorderFacial.setVideoQuality(0);
 		
 		// Initialize encoders
 		_bgEncoder = new Encoder(
