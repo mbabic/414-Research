@@ -1,5 +1,6 @@
 package Project;
 
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 
@@ -33,4 +34,8 @@ public interface Interpolator {
 	public CvScalar bilinearInterpolate(
 		CvScalar tl, CvScalar tr, CvScalar bl, CvScalar br,
 		CvRect boundaries, double x, double y);
+	
+	public CvScalar barycentricInterpolate(
+		CvScalar v0, CvScalar v1, CvScalar v2, CvPoint x0, CvPoint x1,
+		CvPoint x3, double x, double y);
 }

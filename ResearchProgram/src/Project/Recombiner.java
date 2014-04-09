@@ -19,7 +19,14 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class Recombiner {
 
-	
+	/**
+	 * 
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 * @param interpolator
+	 */
 	public static void linearBoundaryInterpolate(
 			IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects, Interpolator interpolator) {
@@ -97,6 +104,14 @@ public class Recombiner {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 * @param interpolator
+	 */
 	public static void bilinearBoundaryInterpolate(
 		IplImage cImage, IplImage bImage, IplImage fImage,
 		ArrayList<CvRect> rects, Interpolator interpolator			
@@ -218,18 +233,114 @@ public class Recombiner {
 		}
 	}
 	
+	public static void barycentricBoundaryInterpolation(
+		IplImage cImage, IplImage bImage, IplImage fImage, 
+		ArrayList<CvRect> rects, Interpolator interpolator) {
+		CvScalar v0, v1, v2;	// Three vertices of interpolation triangle
+		CvRect boundaries;
+		int x, y, width, height;
+		int imgWidth = cImage.width();
+		int imgHeight = cImage.height();
+		
+		cvAbsDiff(bImage, fImage, cImage);
+		for (CvRect cvr: rects) {
+			x = cvr.x();
+			y = cvr.y();
+			height = cvr.height();
+			width = cvr.width();
+			// Interpolate along left and right hand edges.
+			for (int j = y; j < y + height; j++) {
+				// Handle boundary conditions
+				if ((2 <= j && j <= imgHeight - 2) && (2 <= x && x <= imgWidth - 2)) {
+					// Replace along left hand edge.
+					// v0 is the top vertex, assumed to have already been
+					// interpolated and thus its value is good to use
+					v0 = cvGet2D(cImage, j - 1, x);
+					v1 = cvGet2D(bImage, j, x - 2);
+					v2 = cvGet2D(fImage, j, x + 2);
+					boundaries = new CvRect(x-2, j-1, 4, 2);		
+						
+//					cvSet2D(cImage,
+//							j,
+//							x-1,
+//							interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries,
+//									x - 1, j)
+//					);
+//					cvSet2D(cImage,
+//							j,
+//							x,
+//							interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries,
+//									x, j)
+//					);
+//					cvSet2D(cImage,
+//							j,
+//							x+1,
+//							interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries,
+//									x + 1, j)
+//					);
+
+					// Interpolate along right hand edge.
+//					tl = cvGet2D(fImage, j - 1, x + width - 2);
+//					bl = cvGet2D(fImage, j + 1, x + width - 2);
+//					tr = cvGet2D(bImage, j - 1, x + width + 2);
+//					br = cvGet2D(bImage, j + 1, x + width + 2);
+//					boundaries = new CvRect(x + width - 2, j - 2, 4, 2);
+//					cvSet2D(
+//						cImage, j, x + width - 1, 
+//						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width - 1, j)
+//					);
+//
+//					cvSet2D(
+//						cImage, j, x + width, 
+//						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width, j)
+//					);
+//					cvSet2D(
+//						cImage, j, x + width + 1, 
+//						interpolator.bilinearInterpolate(tl, tr, bl, br, boundaries, x + width + 1, j)
+//					);
+				}
+			}			
+			
+			
+			
+		}
+					
+		
+	}
+	
+	/**
+	 * 
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 */
 	public static void linearRGBInterpolation(
 			IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {
 		linearBoundaryInterpolate(cImage, bImage, fImage, rects, new RGBInterpolator());
 	}
 	
+	/**
+	 * 
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 */
 	public static void linearHSVInterpolation(
 			IplImage cImage, IplImage bImage, IplImage fImage,
 			ArrayList<CvRect> rects) {
 		linearBoundaryInterpolate(cImage, bImage, fImage, rects, new HSVInterpolator());
 	}
 	
+	/**
+	 * 
+	 * @param cImage
+	 * @param bImage
+	 * @param fImage
+	 * @param rects
+	 */
 	public static void bilinearHSVInterpolation(
 		IplImage cImage, IplImage bImage, IplImage fImage,
 		ArrayList<CvRect> rects) {

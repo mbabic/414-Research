@@ -1,5 +1,6 @@
 package Project;
 
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 
@@ -61,4 +62,9 @@ public class RGBInterpolator implements Interpolator {
 		return ret;	
 	}
 	
+	public CvScalar barycentricInterpolate(
+			CvScalar v0, CvScalar v1, CvScalar v2, CvPoint x0, CvPoint x1,
+			CvPoint x3, double x, double y) {
+		return null;
+	}	
 }
