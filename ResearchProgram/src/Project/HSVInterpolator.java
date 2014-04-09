@@ -63,70 +63,25 @@ public class HSVInterpolator implements Interpolator {
 			CvScalar v0, CvScalar v1, CvScalar v2, CvPoint x0, CvPoint x1,
 			CvPoint x2, double x, double y) {
 		
-		double A0, A1, A2, A;		// Sub-triangle areas
-		double a, b, c;				// Triangle side lengths
-		double x0p, x1p, x2p;		// Sub-triangles side lengths
-		double x0x1, x0x2, x1x2; 	// Lengths of sides of interpolation triangle
-		double s;					// half the triangle perimeter
-		double B, G, R;				// Interpolated colour component values
-				
-		x0x1 = Math.sqrt(
-			Math.pow(x0.x() - x1.x(), 2) + 
-			Math.pow(x0.y() - x1.y(), 2)
-		);
-		x1x2 = Math.sqrt(
-			Math.pow(x1.x() - x2.x(), 2) + 
-			Math.pow(x1.y() - x2.y(), 2)
-		);
-		x0x2 = Math.sqrt(
-			Math.pow(x2.x() - x0.x(), 2) + 
-			Math.pow(x2.y() - x0.y(), 2)
-		);
-		x0p = Math.sqrt(
-			Math.pow(x - x0.x(), 2) +
-			Math.pow(y - x0.y(), 2)
-		);
-		x1p = Math.sqrt(
-			Math.pow(x - x1.x(), 2) +
-			Math.pow(y - x1.y(), 2)
-		);		
-		x2p = Math.sqrt(
-			Math.pow(x2.x() - x, 2) +
-			Math.pow(x2.y() - y, 2)
-		);
-		// Calculate A
-		a = x0x1;
-		b = x1x2;
-		c = x0x2;
-		s = (a + b + c) / 2f;
+		double lambda0, lambda1, lambda2; 	// barycentric coordinates
+		double DetT;
+		double h, s, v;
 		
-		A = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+		DetT = ((x1.y() - x2.y())*(x0.x() - x2.x())) + ((x2.x() - x1.x())*(x0.y() - x2.y()));
 		
-		// Calculate A0
-		a = x1p;
-		b = x1x2;
-		c = x2p;
-		s = (a + b + c) / 2f;
-		A0 = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+		lambda0 = (x1.y() - x2.y())*(x - x2.x()) + (x2.x() - x1.x())*(y - x2.y());
+		lambda0 /= DetT;
 		
-		// Calculate A1
-		a = x2p;
-		b = x0x2;
-		c = x0p;
-		s = (a + b + c) / 2f;
-		A1 = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+		lambda1 = ((x2.y() - x0.y())*(x - x2.x())) + ((x0.x() - x2.x())*(y - x2.y()));
+		lambda1 /= DetT;
 		
-		// Calculate A2
-		a = x0x1;
-		b = x0p;
-		c = x1p;
-		A2 = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+		lambda2 = 1 - lambda0 - lambda1;
 		
-		// Finally, we can interpolate.
-		B = ( (A0 * v0.val(0)) + (A1 * v1.val(0)) + (A2 * v2.val(0))) / A;
-		G = ( (A0 * v0.val(1)) + (A1 * v1.val(1)) + (A2 * v2.val(1))) / A;
-		R = ( (A0 * v0.val(2)) + (A1 * v1.val(2)) + (A2 * v2.val(2))) / A;
+		// Interpolate
+		h = (lambda0 * v0.val(0)) + (lambda1 * v1.val(0)) + (lambda2 * v2.val(0));
+		s = (lambda0 * v0.val(1)) + (lambda1 * v1.val(1)) + (lambda2 * v2.val(1));
+		v = (lambda0 * v0.val(2)) + (lambda1 * v1.val(2)) + (lambda2 * v2.val(2));
 		
-		return new CvScalar(B, G, R, 1f);
+		return new CvScalar(h, s, v, 1f);
 	}
 }
