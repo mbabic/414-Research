@@ -2,10 +2,13 @@ package Project;
 
 import java.io.File;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 
 public class CaptureLancher {
 	public static void main(String[] args) {
@@ -20,8 +23,13 @@ public class CaptureLancher {
 		FaceStream stream = new FaceStream();
 		
 		try {
-			File inf = new File("tests/foreman_352x288_30.avi");
-			frameGrabber = transmitter.receiveStream(inf);
+			File file = grabMediaFile();
+			if (file == null) {
+				frameGrabber = transmitter.receiveStream();
+			} else {
+				frameGrabber = transmitter.receiveStream(file);
+			}
+			
 		} catch (Exception e1) {
 			System.err.println("Failed to load FrameGrabber");
 			e1.printStackTrace();
@@ -83,5 +91,36 @@ public class CaptureLancher {
 		}
 
 	}
+	
+	private static File grabMediaFile() {
+		File file = null;
+		JFileChooser chooser;
+		int option;
+		
+		chooser = new JFileChooser(System.getProperty("user.dir"));
 
+		chooser.setFileFilter(new FileFilter() {
+			
+			private FileNameExtensionFilter exFilter = new FileNameExtensionFilter("mp4", "avi");
+			@Override
+			public String getDescription() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				
+				if (f.isDirectory()) return true;
+				return exFilter.accept(f);
+			}
+		});
+		chooser.setAcceptAllFileFilterUsed(false);		
+		option = chooser.showOpenDialog(chooser);
+		
+		if (option == JFileChooser.APPROVE_OPTION) {
+			file = chooser.getSelectedFile();
+		}
+		return file;
+	}
 }
