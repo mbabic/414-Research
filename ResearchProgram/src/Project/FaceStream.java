@@ -33,7 +33,7 @@ public class FaceStream implements java.io.Serializable {
 	public ArrayList<SerializableRectList> _rectStream;
 	public ArrayList<PixelBlock> _pixelStream;
 	int _frame;
-	TJCompressor _compressor;
+	private transient TJCompressor  _compressor;
 
 	public FaceStream() {
 		_rectStream = new ArrayList<SerializableRectList>();
