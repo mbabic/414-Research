@@ -20,7 +20,6 @@ public class PixelBlockTests {
 
 	@Test
 	public void testCompression() {
-//		System.loadLibrary("libjpeg");
 		BufferedImage img;
 		try {
 			img = ImageIO.read(new File("tests/test.jpg"));
@@ -34,6 +33,7 @@ public class PixelBlockTests {
 			
 			TJCompressor compressor = new TJCompressor();
 			pb.compress(compressor);
+			System.out.println(compressor.getCompressedSize());
 			
 		} catch (Exception e) {
 			e.printStackTrace();
