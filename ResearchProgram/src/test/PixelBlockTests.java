@@ -4,14 +4,15 @@ import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 import org.junit.Test;
 import org.libjpegturbo.turbojpeg.TJCompressor;
+import org.libjpegturbo.turbojpeg.TJDecompressor;
 
+import Project.IOUtils;
 import Project.PixelBlock;
 
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
@@ -32,8 +33,21 @@ public class PixelBlockTests {
 			PixelBlock pb = new PixelBlock(test, cvr);
 			
 			TJCompressor compressor = new TJCompressor();
+			TJDecompressor decompressor = new TJDecompressor();
 			pb.compress(compressor);
+			IOUtils.bytesToFile(pb._compressed, "asdfasdf.jpg");
 			System.out.println(compressor.getCompressedSize());
+			pb.decompress(decompressor);
+			System.out.println(decompressor.getJPEGSize());
+			for (int i = 0; i < pb._decompressed.length; i++) {
+				if (Math.abs((pb._decompressed[i] & 0xFF) - (pb._flatBytes[i] & 0xFF)) > 20 ) {
+//					System.out.println(i);
+//					System.out.println((pb._decompressed[i] & 0xFF));
+//					System.out.println((pb._flatBytes[i] & 0xFF));
+				}
+			}
+			
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

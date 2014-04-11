@@ -32,8 +32,11 @@ public class PixelBlock implements java.io.Serializable {
 	 * TODO: determine if needs to be declared transient
 	 */
 	public byte[] _flatBytes;
+	public byte[] _compressed;
+	public byte[] _decompressed;
 	/** Byte information associated with pixel arranged in 2-dim array. */
 	private byte[] _blockBytes;
+	private int _compressedSize;
 	/** 
 	 * Pixels associated with this pixel block. 
 	 * Declared transient such that this array list will not be serialized
@@ -115,7 +118,6 @@ public class PixelBlock implements java.io.Serializable {
 		_flatBytes = new byte[2 * (_width + _height) * PIXEL_CHANNELS * 2];
 		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			p = _pixels.get(i / PIXEL_CHANNELS);
-
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
 				_flatBytes[i + j] = (byte) ((int)p.val(0) & 0xFF);
 			}
@@ -150,11 +152,12 @@ public class PixelBlock implements java.io.Serializable {
 				_width,									// width
 				0,										// pitch
 				(2 * (_width + _height)) / _width,		// height
-				TJ.PF_RGB
+				TJ.PF_BGR
 			);
 			compressor.setSubsamp(TJ.SAMP_420);
 			compressor.setJPEGQuality(100);
-			_flatBytes = compressor.compress(TJ.FLAG_FASTDCT);
+			_compressed = compressor.compress(0);
+			_compressedSize = compressor.getCompressedSize();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -166,7 +169,13 @@ public class PixelBlock implements java.io.Serializable {
 	 * @param decompressor
 	 */
 	public void decompress(TJDecompressor decompressor) {
-		
+	try{
+		decompressor.setJPEGImage(_compressed, _compressedSize);
+		_decompressed = decompressor.decompressToYUV(0);
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}		
 	}
 	
 	/**
