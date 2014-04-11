@@ -7,11 +7,22 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * Provides some basic IO functionality required by various classes.
+ * Implements functionality allowing for serialization between files 
+ * and byte arrays.
  * @author Marko Babic, Marcus Karpoff
  */
 public class IOUtils {
 
+	/**
+	 * Convert the file specified by the given filename to a one-dimensional
+	 * array of bytes.
+	 * @param filename
+	 * 		The name of the file to be written to a byte array.
+	 * @return
+	 * 		Byte array representation of the file specified by the given 
+	 * 		filename.
+	 * @throws IOException
+	 */
 	public static byte[] fileToBytes(String filename) throws IOException {
 		File file = new File(filename);
 		RandomAccessFile raf = new RandomAccessFile(file, "r");

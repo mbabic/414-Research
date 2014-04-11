@@ -257,7 +257,6 @@ public class Analyzer {
 		}
 
 		simplifiedFaceList = RectAnalyzer.getBoundingRects(faceList);
-
 		for (int i = 0; i < simplifiedFaceList.size(); i++) {
 			cvSeqPush(faces, simplifiedFaceList.get(i));
 		}

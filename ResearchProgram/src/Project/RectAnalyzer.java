@@ -132,4 +132,25 @@ public class RectAnalyzer {
 		Math.pow(r1.y() +((float) r1.height() / 2f) - 
 				r2.x() - ((float) r2.height() /2f), 2);
 	}
+	/**
+	 * Determines if the point given by x, y coordinates provided lies inside
+	 * the CvRect provided.
+	 * @param x
+	 * 			The x coordinate of the point whose intersection with the 
+	 * 			rectangle is to be determined.
+	 * @param y
+	 * 			The y coordinate of the point whose intersection with the 
+	 * 			rectangle is to be determined.
+	 * @param rect
+	 * 			The rectangle for which we wish to determine if the given point
+	 * 			lies within.
+	 */
+	public static boolean isInsideRect(double x, double y, CvRect rect) {
+		
+		if ((rect.x() < x && x < rect.x() + rect.width()) &&
+			(rect.y() < y && y < rect.y() + rect.height())) {
+			return true;
+		}
+		return false;
+	}
 }

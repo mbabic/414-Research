@@ -13,10 +13,12 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import org.libjpegturbo.turbojpeg.TJCompressor;
+
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 
 /**
- * Stream of SerializableRectLists.
+ * Serializable stream of SerializableRectLists.
  * 
  * @author Marko Babic, Marcus Karpoff
  * 
@@ -30,10 +32,19 @@ public class FaceStream implements java.io.Serializable {
 
 	public ArrayList<SerializableRectList> _stream;
 	int _frame;
+	TJCompressor _compressor;
 
 	public FaceStream() {
 		_stream = new ArrayList<SerializableRectList>();
+		try {
+			_compressor = new TJCompressor();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
 		_frame = 0;
+		
 	}
 
 	public void restart() {

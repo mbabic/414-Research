@@ -403,4 +403,5 @@ public class Recombiner {
 		cvCvtColor(cHsv, bgrImg, CV_HSV2BGR);
 		cvCvtColor(bgrImg, cImage, CV_BGR2RGB);
 	}
+	
 }
