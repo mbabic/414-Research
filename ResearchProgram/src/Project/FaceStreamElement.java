@@ -24,4 +24,12 @@ public class FaceStreamElement implements java.io.Serializable {
 		_pixelBlocks = pbl;
 	}
 	
+	public SerializableRectList getRectangles() {
+		return _rects;
+	}
+	
+	public PixelBlockList getPixelBlocks() {
+		return _pixelBlocks;
+	}
+	
 }

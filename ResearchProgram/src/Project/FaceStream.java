@@ -31,7 +31,7 @@ public class FaceStream implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -2647220701334355386L;
 	public ArrayList<FaceStreamElement> _stream;
-	public ArrayList<SerializableRectList> _rectStream;
+//	public ArrayList<SerializableRectList> _rectStream;
 
 	int _frame;
 	private transient TJCompressor  _compressor;
@@ -39,7 +39,7 @@ public class FaceStream implements java.io.Serializable {
 
 	public FaceStream() {
 		_stream = new ArrayList<FaceStreamElement>();
-		_rectStream = new ArrayList<SerializableRectList>();
+//		_rectStream = new ArrayList<SerializableRectList>();
 		try {
 			_compressor = new TJCompressor();
 			_decompressor = new TJDecompressor();
@@ -59,17 +59,17 @@ public class FaceStream implements java.io.Serializable {
 		_stream.add(fse);
 	}
 	
-	public void add(SerializableRectList faces) {
-		_rectStream.add(faces);
-	}
+//	public void add(SerializableRectList faces) {
+//		_rectStream.add(faces);
+//	}
 
 	public FaceStreamElement getNextElement() {
 		return _stream.get(_frame++);
 	}
 	
-	public ArrayList<CvRect> getNextRectList() {
-		return _rectStream.get(_frame++).toCvRectList();
-	}
+//	public ArrayList<CvRect> getNextRectList() {
+//		return _rectStream.get(_frame++).toCvRectList();
+//	}
 
 	public void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();

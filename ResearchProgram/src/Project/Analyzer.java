@@ -283,12 +283,12 @@ public class Analyzer {
 			FaceStream fs) {
 		CvSeq faces = getFaces(orig);
 		
-		//fs.add(new FaceStreamElement(
-		//	new PixelBlockList(orig, faces),
-		//	new SerializableRectList(faces)
-		//));
+		fs.add(new FaceStreamElement(
+			new PixelBlockList(orig, faces),
+			new SerializableRectList(faces)
+		));
 		
-		fs.add(new SerializableRectList(faces));
+//		fs.add(new SerializableRectList(faces));
 		blackOutFaces(back, faces);
 		cvAbsDiff(orig, back, face);
 	}
@@ -316,10 +316,15 @@ public class Analyzer {
 	 * to one video stream.
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage,
-			IplImage fImage, ArrayList<CvRect> rects) {
+			IplImage fImage, FaceStreamElement fse) {
 		// TODO: change which recombinator called based on param set ...
 		// somewhere
-		Recombiner.barycentricRGBInterpolation(cImage, bImage, fImage, rects);
+		Recombiner.barycentricRGBInterpolation(
+			cImage, 
+			bImage, 
+			fImage, 
+			fse.getRectangles().toCvRectList()
+		);
 	}
 }
 

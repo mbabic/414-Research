@@ -114,13 +114,14 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	private void createByteBuffer() {
 		CvScalar p;
-		_bytes = new byte[2 * (_width + _height) * PIXEL_CHANNELS * 2];
-		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
+		_bytes = new byte[_pixels.size() * PIXEL_CHANNELS * 2];
+		for (int i = 0; i < _pixels.size() * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			p = _pixels.get(i / PIXEL_CHANNELS);
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
 				_bytes[i + j] = (byte) ((int)p.val(0) & 0xFF);
 			}
 		}
+		p = null;
 	}
 	
 	/**
@@ -153,8 +154,8 @@ public class PixelBlock implements java.io.Serializable {
 			_compressed = compressor.compress(0);
 			_compressedSize = compressor.getCompressedSize();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	
