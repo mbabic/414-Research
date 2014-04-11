@@ -45,6 +45,7 @@ public class PixelBlockTests {
 					System.out.println(i);
 					System.out.println((pb._decompressed[i] & 0xFF));
 					System.out.println((pb._bytes[i] & 0xFF));
+					fail("Pixel values differ by more than set threshold");
 				}
 			}
 			

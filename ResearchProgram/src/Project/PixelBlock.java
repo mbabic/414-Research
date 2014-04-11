@@ -29,11 +29,16 @@ public class PixelBlock implements java.io.Serializable {
 	
 	/** 
 	 * Byte information associated with pixels arranged in 1-dim array. 
-	 * TODO: determine if needs to be declared transient
 	 */
-	public byte[] _bytes;
+	public transient byte[] _bytes;
+	
+	/**
+	 * The compressed bytes asociated with the 
+	 */
 	public byte[] _compressed;
-	public byte[] _decompressed;
+	
+	public transient byte[] _decompressed;
+	
 	/** Byte information associated with pixel arranged in 2-dim array. */
 	private int _compressedSize;
 	/** 
@@ -55,24 +60,18 @@ public class PixelBlock implements java.io.Serializable {
 	private int _height;
 	
 	/**
-	 * 
+	 * Empty constructor.
 	 */
 	public PixelBlock() {
 		_pixels = new ArrayList<CvScalar>();
 	}
 	
 	/**
-	 * 
-	 * @param pixels
-	 */
-	public PixelBlock(ArrayList<CvScalar> pixels) {
-		_pixels = new ArrayList<CvScalar>(pixels);
-	}
-	
-	/**
-	 * 
 	 * @param img
+	 * 		The image from which we wish to extract pixels.
 	 * @param rect
+	 * 		The rectangle defining the lines of pixels which we wish to
+	 * 		extract.
 	 */
 	public PixelBlock(IplImage img, CvRect rect) {
 		int x, y, height, width;
@@ -110,7 +109,8 @@ public class PixelBlock implements java.io.Serializable {
 	}
 	
 	/**
-	 * 
+	 * From instance _pixels value, populate _bytes array with appropriate
+	 * byte values.
 	 */
 	private void createByteBuffer() {
 		CvScalar p;
@@ -132,7 +132,9 @@ public class PixelBlock implements java.io.Serializable {
 	
 	/**
 	 * Compress byte array using JPEG algorithm.
+	 * TODO: clear _bytes from memory.
 	 * @param compressor
+	 * 		The instance of TJCompressor used to compress the pixels.
 	 */
 	public void compress(TJCompressor compressor) {
 		try {
@@ -161,23 +163,23 @@ public class PixelBlock implements java.io.Serializable {
 	 * @param decompressor
 	 */
 	public void decompress(TJDecompressor decompressor) {
-	try{
-		_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS];
-		decompressor.setJPEGImage(_compressed, _compressedSize);
-		decompressor.decompress(
-			_decompressed,
-			0,
-			0, 
-			_width, 
-			0,
-			(2 * (_height + _width)) / _width,
-			TJ.PF_BGR,
-			0
-		);
-	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}		
+		try {
+			_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS];
+			decompressor.setJPEGImage(_compressed, _compressedSize);
+			decompressor.decompress(
+				_decompressed, 
+				0,
+				0, 
+				_width, 
+				0,
+				(2 * (_height + _width)) / _width, 
+				TJ.PF_BGR, 
+				0
+			);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}	
 	}
 	
 	/**

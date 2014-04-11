@@ -31,7 +31,7 @@ public class FaceStream implements java.io.Serializable {
 	private static final long serialVersionUID = -2647220701334355386L;
 
 	public ArrayList<SerializableRectList> _rectStream;
-	public ArrayList<PixelBlock> _pixelStream;
+	public ArrayList<PixelBlockList> _pixelStream;
 	int _frame;
 	private transient TJCompressor  _compressor;
 
