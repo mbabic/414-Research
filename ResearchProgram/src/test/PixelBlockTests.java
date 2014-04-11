@@ -49,8 +49,6 @@ public class PixelBlockTests {
 				}
 			}
 			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

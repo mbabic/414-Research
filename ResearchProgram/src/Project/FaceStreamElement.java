@@ -16,12 +16,12 @@ public class FaceStreamElement implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -6526438513032989593L;
 
-	private ArrayList<CvRect> _rects;
-	private ArrayList<PixelBlock> _pixelBlocks;
+	private SerializableRectList _rects;
+	private PixelBlockList _pixelBlocks;
 	
-	public FaceStreamElement(ArrayList<CvRect> rects, ArrayList<PixelBlock> pbs) {
-		_rects = new ArrayList<CvRect>(rects);
-		_pixelBlocks = new ArrayList<PixelBlock>(pbs);
+	public FaceStreamElement(PixelBlockList pbl, SerializableRectList srl) {
+		_rects = srl;
+		_pixelBlocks = pbl;
 	}
 	
 }

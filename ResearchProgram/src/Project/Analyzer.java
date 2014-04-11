@@ -282,6 +282,12 @@ public class Analyzer {
 	public void separateStreams(IplImage orig, IplImage back, IplImage face,
 			FaceStream fs) {
 		CvSeq faces = getFaces(orig);
+		
+		//fs.add(new FaceStreamElement(
+		//	new PixelBlockList(orig, faces),
+		//	new SerializableRectList(faces)
+		//));
+		
 		fs.add(new SerializableRectList(faces));
 		blackOutFaces(back, faces);
 		cvAbsDiff(orig, back, face);
