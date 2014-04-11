@@ -290,13 +290,10 @@ public class Analyzer {
 	/**
 	 * This function will write onto of the frames that have facial data.
 	 * 
-	 * @param inputMat
-	 *            The Mat of that is going to be blacked out
-	 * @param rect
-	 *            The rectangle that will be drawn
-	 * @param sf
-	 *            (shrink factor) The number of pixel by which the rectangle
-	 *            which is blacked out is smaller than the actual rect.s
+	 * @param input
+	 *            The IplImage to be blacked out
+	 * @param rects
+	 *            CvSeq of rectangles defining areas to black out.
 	 */
 	private void blackOutFaces(IplImage input, CvSeq rects) {
 		int total_Faces = rects.total();

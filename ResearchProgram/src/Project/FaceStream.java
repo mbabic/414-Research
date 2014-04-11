@@ -30,12 +30,13 @@ public class FaceStream implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -2647220701334355386L;
 
-	public ArrayList<SerializableRectList> _stream;
+	public ArrayList<SerializableRectList> _rectStream;
+	public ArrayList<PixelBlock> _pixelStream;
 	int _frame;
 	TJCompressor _compressor;
 
 	public FaceStream() {
-		_stream = new ArrayList<SerializableRectList>();
+		_rectStream = new ArrayList<SerializableRectList>();
 		try {
 			_compressor = new TJCompressor();
 		} catch (Exception e) {
@@ -52,11 +53,11 @@ public class FaceStream implements java.io.Serializable {
 	}
 
 	public void add(SerializableRectList faces) {
-		_stream.add(faces);
+		_rectStream.add(faces);
 	}
 
 	public ArrayList<CvRect> getNextRectList() {
-		return _stream.get(_frame++).toCvRectList();
+		return _rectStream.get(_frame++).toCvRectList();
 	}
 
 	public void writeObject(ObjectOutputStream oos) throws IOException {
