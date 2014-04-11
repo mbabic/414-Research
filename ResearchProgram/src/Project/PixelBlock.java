@@ -31,11 +31,10 @@ public class PixelBlock implements java.io.Serializable {
 	 * Byte information associated with pixels arranged in 1-dim array. 
 	 * TODO: determine if needs to be declared transient
 	 */
-	public byte[] _flatBytes;
+	public byte[] _bytes;
 	public byte[] _compressed;
 	public byte[] _decompressed;
 	/** Byte information associated with pixel arranged in 2-dim array. */
-	private byte[] _blockBytes;
 	private int _compressedSize;
 	/** 
 	 * Pixels associated with this pixel block. 
@@ -115,11 +114,11 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	private void createByteBuffer() {
 		CvScalar p;
-		_flatBytes = new byte[2 * (_width + _height) * PIXEL_CHANNELS * 2];
+		_bytes = new byte[2 * (_width + _height) * PIXEL_CHANNELS * 2];
 		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			p = _pixels.get(i / PIXEL_CHANNELS);
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
-				_flatBytes[i + j] = (byte) ((int)p.val(0) & 0xFF);
+				_bytes[i + j] = (byte) ((int)p.val(0) & 0xFF);
 			}
 		}
 	}
@@ -132,13 +131,6 @@ public class PixelBlock implements java.io.Serializable {
 	}
 	
 	/**
-	 * Create 2-dimensional out of pixel data.
-	 */
-	public void createBlock() {
-		
-	}
-	
-	/**
 	 * Compress byte array using JPEG algorithm.
 	 * @param compressor
 	 */
@@ -146,7 +138,7 @@ public class PixelBlock implements java.io.Serializable {
 		try {
 			System.out.println(2 * (_width + _height) * PIXEL_CHANNELS);
 			compressor.setSourceImage(
-				_flatBytes,								// src buf
+					_bytes,								// src buf
 				0,										// x offset
 				0,										// y offset
 				_width,									// width
@@ -170,8 +162,18 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	public void decompress(TJDecompressor decompressor) {
 	try{
+		_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS];
 		decompressor.setJPEGImage(_compressed, _compressedSize);
-		_decompressed = decompressor.decompressToYUV(0);
+		decompressor.decompress(
+			_decompressed,
+			0,
+			0, 
+			_width, 
+			0,
+			(2 * (_height + _width)) / _width,
+			TJ.PF_BGR,
+			0
+		);
 	} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

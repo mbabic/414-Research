@@ -39,11 +39,12 @@ public class PixelBlockTests {
 			System.out.println(compressor.getCompressedSize());
 			pb.decompress(decompressor);
 			System.out.println(decompressor.getJPEGSize());
+			System.out.println(pb._decompressed.length);
 			for (int i = 0; i < pb._decompressed.length; i++) {
-				if (Math.abs((pb._decompressed[i] & 0xFF) - (pb._flatBytes[i] & 0xFF)) > 20 ) {
-//					System.out.println(i);
-//					System.out.println((pb._decompressed[i] & 0xFF));
-//					System.out.println((pb._flatBytes[i] & 0xFF));
+				if (Math.abs((pb._decompressed[i] & 0xFF) - (pb._bytes[i] & 0xFF)) > 1 ) {
+					System.out.println(i);
+					System.out.println((pb._decompressed[i] & 0xFF));
+					System.out.println((pb._bytes[i] & 0xFF));
 				}
 			}
 			
