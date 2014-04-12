@@ -30,7 +30,7 @@ public class PixelBlock implements java.io.Serializable {
 	/** 
 	 * Byte information associated with pixels arranged in 1-dim array. 
 	 */
-	public transient byte[] _bytes;
+	public byte[] _bytes;
 	
 	/**
 	 * The compressed bytes associated with the pixels.
@@ -103,10 +103,7 @@ public class PixelBlock implements java.io.Serializable {
 		// Get values of pixels along top edge, right to left.
 		for (int i = x + width; i > x; i--) {
 			_pixels.add(cvGet2D(img, y, i));
-		}	
-		
-		System.out.println(_pixels);
-		
+		}		
 		pixelsToBytes();
 	}
 	
@@ -116,8 +113,8 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	private void pixelsToBytes() {
 		CvScalar p;
-		_bytes = new byte[_pixels.size() * PIXEL_CHANNELS * 2];
-		for (int i = 0; i < _pixels.size() * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
+		_bytes = new byte[(2 * (_width + _height)) * PIXEL_CHANNELS * 2];
+		for (int i = 0; i < (2 * (_width + _height)) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			p = _pixels.get(i / PIXEL_CHANNELS);
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
 				_bytes[i + j] = (byte) ((int)p.val(j) & 0xFF);
@@ -161,15 +158,20 @@ public class PixelBlock implements java.io.Serializable {
 			
 			if (_compressed == null || _compressed.length == 0) return;
 			
-			_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS];
+			_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS * 2];
 			decompressor.setJPEGImage(_compressed, _compressedSize);
+			
+//			_decompressed = decompressor.decompress(
+//				0, 0, 0, TJ.PF_RGB, 0
+//			);
+			
 			decompressor.decompress(
 				_decompressed, 
 				0,
 				0, 
-				_width, 
+				0, 
 				0,
-				(2 * (_height + _width)) / _width, 
+				0, 
 				TJ.PF_RGB, 
 				0
 			);
@@ -198,15 +200,23 @@ public class PixelBlock implements java.io.Serializable {
 		_pixels = new ArrayList<CvScalar>();
 		
 		if (_decompressed == null || _decompressed.length == 0) {
-			// TODO: throw exception?
+			System.err.println("klajd f;laksjd f;lawkej f;alsjkf iwejf pwojf p2-38u r298r ");
 			System.exit(1);
 		}
 		
 		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			
-			r = ((int)_decompressed[i]) & 0x000000FF;
-			g = ((int)_decompressed[i+1]) & 0x000000FF;
-			b = ((int)_decompressed[i+2]) & 0x000000FF;
+			r = _bytes[i] & 0xFF;
+			g =_bytes[i+1] & 0xFF;
+			b = _bytes[i+2] & 0xFF;
+			
+			if (r == 0 && b == 0 && g == 0) {
+				System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				System.out.println(r);
+				System.out.println(g);			
+				System.out.println(b);			
+
+			}
 			
 			pixel = new CvScalar(r, g, b, 0f);
 			_pixels.add(pixel);
