@@ -376,8 +376,14 @@ public class Recombiner {
 	}
 
 	public static void barycentricRGBInterpolation(IplImage cImage,
-			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects) {
+			IplImage bImage, IplImage fImage, FaceStreamElement fse) {
 		
+		ArrayList<CvRect> rects = fse.getRectangles().toCvRectList();
+		PixelBlockList pixelBlocks = fse.getPixelBlocks();
+		for (int i = 0; i < pixelBlocks.size(); i++) {
+			PixelBlock pb = pixelBlocks.get(i);
+			System.out.println(pb._decompressed.length);
+		}
 		barycentricBoundaryInterpolation(cImage, bImage, fImage, rects,
 				new RGBInterpolator());
 	}

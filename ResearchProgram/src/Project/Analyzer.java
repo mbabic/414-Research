@@ -320,7 +320,7 @@ public class Analyzer {
 			cImage, 
 			bImage, 
 			fImage, 
-			fse.getRectangles().toCvRectList()
+			fse
 		);
 	}
 }

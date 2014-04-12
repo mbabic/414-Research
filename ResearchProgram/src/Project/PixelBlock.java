@@ -33,7 +33,7 @@ public class PixelBlock implements java.io.Serializable {
 	public transient byte[] _bytes;
 	
 	/**
-	 * The compressed bytes asociated with the 
+	 * The compressed bytes associated with the pixels.
 	 */
 	public byte[] _compressed;
 	
@@ -125,23 +125,18 @@ public class PixelBlock implements java.io.Serializable {
 	}
 	
 	/**
-	 * Flatten byte array to one-dimensional representation
-	 */
-	public void flatten() {
-		
-	}
-	
-	/**
 	 * Compress byte array using JPEG algorithm.
 	 * TODO: clear _bytes from memory.
 	 * @param compressor
 	 * 		The instance of TJCompressor used to compress the pixels.
 	 */
 	public void compress(TJCompressor compressor) {
+		if (_bytes == null || _bytes.length == 0) {
+			System.err.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		}
 		try {
-			System.out.println(2 * (_width + _height) * PIXEL_CHANNELS);
 			compressor.setSourceImage(
-					_bytes,								// src buf
+				_bytes,								// src buf
 				0,										// x offset
 				0,										// y offset
 				_width,									// width
@@ -165,6 +160,8 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	public void decompress(TJDecompressor decompressor) {
 		try {
+			
+			if (_compressed == null || _compressed.length == 0) return;
 			_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS];
 			decompressor.setJPEGImage(_compressed, _compressedSize);
 			decompressor.decompress(
