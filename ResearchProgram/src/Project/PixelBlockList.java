@@ -99,9 +99,7 @@ public class PixelBlockList implements java.io.Serializable {
 	 */
 	public PixelBlock get(int i) {
 		PixelBlock pb = _pixelBlocks.get(i);
-		
 		initDecompressor();
-		
 		pb.decompress(_decompressor);
 		return pb;
 	}

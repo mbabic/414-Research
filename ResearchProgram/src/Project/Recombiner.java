@@ -212,6 +212,61 @@ public class Recombiner {
 		}
 	}
 
+	
+	/**
+	 * Perform interpolation on rectangle boundaries using barycentric
+	 * coordinates (triangles) and saved pixel data.
+	 * @param cImage
+	 * 		The image 
+	 * @param bImage
+	 * 		Background image.
+	 * @param fImage
+	 * 		Face image.
+	 * @param fse
+	 * 		The FaceStreamElement containing the rectangles defining the 
+	 * 		regions in which the faces lie and the associated pixel data.
+	 * @param interpolator
+	 *		The interpolator to be used in interpolation operations. 
+	 */
+	public static void barycentricBoundaryInterpolation(IplImage cImage,
+			IplImage bImage, IplImage fImage, FaceStreamElement fse,
+			Interpolator interpolator) {
+		
+		PixelBlockList pbl = fse.getPixelBlocks();
+		ArrayList<CvRect> rects = fse.getRectangles().toCvRectList();
+		ArrayList<CvScalar> pixels;
+		CvRect rect;
+		PixelBlock pb;
+		int x, y, height, width;
+		
+		
+		for (int i = 0; i < rects.size(); i++) {
+			
+			pb = pbl.get(i);
+			rect = rects.get(i);
+			pixels = pb.reconstructPixels();
+			System.out.println("Pixels size: " + pixels.size());
+			System.out.println("Rect size: " + (2 * rect.width() + rect.height()));
+			
+			
+		}
+		
+	}
+	
+	/**
+	 * Perform interpolation on rectangle boundaries using barycentric
+	 * coordinates (triangles) with no saved pixel data.
+	 * @param cImage
+	 * 		The image 
+	 * @param bImage
+	 * 		Background image.
+	 * @param fImage
+	 * 		Face image.
+	 * @param rects
+	 * 		Rects defining the regions in which the faces lie.
+	 * @param interpolator
+	 *		The interpolator to be used in interpolation operations. 
+	 */
 	public static void barycentricBoundaryInterpolation(IplImage cImage,
 			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects,
 			Interpolator interpolator) {
@@ -378,14 +433,17 @@ public class Recombiner {
 	public static void barycentricRGBInterpolation(IplImage cImage,
 			IplImage bImage, IplImage fImage, FaceStreamElement fse) {
 		
-		ArrayList<CvRect> rects = fse.getRectangles().toCvRectList();
-		PixelBlockList pixelBlocks = fse.getPixelBlocks();
-		for (int i = 0; i < pixelBlocks.size(); i++) {
-			PixelBlock pb = pixelBlocks.get(i);
-			System.out.println(pb._decompressed.length);
+		
+		if (fse.getPixelBlocks() != null) {
+			barycentricBoundaryInterpolation(cImage, bImage, fImage, fse,
+					new RGBInterpolator());		
+		} else {
+			ArrayList<CvRect> rects = fse.getRectangles().toCvRectList();
+			barycentricBoundaryInterpolation(cImage, bImage, fImage, rects,
+					new RGBInterpolator());
 		}
-		barycentricBoundaryInterpolation(cImage, bImage, fImage, rects,
-				new RGBInterpolator());
+		
+
 	}
 	
 	public static void barycentricHSVInterpolation(IplImage cImage,

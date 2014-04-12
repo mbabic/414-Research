@@ -105,14 +105,14 @@ public class PixelBlock implements java.io.Serializable {
 			_pixels.add(cvGet2D(img, y, i));
 		}	
 		
-		createByteBuffer();
+		pixelsToBytes();
 	}
 	
 	/**
 	 * From instance _pixels value, populate _bytes array with appropriate
 	 * byte values.
 	 */
-	private void createByteBuffer() {
+	private void pixelsToBytes() {
 		CvScalar p;
 		_bytes = new byte[_pixels.size() * PIXEL_CHANNELS * 2];
 		for (int i = 0; i < _pixels.size() * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
@@ -121,7 +121,6 @@ public class PixelBlock implements java.io.Serializable {
 				_bytes[i + j] = (byte) ((int)p.val(0) & 0xFF);
 			}
 		}
-		p = null;
 	}
 	
 	/**
@@ -131,9 +130,6 @@ public class PixelBlock implements java.io.Serializable {
 	 * 		The instance of TJCompressor used to compress the pixels.
 	 */
 	public void compress(TJCompressor compressor) {
-		if (_bytes == null || _bytes.length == 0) {
-			System.err.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		}
 		try {
 			compressor.setSourceImage(
 				_bytes,								// src buf
@@ -162,6 +158,7 @@ public class PixelBlock implements java.io.Serializable {
 		try {
 			
 			if (_compressed == null || _compressed.length == 0) return;
+			
 			_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS];
 			decompressor.setJPEGImage(_compressed, _compressedSize);
 			decompressor.decompress(
@@ -188,7 +185,31 @@ public class PixelBlock implements java.io.Serializable {
 		
 	}
 	
-	public void pixelsToBytes() {
+	/**
+	 * @return
+	 * 		Use _decompressed to reconstruct an array list of pixels. 
+	 */
+	public ArrayList<CvScalar> reconstructPixels() {
 		
+		CvScalar pixel;
+		int r, g, b;
+		_pixels = new ArrayList<CvScalar>();
+		
+		if (_decompressed == null || _decompressed.length == 0) {
+			// TODO: throw exception?
+			System.exit(1);
+		}
+		
+		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
+			
+			r = _decompressed[i];
+			b = _decompressed[i+1];
+			g = _decompressed[i+2];
+			
+			pixel = new CvScalar(r, g, b, 1f);
+			_pixels.add(pixel);
+		}
+		return _pixels;
 	}
+	
 }
