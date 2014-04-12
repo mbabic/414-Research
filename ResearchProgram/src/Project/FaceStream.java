@@ -13,10 +13,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import org.libjpegturbo.turbojpeg.TJCompressor;
+import org.libjpegturbo.turbojpeg.TJDecompressor;
+
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 
 /**
- * Stream of SerializableRectLists.
+ * Serializable stream of SerializableRectLists.
  * 
  * @author Marko Babic, Marcus Karpoff
  * 
@@ -27,12 +30,24 @@ public class FaceStream implements java.io.Serializable {
 	 * Auto-generated UID.
 	 */
 	private static final long serialVersionUID = -2647220701334355386L;
+	public ArrayList<FaceStreamElement> _stream;
+//	public ArrayList<SerializableRectList> _rectStream;
 
-	public ArrayList<SerializableRectList> _stream;
 	int _frame;
+	private transient TJCompressor  _compressor;
+	private transient TJDecompressor _decompressor;
 
 	public FaceStream() {
-		_stream = new ArrayList<SerializableRectList>();
+		_stream = new ArrayList<FaceStreamElement>();
+//		_rectStream = new ArrayList<SerializableRectList>();
+		try {
+			_compressor = new TJCompressor();
+			_decompressor = new TJDecompressor();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
 		_frame = 0;
 	}
 
@@ -40,13 +55,21 @@ public class FaceStream implements java.io.Serializable {
 		_frame = 0;
 	}
 
-	public void add(SerializableRectList faces) {
-		_stream.add(faces);
+	public void add(FaceStreamElement fse) {
+		_stream.add(fse);
 	}
+	
+//	public void add(SerializableRectList faces) {
+//		_rectStream.add(faces);
+//	}
 
-	public ArrayList<CvRect> getNextRectList() {
-		return _stream.get(_frame++).toCvRectList();
+	public FaceStreamElement getNextElement() {
+		return _stream.get(_frame++);
 	}
+	
+//	public ArrayList<CvRect> getNextRectList() {
+//		return _rectStream.get(_frame++).toCvRectList();
+//	}
 
 	public void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();

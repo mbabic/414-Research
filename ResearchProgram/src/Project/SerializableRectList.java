@@ -25,6 +25,13 @@ public class SerializableRectList implements java.io.Serializable {
 		_rects = new ArrayList<SerializableRect>();
 	}
 	
+	public SerializableRectList(ArrayList<CvRect> rects) {
+		_rects = new ArrayList<SerializableRect>();
+		for (int i = 0; i < rects.size(); i++) {
+			_rects.add(new SerializableRect(rects.get(i)));
+		}		
+	}
+	
 	public SerializableRectList(CvSeq seq) {
 		_rects = new ArrayList<SerializableRect>();
 		for (int i = 0; i < seq.total(); i++) {

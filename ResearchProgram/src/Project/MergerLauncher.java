@@ -33,7 +33,7 @@ public class MergerLauncher {
 		IplImage mergImage, backImage, faceImage;
 		FFmpegFrameRecorder recorder = null;
 		FaceStream stream = FaceStream.fromFile();
-		ArrayList<CvRect> rects;
+		FaceStreamElement fse;
 		try {
 			backFrameGrabber = transmitter.receiveStream(inb);
 			faceFrameGrabber = transmitter.receiveStream(inf);
@@ -86,8 +86,8 @@ public class MergerLauncher {
 				}
 
 				mergImage = backImage.clone();
-				rects = stream.getNextRectList();
-				analyzer.recombineVideo(mergImage, backImage, faceImage, rects);
+				fse = stream.getNextElement();
+				analyzer.recombineVideo(mergImage, backImage, faceImage, fse);
 				if (onceThrough) {
 					try {
 						recorder.record(mergImage);

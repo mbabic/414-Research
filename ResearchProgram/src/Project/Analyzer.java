@@ -257,7 +257,6 @@ public class Analyzer {
 		}
 
 		simplifiedFaceList = RectAnalyzer.getBoundingRects(faceList);
-
 		for (int i = 0; i < simplifiedFaceList.size(); i++) {
 			cvSeqPush(faces, simplifiedFaceList.get(i));
 		}
@@ -283,7 +282,10 @@ public class Analyzer {
 	public void separateStreams(IplImage orig, IplImage back, IplImage face,
 			FaceStream fs) {
 		CvSeq faces = getFaces(orig);
-		fs.add(new SerializableRectList(faces));
+		
+		fs.add(new FaceStreamElement(orig, faces));
+		
+//		fs.add(new SerializableRectList(faces));
 		blackOutFaces(back, faces);
 		cvAbsDiff(orig, back, face);
 	}
@@ -291,13 +293,10 @@ public class Analyzer {
 	/**
 	 * This function will write onto of the frames that have facial data.
 	 * 
-	 * @param inputMat
-	 *            The Mat of that is going to be blacked out
-	 * @param rect
-	 *            The rectangle that will be drawn
-	 * @param sf
-	 *            (shrink factor) The number of pixel by which the rectangle
-	 *            which is blacked out is smaller than the actual rect.s
+	 * @param input
+	 *            The IplImage to be blacked out
+	 * @param rects
+	 *            CvSeq of rectangles defining areas to black out.
 	 */
 	private void blackOutFaces(IplImage input, CvSeq rects) {
 		int total_Faces = rects.total();
@@ -314,10 +313,15 @@ public class Analyzer {
 	 * to one video stream.
 	 */
 	public void recombineVideo(IplImage cImage, IplImage bImage,
-			IplImage fImage, ArrayList<CvRect> rects) {
+			IplImage fImage, FaceStreamElement fse) {
 		// TODO: change which recombinator called based on param set ...
 		// somewhere
-		Recombiner.barycentricRGBInterpolation(cImage, bImage, fImage, rects);
+		Recombiner.barycentricRGBInterpolation(
+			cImage, 
+			bImage, 
+			fImage, 
+			fse.getRectangles().toCvRectList()
+		);
 	}
 }
 
