@@ -105,6 +105,8 @@ public class PixelBlock implements java.io.Serializable {
 			_pixels.add(cvGet2D(img, y, i));
 		}	
 		
+		System.out.println(_pixels);
+		
 		pixelsToBytes();
 	}
 	
@@ -118,7 +120,7 @@ public class PixelBlock implements java.io.Serializable {
 		for (int i = 0; i < _pixels.size() * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			p = _pixels.get(i / PIXEL_CHANNELS);
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
-				_bytes[i + j] = (byte) ((int)p.val(0) & 0xFF);
+				_bytes[i + j] = (byte) ((int)p.val(j) & 0xFF);
 			}
 		}
 	}
@@ -168,7 +170,7 @@ public class PixelBlock implements java.io.Serializable {
 				_width, 
 				0,
 				(2 * (_height + _width)) / _width, 
-				TJ.PF_BGR, 
+				TJ.PF_RGB, 
 				0
 			);
 		} catch (Exception e) {
@@ -202,11 +204,11 @@ public class PixelBlock implements java.io.Serializable {
 		
 		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			
-			r = _decompressed[i];
-			b = _decompressed[i+1];
-			g = _decompressed[i+2];
+			r = ((int)_decompressed[i]) & 0x000000FF;
+			g = ((int)_decompressed[i+1]) & 0x000000FF;
+			b = ((int)_decompressed[i+2]) & 0x000000FF;
 			
-			pixel = new CvScalar(r, g, b, 1f);
+			pixel = new CvScalar(r, g, b, 0f);
 			_pixels.add(pixel);
 		}
 		return _pixels;
