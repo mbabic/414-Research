@@ -1,8 +1,7 @@
 package Project;
 
-import java.util.ArrayList;
-
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvSeq;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /** 
  * A particular element in a FaceStream.  Aggregates an array of CvRects and
@@ -19,6 +18,16 @@ public class FaceStreamElement implements java.io.Serializable {
 	private SerializableRectList _rects;
 	private PixelBlockList _pixelBlocks;
 	
+	public FaceStreamElement(IplImage img, CvSeq rects) {
+		_pixelBlocks = new PixelBlockList(img, rects);
+		_rects = new SerializableRectList(rects);	
+	}
+	
+	/**
+	 * @deprecated
+	 * @param pbl
+	 * @param srl
+	 */
 	public FaceStreamElement(PixelBlockList pbl, SerializableRectList srl) {
 		_rects = srl;
 		_pixelBlocks = pbl;

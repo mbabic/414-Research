@@ -283,10 +283,7 @@ public class Analyzer {
 			FaceStream fs) {
 		CvSeq faces = getFaces(orig);
 		
-		fs.add(new FaceStreamElement(
-			new PixelBlockList(orig, faces),
-			new SerializableRectList(faces)
-		));
+		fs.add(new FaceStreamElement(orig, faces));
 		
 //		fs.add(new SerializableRectList(faces));
 		blackOutFaces(back, faces);
