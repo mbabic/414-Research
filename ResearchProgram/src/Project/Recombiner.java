@@ -242,6 +242,8 @@ public class Recombiner {
 		PixelBlock pb;
 		CvScalar pixel, v0, v1;
 		int x, y, height, width;
+		int imgWidth = cImage.width();
+		int imgHeight = cImage.height();
 		
 		cvAbsDiff(bImage, fImage, cImage);
 		for (int n = 0; n < rects.size(); n++) {
@@ -260,13 +262,12 @@ public class Recombiner {
 			// So, we begin along left hand edge.
 			for (int j = y; j < y + height; j++) {
 				// Handle boundary conditions
-				if ((2 <= j && j <= height - 1)
-						&& (2 <= x && x <= width - 2)) {
-					pixel = pixels.get(j - y);
+				if ((2 <= y && j <= imgHeight - 2)
+						&& (2 <= x && x <= imgWidth - 2)) {
+					pixel = (CvScalar) iter.next();
 					v0 = cvGet2D(bImage, j, x-2);
 					v1 = cvGet2D(fImage, j, x+2);
 					cvSet2D(cImage, j, x,pixel);
-					System.out.println(pixel);
 					cvSet2D(cImage, j, x - 1,
 						interpolator.linearInterpolate(v0, pixel, 0.666)
 					);
@@ -283,15 +284,16 @@ public class Recombiner {
 			// Interpolate along bottom edge
 			for (int i = x; i < x + width; i++) {
 				// Handle boundary conditions
-				if ((0 <= i && i <= width - 2)
-						&& (2 <= y && y <= height - 2)) {
+				if ((0 <= i && i <= imgWidth - 2)
+						&& (2 <= y && y <= imgHeight - 2)) {
 					pixel = (CvScalar) iter.next();
-					v0 = cvGet2D(fImage, y + width - 2, i);
-					v1 = cvGet2D(bImage, y + width + 2, i);
-					cvSet2D(cImage, y + width - 1, i,
+					v0 = cvGet2D(fImage, y + height - 2, i);
+					v1 = cvGet2D(bImage, y + height + 2, i);
+					cvSet2D(cImage, y + height, i, pixel);
+					cvSet2D(cImage, y + height - 1, i,
 							interpolator.linearInterpolate(v0, pixel, 0.5)
 					);
-					cvSet2D(cImage, y + width + 1, i,
+					cvSet2D(cImage, y + height + 1, i,
 							interpolator.linearInterpolate(v1, pixel, 0.5)
 					);
 				}
