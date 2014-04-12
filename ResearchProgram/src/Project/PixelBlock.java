@@ -33,7 +33,7 @@ public class PixelBlock implements java.io.Serializable {
 	public transient byte[] _bytes;
 	
 	/**
-	 * The compressed bytes asociated with the 
+	 * The compressed bytes associated with the pixels.
 	 */
 	public byte[] _compressed;
 	
@@ -52,12 +52,12 @@ public class PixelBlock implements java.io.Serializable {
 	 * Width of rectangle which defines area of image from which instance
 	 * retrieves pixel values.
 	 */	
-	private int _width;
+	public int _width;
 	/** 
 	 * Height of rectangle which defines area of image from which instance
 	 * retrieves pixel values.
 	 */
-	private int _height;
+	public int _height;
 	
 	/**
 	 * Empty constructor.
@@ -84,9 +84,9 @@ public class PixelBlock implements java.io.Serializable {
 		_height = height;
 
 		// We get pixel values in separate iterations and in order to keep
-		// the byte data in a predicatble format at deserialization.
+		// the byte data in a predictable format at de-serialization.
 		// Get values of pixels along left-hand edge, top to bottom.
-		for (int j = y; j < y + width; j++) {
+		for (int j = y; j < y + height; j++) {
 			_pixels.add(cvGet2D(img, j, x));
 		}
 
@@ -96,39 +96,33 @@ public class PixelBlock implements java.io.Serializable {
 		}
 
 		// Get values of pixels along right edge, bottom to top.
-		for (int j = y + height - 1; j >= y; j--) {
+		for (int j = y + height; j > y; j--) {
 			_pixels.add(cvGet2D(img, j, x + width));
 		}
 
 		// Get values of pixels along top edge, right to left.
-		for (int i = x + width - 1; i >= x; i--) {
+		for (int i = x + width; i > x; i--) {
 			_pixels.add(cvGet2D(img, y, i));
 		}	
 		
-		createByteBuffer();
+		System.out.println(_pixels);
+		
+		pixelsToBytes();
 	}
 	
 	/**
 	 * From instance _pixels value, populate _bytes array with appropriate
 	 * byte values.
 	 */
-	private void createByteBuffer() {
+	private void pixelsToBytes() {
 		CvScalar p;
 		_bytes = new byte[_pixels.size() * PIXEL_CHANNELS * 2];
 		for (int i = 0; i < _pixels.size() * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			p = _pixels.get(i / PIXEL_CHANNELS);
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
-				_bytes[i + j] = (byte) ((int)p.val(0) & 0xFF);
+				_bytes[i + j] = (byte) ((int)p.val(j) & 0xFF);
 			}
 		}
-		p = null;
-	}
-	
-	/**
-	 * Flatten byte array to one-dimensional representation
-	 */
-	public void flatten() {
-		
 	}
 	
 	/**
@@ -139,15 +133,14 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	public void compress(TJCompressor compressor) {
 		try {
-			System.out.println(2 * (_width + _height) * PIXEL_CHANNELS);
 			compressor.setSourceImage(
-					_bytes,								// src buf
+				_bytes,								// src buf
 				0,										// x offset
 				0,										// y offset
 				_width,									// width
 				0,										// pitch
 				(2 * (_width + _height)) / _width,		// height
-				TJ.PF_BGR
+				TJ.PF_RGB
 			);
 			compressor.setSubsamp(TJ.SAMP_420);
 			compressor.setJPEGQuality(100);
@@ -165,6 +158,9 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	public void decompress(TJDecompressor decompressor) {
 		try {
+			
+			if (_compressed == null || _compressed.length == 0) return;
+			
 			_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS];
 			decompressor.setJPEGImage(_compressed, _compressedSize);
 			decompressor.decompress(
@@ -174,7 +170,7 @@ public class PixelBlock implements java.io.Serializable {
 				_width, 
 				0,
 				(2 * (_height + _width)) / _width, 
-				TJ.PF_BGR, 
+				TJ.PF_RGB, 
 				0
 			);
 		} catch (Exception e) {
@@ -191,7 +187,31 @@ public class PixelBlock implements java.io.Serializable {
 		
 	}
 	
-	public void pixelsToBytes() {
+	/**
+	 * @return
+	 * 		Use _decompressed to reconstruct an array list of pixels. 
+	 */
+	public ArrayList<CvScalar> reconstructPixels() {
 		
+		CvScalar pixel;
+		int r, g, b;
+		_pixels = new ArrayList<CvScalar>();
+		
+		if (_decompressed == null || _decompressed.length == 0) {
+			// TODO: throw exception?
+			System.exit(1);
+		}
+		
+		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
+			
+			r = ((int)_decompressed[i]) & 0x000000FF;
+			g = ((int)_decompressed[i+1]) & 0x000000FF;
+			b = ((int)_decompressed[i+2]) & 0x000000FF;
+			
+			pixel = new CvScalar(r, g, b, 0f);
+			_pixels.add(pixel);
+		}
+		return _pixels;
 	}
+	
 }

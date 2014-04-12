@@ -16,6 +16,7 @@ import Project.IOUtils;
 import Project.PixelBlock;
 
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class PixelBlockTests {
 
@@ -31,7 +32,8 @@ public class PixelBlockTests {
 			rects.add(cvr);
 			
 			PixelBlock pb = new PixelBlock(test, cvr);
-			
+			ArrayList<CvScalar> pixels = new ArrayList<CvScalar>(pb._pixels);
+			ArrayList<CvScalar> reconstructedPixels;
 			TJCompressor compressor = new TJCompressor();
 			TJDecompressor decompressor = new TJDecompressor();
 			pb.compress(compressor);
@@ -40,12 +42,21 @@ public class PixelBlockTests {
 			pb.decompress(decompressor);
 			System.out.println(decompressor.getJPEGSize());
 			System.out.println(pb._decompressed.length);
-			for (int i = 0; i < pb._decompressed.length; i++) {
-				if (Math.abs((pb._decompressed[i] & 0xFF) - (pb._bytes[i] & 0xFF)) > 1 ) {
-					System.out.println(i);
-					System.out.println((pb._decompressed[i] & 0xFF));
-					System.out.println((pb._bytes[i] & 0xFF));
-					fail("Pixel values differ by more than set threshold");
+//			for (int i = 0; i < pb._decompressed.length; i++) {
+//				if (Math.abs((pb._decompressed[i] & 0xFF) - (pb._bytes[i] & 0xFF)) > 10 ) {
+//					System.out.println("i: " + i);
+//					System.out.println((pb._decompressed[i] & 0xFF));
+//					System.out.println((pb._bytes[i] & 0xFF));
+//					fail("Pixel values differ by more than set threshold");
+//				}
+//			}
+			
+			reconstructedPixels = pb.reconstructPixels();
+			System.out.println(reconstructedPixels);
+			for (int i = 0; i < reconstructedPixels.size(); i++) {
+				if (reconstructedPixels.get(i).val(0) != pixels.get(i).val(0)) {
+//					System.out.println(reconstructedPixels.get(i));
+//					System.out.println(pixels.get(i));
 				}
 			}
 			

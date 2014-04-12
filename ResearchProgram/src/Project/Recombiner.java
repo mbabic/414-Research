@@ -5,13 +5,15 @@ import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvSet2D;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2BGR;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2HSV;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
@@ -212,6 +214,108 @@ public class Recombiner {
 		}
 	}
 
+	
+	/**
+	 * Perform interpolation on rectangle boundaries using barycentric
+	 * coordinates (triangles) and saved pixel data.
+	 * @param cImage
+	 * 		The image 
+	 * @param bImage
+	 * 		Background image.
+	 * @param fImage
+	 * 		Face image.
+	 * @param fse
+	 * 		The FaceStreamElement containing the rectangles defining the 
+	 * 		regions in which the faces lie and the associated pixel data.
+	 * @param interpolator
+	 *		The interpolator to be used in interpolation operations. 
+	 */
+	public static void barycentricBoundaryInterpolation(IplImage cImage,
+			IplImage bImage, IplImage fImage, FaceStreamElement fse,
+			Interpolator interpolator) {
+		
+		PixelBlockList pbl = fse.getPixelBlocks();
+		ArrayList<CvRect> rects = fse.getRectangles().toCvRectList();
+		ArrayList<CvScalar> pixels;
+		Iterator iter;
+		CvRect rect;
+		PixelBlock pb;
+		CvScalar pixel, v0, v1;
+		int x, y, height, width;
+		int imgWidth = cImage.width();
+		int imgHeight = cImage.height();
+		
+		cvAbsDiff(bImage, fImage, cImage);
+		for (int n = 0; n < rects.size(); n++) {
+			pb = pbl.get(n);
+			pixels = pb.reconstructPixels();
+			iter = pixels.iterator();
+			rect = rects.get(n);
+			x = rect.x();
+			y = rect.y();
+			width = rect.width();
+			height = rect.height();
+
+			// Pixels were saved in top-left to bottom-left, bottom-left 
+			// to bottom-right, bottom-right to top-right, top-right to
+			// top-left order.
+			// So, we begin along left hand edge.
+			for (int j = y; j < y + height; j++) {
+				// Handle boundary conditions
+				if ((2 <= y && j <= imgHeight - 2)
+						&& (2 <= x && x <= imgWidth - 2)) {
+					pixel = (CvScalar) iter.next();
+					v0 = cvGet2D(bImage, j, x-2);
+					v1 = cvGet2D(fImage, j, x+2);
+					cvSet2D(cImage, j, x,pixel);
+					cvSet2D(cImage, j, x - 1,
+						interpolator.linearInterpolate(v0, pixel, 0.666)
+					);
+					cvSet2D(cImage, j, x - 2,
+							interpolator.linearInterpolate(v0, pixel, 0.333)
+						);
+					cvSet2D(cImage, j, x + 1,
+						interpolator.linearInterpolate(v1, pixel, 0.5)
+					);
+				}
+				
+			}
+			
+			// Interpolate along bottom edge
+			for (int i = x; i < x + width; i++) {
+				// Handle boundary conditions
+				if ((0 <= i && i <= imgWidth - 2)
+						&& (2 <= y && y <= imgHeight - 2)) {
+					pixel = (CvScalar) iter.next();
+					v0 = cvGet2D(fImage, y + height - 2, i);
+					v1 = cvGet2D(bImage, y + height + 2, i);
+					cvSet2D(cImage, y + height, i, pixel);
+					cvSet2D(cImage, y + height - 1, i,
+							interpolator.linearInterpolate(v0, pixel, 0.5)
+					);
+					cvSet2D(cImage, y + height + 1, i,
+							interpolator.linearInterpolate(v1, pixel, 0.5)
+					);
+				}
+			}
+		}
+		
+	}
+	
+	/**
+	 * Perform interpolation on rectangle boundaries using barycentric
+	 * coordinates (triangles) with no saved pixel data.
+	 * @param cImage
+	 * 		The image 
+	 * @param bImage
+	 * 		Background image.
+	 * @param fImage
+	 * 		Face image.
+	 * @param rects
+	 * 		Rects defining the regions in which the faces lie.
+	 * @param interpolator
+	 *		The interpolator to be used in interpolation operations. 
+	 */
 	public static void barycentricBoundaryInterpolation(IplImage cImage,
 			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects,
 			Interpolator interpolator) {
@@ -376,10 +480,19 @@ public class Recombiner {
 	}
 
 	public static void barycentricRGBInterpolation(IplImage cImage,
-			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects) {
+			IplImage bImage, IplImage fImage, FaceStreamElement fse) {
 		
-		barycentricBoundaryInterpolation(cImage, bImage, fImage, rects,
-				new RGBInterpolator());
+		
+		if (fse.getPixelBlocks() != null) {
+			barycentricBoundaryInterpolation(cImage, bImage, fImage, fse,
+					new RGBInterpolator());		
+		} else {
+			ArrayList<CvRect> rects = fse.getRectangles().toCvRectList();
+			barycentricBoundaryInterpolation(cImage, bImage, fImage, rects,
+					new RGBInterpolator());
+		}
+		
+
 	}
 	
 	public static void barycentricHSVInterpolation(IplImage cImage,
