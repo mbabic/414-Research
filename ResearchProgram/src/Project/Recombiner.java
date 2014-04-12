@@ -5,13 +5,15 @@ import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvSet2D;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2BGR;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2HSV;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
@@ -235,20 +237,61 @@ public class Recombiner {
 		PixelBlockList pbl = fse.getPixelBlocks();
 		ArrayList<CvRect> rects = fse.getRectangles().toCvRectList();
 		ArrayList<CvScalar> pixels;
+		Iterator iter;
 		CvRect rect;
 		PixelBlock pb;
+		CvScalar pixel, v0, v1;
 		int x, y, height, width;
 		
-		
-		for (int i = 0; i < rects.size(); i++) {
-			
-			pb = pbl.get(i);
-			rect = rects.get(i);
+		cvAbsDiff(bImage, fImage, cImage);
+		for (int n = 0; n < rects.size(); n++) {
+			pb = pbl.get(n);
 			pixels = pb.reconstructPixels();
-			System.out.println("Pixels size: " + pixels.size());
-			System.out.println("Rect size: " + (2 * rect.width() + rect.height()));
+			iter = pixels.iterator();
+			rect = rects.get(n);
+			x = rect.x();
+			y = rect.y();
+			width = rect.width();
+			height = rect.height();
 			
+			// Pixels were saved in top-left to bottom-left, bottom-left 
+			// to bottom-right, bottom-right to top-right, top-right to
+			// top-left order.
 			
+			// So, we begin along left hand edge.
+			for (int j = y; j < y + height; j++) {
+				// Handle boundary conditions
+				if ((2 <= j && j <= height - 1)
+						&& (2 <= x && x <= width - 2)) {
+					pixel = (CvScalar) iter.next();
+					v0 = cvGet2D(bImage, j, x-2);
+					v1 = cvGet2D(fImage, j, x+2);
+					
+					cvSet2D(cImage, j, x - 1,
+							interpolator.linearInterpolate(v0, pixel, 0.5));
+					cvSet2D(cImage, j, x + 1,
+							interpolator.linearInterpolate(v1, pixel, 0.5));
+				}
+				
+			}
+			
+			// Interpolate along bottom edge
+			for (int i = x; i < x + width; i++) {
+				// Handle boundary conditions
+				if ((0 <= i && i <= width - 2)
+						&& (2 <= y && y <= height - 2)) {
+					pixel = (CvScalar) iter.next();
+					v0 = cvGet2D(fImage, y + width - 2, i);
+					v1 = cvGet2D(bImage, y + width + 2, i);
+					
+					cvSet2D(cImage, y + width - 1, i,
+							interpolator.linearInterpolate(v0, pixel, 0.5)
+					);
+					cvSet2D(cImage, y + width + 1, i,
+							interpolator.linearInterpolate(v1, pixel, 0.5)
+					);
+				}
+			}
 		}
 		
 	}

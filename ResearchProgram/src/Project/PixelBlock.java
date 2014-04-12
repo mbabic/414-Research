@@ -86,7 +86,7 @@ public class PixelBlock implements java.io.Serializable {
 		// We get pixel values in separate iterations and in order to keep
 		// the byte data in a predicatble format at deserialization.
 		// Get values of pixels along left-hand edge, top to bottom.
-		for (int j = y; j < y + width; j++) {
+		for (int j = y; j < y + height; j++) {
 			_pixels.add(cvGet2D(img, j, x));
 		}
 
