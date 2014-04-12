@@ -69,4 +69,8 @@ public class Settings {
 	/** Folder in which to store intermediate conversion files */
 	public static final String OUT = "out/";
 	
+	/** Boolean value indicating if pixel values on rectangle border should
+	 * be saved. */
+	public static boolean SAVE_PIXELS = true;
+	
 }
