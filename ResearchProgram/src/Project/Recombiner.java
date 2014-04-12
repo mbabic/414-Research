@@ -253,24 +253,29 @@ public class Recombiner {
 			y = rect.y();
 			width = rect.width();
 			height = rect.height();
-			
+
 			// Pixels were saved in top-left to bottom-left, bottom-left 
 			// to bottom-right, bottom-right to top-right, top-right to
 			// top-left order.
-			
 			// So, we begin along left hand edge.
 			for (int j = y; j < y + height; j++) {
 				// Handle boundary conditions
 				if ((2 <= j && j <= height - 1)
 						&& (2 <= x && x <= width - 2)) {
-					pixel = (CvScalar) iter.next();
+					pixel = pixels.get(j - y);
 					v0 = cvGet2D(bImage, j, x-2);
 					v1 = cvGet2D(fImage, j, x+2);
-					
+					cvSet2D(cImage, j, x,pixel);
+					System.out.println(pixel);
 					cvSet2D(cImage, j, x - 1,
-							interpolator.linearInterpolate(v0, pixel, 0.5));
+						interpolator.linearInterpolate(v0, pixel, 0.666)
+					);
+					cvSet2D(cImage, j, x - 2,
+							interpolator.linearInterpolate(v0, pixel, 0.333)
+						);
 					cvSet2D(cImage, j, x + 1,
-							interpolator.linearInterpolate(v1, pixel, 0.5));
+						interpolator.linearInterpolate(v1, pixel, 0.5)
+					);
 				}
 				
 			}
@@ -283,7 +288,6 @@ public class Recombiner {
 					pixel = (CvScalar) iter.next();
 					v0 = cvGet2D(fImage, y + width - 2, i);
 					v1 = cvGet2D(bImage, y + width + 2, i);
-					
 					cvSet2D(cImage, y + width - 1, i,
 							interpolator.linearInterpolate(v0, pixel, 0.5)
 					);

@@ -52,10 +52,11 @@ public class PixelBlockTests {
 //			}
 			
 			reconstructedPixels = pb.reconstructPixels();
+			System.out.println(reconstructedPixels);
 			for (int i = 0; i < reconstructedPixels.size(); i++) {
 				if (reconstructedPixels.get(i).val(0) != pixels.get(i).val(0)) {
-					System.out.println(reconstructedPixels.get(i));
-					System.out.println(pixels.get(i));
+//					System.out.println(reconstructedPixels.get(i));
+//					System.out.println(pixels.get(i));
 				}
 			}
 			

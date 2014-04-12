@@ -52,12 +52,12 @@ public class PixelBlock implements java.io.Serializable {
 	 * Width of rectangle which defines area of image from which instance
 	 * retrieves pixel values.
 	 */	
-	private int _width;
+	public int _width;
 	/** 
 	 * Height of rectangle which defines area of image from which instance
 	 * retrieves pixel values.
 	 */
-	private int _height;
+	public int _height;
 	
 	/**
 	 * Empty constructor.
@@ -84,7 +84,7 @@ public class PixelBlock implements java.io.Serializable {
 		_height = height;
 
 		// We get pixel values in separate iterations and in order to keep
-		// the byte data in a predicatble format at deserialization.
+		// the byte data in a predictable format at de-serialization.
 		// Get values of pixels along left-hand edge, top to bottom.
 		for (int j = y; j < y + height; j++) {
 			_pixels.add(cvGet2D(img, j, x));
@@ -96,12 +96,12 @@ public class PixelBlock implements java.io.Serializable {
 		}
 
 		// Get values of pixels along right edge, bottom to top.
-		for (int j = y + height - 1; j >= y; j--) {
+		for (int j = y + height; j > y; j--) {
 			_pixels.add(cvGet2D(img, j, x + width));
 		}
 
 		// Get values of pixels along top edge, right to left.
-		for (int i = x + width - 1; i >= x; i--) {
+		for (int i = x + width; i > x; i--) {
 			_pixels.add(cvGet2D(img, y, i));
 		}	
 		
@@ -140,7 +140,7 @@ public class PixelBlock implements java.io.Serializable {
 				_width,									// width
 				0,										// pitch
 				(2 * (_width + _height)) / _width,		// height
-				TJ.PF_BGR
+				TJ.PF_RGB
 			);
 			compressor.setSubsamp(TJ.SAMP_420);
 			compressor.setJPEGQuality(100);
