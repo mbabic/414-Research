@@ -1,8 +1,15 @@
 package Project;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -11,8 +18,8 @@ import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class CaptureLancher {
+
 	public static void main(String[] args) {
-		// TODO: setup mechanism to specify input file and encryption password.
 		UI gui = new UI();
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
@@ -22,14 +29,21 @@ public class CaptureLancher {
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
 		
+		LoadingPanel settingsPanel = new LoadingPanel();
+		int mode = settingsPanel.getInputMode();
+		String password = settingsPanel.getPassword();
+		
 		try {
-			File file = grabMediaFile();
-			if (file == null) {
-				frameGrabber = transmitter.receiveStream();
+			if (mode == LoadingPanel.FILE){
+				File file = grabMediaFile();
+				if (file == null) {
+					System.exit(0);
+				} else {
+					frameGrabber = transmitter.receiveStream(file);
+				}
 			} else {
-				frameGrabber = transmitter.receiveStream(file);
+				frameGrabber = transmitter.receiveStream();
 			}
-			
 		} catch (Exception e1) {
 			System.err.println("Failed to load FrameGrabber");
 			e1.printStackTrace();
@@ -86,6 +100,8 @@ public class CaptureLancher {
 			stream.toFile();
 			gui.destroy();
 			transmitter.encodeHECV();
+			outb.deleteOnExit();
+			outf.deleteOnExit();
 			System.exit(0);
 
 		}
