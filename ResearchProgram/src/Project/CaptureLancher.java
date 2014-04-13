@@ -1,15 +1,8 @@
 package Project;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -23,6 +16,8 @@ public class CaptureLancher {
 		UI gui = new UI();
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
+		outb.deleteOnExit();
+		outf.deleteOnExit();
 		Transmitter transmitter = new Transmitter();
 		Analyzer analyzer = null;
 		FrameGrabber frameGrabber = null;
@@ -100,8 +95,6 @@ public class CaptureLancher {
 			stream.toFile();
 			gui.destroy();
 			transmitter.encodeHECV();
-			outb.deleteOnExit();
-			outf.deleteOnExit();
 			System.exit(0);
 
 		}

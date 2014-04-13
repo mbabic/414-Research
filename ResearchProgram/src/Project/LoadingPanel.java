@@ -22,9 +22,17 @@ public class LoadingPanel extends JFrame {
 	private String password;
 	private JPasswordField passField;
 
+	/**
+	 * JPanel Item with some specialized functions
+	 */
 	LoadingPanel() {
+		super();
 	}
 
+	/**
+	 * Shows a panel that will find out what type of input the user wants
+	 * @return The mode selected. Will either be FILE or WEBCAM.
+	 */
 	public int getInputMode() {
 		modeSelected = -1;
 		JButton loadVideoButton = new JButton("Load a File");
@@ -58,6 +66,10 @@ public class LoadingPanel extends JFrame {
 		return modeSelected;
 	}
 
+	/**
+	 * Gets a password from the user
+	 * @return The password
+	 */
 	public String getPassword() {
 		password = "";
 		
