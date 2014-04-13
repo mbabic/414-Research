@@ -13,6 +13,12 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class CaptureLancher {
 
 	public static void main(String[] args) {
+		
+		
+		LoadingPanel settingsPanel = new LoadingPanel();
+		
+		
+		
 
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
@@ -23,7 +29,8 @@ public class CaptureLancher {
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
 		
-		LoadingPanel settingsPanel = new LoadingPanel();
+//		LoadingPanel settingsPanel = new LoadingPanel();
+		
 		int mode = settingsPanel.getInputMode();
 		String password = settingsPanel.getPassword();
 		if (password != "\n")

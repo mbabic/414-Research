@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import org.libjpegturbo.turbojpeg.TJ;
 import org.libjpegturbo.turbojpeg.TJCompressor;
 import org.libjpegturbo.turbojpeg.TJDecompressor;
-import org.libjpegturbo.turbojpeg.TJTransform;
-import org.libjpegturbo.turbojpeg.TJTransformer;
 
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
