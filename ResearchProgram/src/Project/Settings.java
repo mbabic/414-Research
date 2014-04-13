@@ -71,6 +71,6 @@ public class Settings {
 	
 	/** Boolean value indicating if pixel values on rectangle border should
 	 * be saved. */
-	public static boolean SAVE_PIXELS = true;
+	public static boolean SAVE_PIXELS = false;
 	
 }

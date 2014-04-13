@@ -1,15 +1,8 @@
 package Project;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -20,11 +13,13 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class CaptureLancher {
 
 	public static void main(String[] args) {
-		UI gui = new UI();
+
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
+		outb.deleteOnExit();
+		outf.deleteOnExit();
+		
 		Transmitter transmitter = new Transmitter();
-		Analyzer analyzer = null;
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
@@ -47,9 +42,11 @@ public class CaptureLancher {
 		} catch (Exception e1) {
 			System.err.println("Failed to load FrameGrabber");
 			e1.printStackTrace();
-			gui.destroy();
 			System.exit(-1);
 		}
+		
+		UI gui = new UI();
+		Analyzer analyzer = null;
 		
 		try {
 			analyzer = new Analyzer();
@@ -60,7 +57,6 @@ public class CaptureLancher {
 			System.exit(-1);
 		}
 		try {
-
 			origImage = frameGrabber.grab();
 			transmitter.initializeRecorders(outb, outf, origImage);
 			backImage = origImage.clone();
@@ -100,8 +96,6 @@ public class CaptureLancher {
 			stream.toFile();
 			gui.destroy();
 			transmitter.encodeHECV();
-			outb.deleteOnExit();
-			outf.deleteOnExit();
 			System.exit(0);
 
 		}
@@ -120,7 +114,6 @@ public class CaptureLancher {
 			private FileNameExtensionFilter exFilter = new FileNameExtensionFilter("mp4", "avi");
 			@Override
 			public String getDescription() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 			
