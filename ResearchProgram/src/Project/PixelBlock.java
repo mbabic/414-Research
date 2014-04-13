@@ -37,7 +37,7 @@ public class PixelBlock implements java.io.Serializable {
 	/** 
 	 * Byte information associated with pixels arranged in 1-dim array. 
 	 */
-	public byte[] _bytes;
+	public transient byte[] _bytes;
 	
 	/**
 	 * The compressed bytes associated with the pixels.
