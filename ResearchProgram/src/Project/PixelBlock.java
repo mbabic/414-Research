@@ -13,6 +13,8 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
+ * Serializable data structure used to save pixel information on boundary
+ * of rectangles defining face areas.
  * Assumes RGB pixel format.
  * @author Marko Babic, Marcus Karpoff
  *
@@ -24,6 +26,9 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -7335428971230485355L;
 	
+	/**
+	 * Pixel depth.  Assumes RGB.
+	 */
 	private static final int PIXEL_CHANNELS = 3;
 	
 	
@@ -37,6 +42,9 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	public byte[] _compressed;
 	
+	/**
+	 * Decompressed bytes associated with compressed iamge data.
+	 */
 	public transient byte[] _decompressed;
 	
 	/** Byte information associated with pixel arranged in 2-dim array. */
@@ -126,7 +134,7 @@ public class PixelBlock implements java.io.Serializable {
 	 * Compress byte array using JPEG algorithm.
 	 * TODO: clear _bytes from memory.
 	 * @param compressor
-	 * 		The instance of TJCompressor used to compress the pixels.
+	 * 		The instance of TJCompressor used to perform the compression.
 	 */
 	public void compress(TJCompressor compressor) {
 		try {
@@ -152,6 +160,8 @@ public class PixelBlock implements java.io.Serializable {
 	/**
 	 * Decompress byte array which was compressed using JPEG algorithm.
 	 * @param decompressor
+	 * 		The instance of TJDecompressor to be used to perfrom the
+	 * 		decompression.
 	 */
 	public void decompress(TJDecompressor decompressor) {
 		try {
@@ -179,14 +189,6 @@ public class PixelBlock implements java.io.Serializable {
 			e.printStackTrace();
 			System.exit(1);
 		}	
-	}
-	
-	/**
-	 * Destroy reference to pixel array such that it is not serialized with
-	 * rest of object.
-	 */
-	public void prepareForSerialization() {
-		
 	}
 	
 	/**

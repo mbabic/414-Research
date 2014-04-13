@@ -284,7 +284,6 @@ public class Analyzer {
 		CvSeq faces = getFaces(orig);
 		
 		fs.add(new FaceStreamElement(orig, faces));
-
 		blackOutFaces(back, faces);
 		cvAbsDiff(orig, back, face);
 	}

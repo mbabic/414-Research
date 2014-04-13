@@ -15,7 +15,15 @@ public class FaceStreamElement implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -6526438513032989593L;
 
+	/** 
+	 * Rectangles associated with the frame this element has recorded data 
+	 * for.
+	 */
 	private SerializableRectList _rects;
+	/**
+	 * PixelBlockList associated with the frame this element has recorded data
+	 * for.
+	 */
 	private PixelBlockList _pixelBlocks;
 	
 	public FaceStreamElement(IplImage img, CvSeq rects) {
@@ -29,19 +37,19 @@ public class FaceStreamElement implements java.io.Serializable {
 	}
 	
 	/**
-	 * @deprecated
-	 * @param pbl
-	 * @param srl
+	 * @return
+	 * 		Rectangles associated with the frame this instance has recorded
+	 * 		data for.
 	 */
-	public FaceStreamElement(PixelBlockList pbl, SerializableRectList srl) {
-		_rects = srl;
-		_pixelBlocks = pbl;
-	}
-	
 	public SerializableRectList getRectangles() {
 		return _rects;
 	}
 	
+	/**
+	 * @return
+	 * 		PixelBlock list associated wit the frame this instance has 
+	 * 		recorded data for.
+	 */
 	public PixelBlockList getPixelBlocks() {
 		return _pixelBlocks;
 	}

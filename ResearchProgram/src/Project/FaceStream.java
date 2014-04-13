@@ -19,8 +19,7 @@ import org.libjpegturbo.turbojpeg.TJDecompressor;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 
 /**
- * Serializable stream of SerializableRectLists.
- * 
+ * Serializable stream of FaceStreamElements.
  * @author Marko Babic, Marcus Karpoff
  * 
  */
@@ -30,46 +29,52 @@ public class FaceStream implements java.io.Serializable {
 	 * Auto-generated UID.
 	 */
 	private static final long serialVersionUID = -2647220701334355386L;
+	
+	/**
+	 * Aggregation of FaceStreamElements.
+	 */
 	public ArrayList<FaceStreamElement> _stream;
-//	public ArrayList<SerializableRectList> _rectStream;
 
-	int _frame;
-	private transient TJCompressor  _compressor;
-	private transient TJDecompressor _decompressor;
+	/** 
+	 * Private state variable.  Keeps tracks of the next element to be 
+	 * retrieved from the stream.
+	 */
+	private int _frame;
 
+
+	/**
+	 * Empty constructor.
+	 */
 	public FaceStream() {
 		_stream = new ArrayList<FaceStreamElement>();
-//		_rectStream = new ArrayList<SerializableRectList>();
-		try {
-			_compressor = new TJCompressor();
-			_decompressor = new TJDecompressor();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(1);
-		}
 		_frame = 0;
 	}
 
+	/**
+	 * Reset instance attribute _frame to beginning such that next call to
+	 * getNextElement() returns the information associated with the first
+	 * frame in the stream.
+	 */
 	public void restart() {
 		_frame = 0;
 	}
 
+	/**
+	 * @param fse
+	 * 		The face stream element to be added.
+	 */
 	public void add(FaceStreamElement fse) {
 		_stream.add(fse);
 	}
 	
-//	public void add(SerializableRectList faces) {
-//		_rectStream.add(faces);
-//	}
 
+	/**
+	 * @return
+	 * 		The next FaceStreamElement in the stream.
+	 */
 	public FaceStreamElement getNextElement() {
 		return _stream.get(_frame++);
 	}
-	
-//	public ArrayList<CvRect> getNextRectList() {
-//		return _rectStream.get(_frame++).toCvRectList();
-//	}
 
 	public void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
@@ -80,6 +85,9 @@ public class FaceStream implements java.io.Serializable {
 		ois.defaultReadObject();
 	}
 
+	/**
+	 * Write the instance to a file.
+	 */
 	public void toFile() {
 		OutputStream file = null;
 		OutputStream buf = null;
@@ -112,6 +120,10 @@ public class FaceStream implements java.io.Serializable {
 		}
 	}
 
+	/**
+	 * @return
+	 * 		Deserialized FaceStream from file.
+	 */
 	public static FaceStream fromFile() {
 		InputStream file = null;
 		InputStream buf = null;

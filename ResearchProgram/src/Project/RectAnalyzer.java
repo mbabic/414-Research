@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 
 /**
- * Performs operations on CvRects.
- * TODO: better explanation
+ * Performs operations such as the retrival of bounding rectangles, intersection
+ * checks, etc. on CvRects.
  * @author Marko Babic, Marcus Karpoff
- *
  */
 public class RectAnalyzer {
 

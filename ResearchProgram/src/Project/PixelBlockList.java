@@ -12,7 +12,7 @@ import com.googlecode.javacv.cpp.opencv_core.CvSeq;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
- * Serializable array of pixel boxes.
+ * Serializable array of PixelBlocks.
  * @author Marko Babic, Marcus Karpoff
  */
 public class PixelBlockList implements java.io.Serializable {
@@ -22,8 +22,11 @@ public class PixelBlockList implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 4473855717545417735L;
 
+	/** List of PixelBlock instances this class aggregates. */
 	private ArrayList<PixelBlock> _pixelBlocks;
+	/** Instance of TJCompressor used in compression operation. */
 	private transient TJCompressor _compressor;
+	/** Instance of TJDecompressor used in decompression operations. */
 	private transient TJDecompressor _decompressor;
 	
 	/**

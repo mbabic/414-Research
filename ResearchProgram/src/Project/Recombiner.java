@@ -19,16 +19,26 @@ import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-
+/**
+ * Implements functionality with regard to the recombination of a frame
+ * containing face information and a frame containing background information.
+ * @author Marko Babic, Marcus Karpoff
+ */
 public class Recombiner {
 
 	/**
-	 * 
+	 * Perform linear interpolation on rectangle boundaries with no saved 
+	 * pixel data.
 	 * @param cImage
+	 * 		The image 
 	 * @param bImage
+	 * 		Background image.
 	 * @param fImage
+	 * 		Face image.
 	 * @param rects
+	 * 		Rects defining the regions in which the faces lie.
 	 * @param interpolator
+	 *		The interpolator to be used in interpolation operations. 
 	 */
 	public static void linearBoundaryInterpolate(IplImage cImage,
 			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects,
@@ -115,12 +125,18 @@ public class Recombiner {
 	}
 
 	/**
-	 * 
+	 * Perform bilinear interpolation on rectangle boundaries with no saved 
+	 * pixel data.
 	 * @param cImage
+	 * 		The image 
 	 * @param bImage
+	 * 		Background image.
 	 * @param fImage
+	 * 		Face image.
 	 * @param rects
+	 * 		Rects defining the regions in which the faces lie.
 	 * @param interpolator
+	 *		The interpolator to be used in interpolation operations. 
 	 */
 	public static void bilinearBoundaryInterpolate(IplImage cImage,
 			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects,
@@ -453,11 +469,19 @@ public class Recombiner {
 	}
 
 	/**
-	 * 
+	 * Recombine fImage and bImage using linear interpolation along
+	 * the edge of the boundary defining their non-black content in the RGB
+	 * colour space.
 	 * @param cImage
+	 * 		The reconstructed image.
 	 * @param bImage
+	 * 		The image containing the background data.
 	 * @param fImage
-	 * @param rects
+	 * 		The image containing the face data.
+	 * @param fse
+	 * 		FaceStreamElement containing the rectangles defining the boundaries
+	 * 		between fImage and bImage and (possibly) the save pixel
+	 * 		information.
 	 */
 	public static void linearRGBInterpolation(IplImage cImage, IplImage bImage,
 			IplImage fImage, ArrayList<CvRect> rects) {
@@ -466,11 +490,19 @@ public class Recombiner {
 	}
 
 	/**
-	 * 
+	 * Recombine fImage and bImage using linear interpolation along
+	 * the edge of the boundary defining their non-black content in the HSV
+	 * colour space.
 	 * @param cImage
+	 * 		The reconstructed image.
 	 * @param bImage
+	 * 		The image containing the background data.
 	 * @param fImage
-	 * @param rects
+	 * 		The image containing the face data.
+	 * @param fse
+	 * 		FaceStreamElement containing the rectangles defining the boundaries
+	 * 		between fImage and bImage and (possibly) the save pixel
+	 * 		information.
 	 */
 	public static void linearHSVInterpolation(IplImage cImage, IplImage bImage,
 			IplImage fImage, ArrayList<CvRect> rects) {
@@ -479,11 +511,19 @@ public class Recombiner {
 	}
 
 	/**
-	 * 
+	 * Recombine fImage and bImage using barycentric interpolation along
+	 * the edge of the boundary defining their non-black content in the HSV
+	 * colour space.
 	 * @param cImage
+	 * 		The reconstructed image.
 	 * @param bImage
+	 * 		The image containing the background data.
 	 * @param fImage
-	 * @param rects
+	 * 		The image containing the face data.
+	 * @param fse
+	 * 		FaceStreamElement containing the rectangles defining the boundaries
+	 * 		between fImage and bImage and (possibly) the save pixel
+	 * 		information.
 	 */
 	public static void bilinearHSVInterpolation(IplImage cImage,
 			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects) {
@@ -509,12 +549,42 @@ public class Recombiner {
 
 	}
 
+	/**
+	 * Recombine fImage and bImage using bilinear interpolation along
+	 * the edge of the boundary defining their non-black content in the RGB
+	 * colour space.
+	 * @param cImage
+	 * 		The reconstructed image.
+	 * @param bImage
+	 * 		The image containing the background data.
+	 * @param fImage
+	 * 		The image containing the face data.
+	 * @param fse
+	 * 		FaceStreamElement containing the rectangles defining the boundaries
+	 * 		between fImage and bImage and (possibly) the save pixel
+	 * 		information.
+	 */
 	public static void bilinearRGBInterpolation(IplImage cImage,
 			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects) {
 		bilinearBoundaryInterpolate(cImage, bImage, fImage, rects,
 				new RGBInterpolator());
 	}
 
+	/**
+	 * Recombine fImage and bImage using barycentric interpolation along
+	 * the edge of the boundary defining their non-black content in the RGB
+	 * colour space.
+	 * @param cImage
+	 * 		The reconstructed image.
+	 * @param bImage
+	 * 		The image containing the background data.
+	 * @param fImage
+	 * 		The image containing the face data.
+	 * @param fse
+	 * 		FaceStreamElement containing the rectangles defining the boundaries
+	 * 		between fImage and bImage and (possibly) the save pixel
+	 * 		information.
+	 */
 	public static void barycentricRGBInterpolation(IplImage cImage,
 			IplImage bImage, IplImage fImage, FaceStreamElement fse) {
 		
@@ -531,6 +601,21 @@ public class Recombiner {
 
 	}
 	
+	/**
+	 * Recombine fImage and bImage using barycentric interpolation along
+	 * the edge of the boundary defining their non-black content in the HSV
+	 * colour space.
+	 * @param cImage
+	 * 		The reconstructed image.
+	 * @param bImage
+	 * 		The image containing the background data.
+	 * @param fImage
+	 * 		The image containing the face data.
+	 * @param fse
+	 * 		FaceStreamElement containing the rectangles defining the boundaries
+	 * 		between fImage and bImage and (possibly) the save pixel
+	 * 		information.
+	 */
 	public static void barycentricHSVInterpolation(IplImage cImage,
 			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects) {
 		IplImage bgrImg = cvCreateImage(cvGetSize(cImage), 8, 3);
