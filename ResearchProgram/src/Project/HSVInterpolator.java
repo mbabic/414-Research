@@ -4,7 +4,11 @@ import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_imgproc.CvDistanceFunction;
-
+/**
+ * Performs interpolation operations in the HSV colour space.  Implements
+ * the Interpolator interface.
+ * @author Marko Babic, Marcus Karpoff
+ */
 public class HSVInterpolator implements Interpolator {
 	/**
 	 * Returns an interpolated CvScalar in the HSV color space based on
@@ -28,6 +32,25 @@ public class HSVInterpolator implements Interpolator {
 				Math.floor(v0.val(2) + (v1.val(2) - v0.val(2)) * t), 1f);	
 	}
 	
+	/**
+	 * Perform bilinear interpolation in the HSV colour space.
+	 * @param tl
+	 * 		The top left corner pixel of the interpolation square.
+	 * @param tr
+	 * 		The top right corner pixel of the interpolation square.
+	 * @param bl
+	 * 		The bottom left corner pixel of the interpolation square.
+	 * @param br
+	 * 		The bottom right corner pixel of the interpolation square.
+	 * @param boundaries
+	 * 		CvRect describing the boundaries of the interpolation square.
+	 * @param x
+	 * 		The x-coordinate of the point whose value is to be interpolated.
+	 * @param y
+	 * 		The y-coordinate of the point whose value is to be interpolated.
+	 * @return
+	 * 		The pixel resultant from the interpolation operation.
+	 */
 	public CvScalar bilinearInterpolate(
 			CvScalar tl, CvScalar tr, CvScalar bl, CvScalar br,
 			CvRect boundaries, double x, double y) {
@@ -59,6 +82,34 @@ public class HSVInterpolator implements Interpolator {
 		return new CvScalar(h, s, v, 1f);
 	}
 	
+	/**
+	 * Perform interpolation use barycentric coordinates (triangles) in the
+	 * HSV colour space.
+	 * @param v0
+	 * 		The pixel value of the first vertex of the triangle of 
+	 * 		interpolation.
+	 * @param v1
+	 * 		The pixel value of the second vertex of the triangle of 
+	 * 		interpolation.
+	 * @param v2
+	 * 		The pixel value of the third vertex of the triangle of 
+	 * 		interpolation.
+	 * @param x0
+	 * 		The point defining the position of the first vertex of the 
+	 * 		triangle of interpolation.
+	 * @param x1
+	 * 		The point defining the position of the second vertex of the 
+	 * 		triangle of interpolation.
+	 * @param x2
+	 * 		The point defining the position of the third vertex of the 
+	 * 		triangle of interpolation.
+	 * @param x
+	 * 		The x-coordinate of the point whose value is to be interpolated.
+	 * @param y
+	 * 		The y-coordinate of the point whose value is to be interpolated.
+	 * @return
+	 * 		The pixel resultant from the interpolation operation.
+	 */
 	public CvScalar barycentricInterpolate(
 			CvScalar v0, CvScalar v1, CvScalar v2, CvPoint x0, CvPoint x1,
 			CvPoint x2, double x, double y) {
