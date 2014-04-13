@@ -51,7 +51,7 @@ public class Settings {
 	/** Default encoding/decoding FPS. */
 	public static final int DEFAULT_FPS = 30;
 	/** Default number of frames to be encoded/decoded. */
-	public static final int DEFAULT_FRAMES = 40;	
+	public static final int DEFAULT_FRAMES = 5;	
 
 	/** Path to ffmpeg executable.*/
 	public static final String FFMPEG = "libs/ffmpeg.exe"; 
