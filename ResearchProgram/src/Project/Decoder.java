@@ -107,9 +107,7 @@ public class Decoder {
 		}
 		public Integer call() {
 			File ffmpegFile = new File(Settings.FFMPEG);
-			File inFile = new File(_in);
 			String ffmpeg = ffmpegFile.getAbsolutePath();
-			String inputVideoPath = inFile.getAbsolutePath();
 			
 			String output = Settings.OUT + _out + ".avi";
 			File outFile = new File(output);

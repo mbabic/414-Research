@@ -84,7 +84,7 @@ public class PixelBlock implements java.io.Serializable {
 	 * 		extract.
 	 */
 	public PixelBlock(IplImage img, CvRect rect) {
-		int x, y, height, width;
+		int x, y, height, width, imgHeight, imgWidth;
 		_pixels = new ArrayList<CvScalar>();
 		x = rect.x();
 		y = rect.y();
@@ -92,28 +92,34 @@ public class PixelBlock implements java.io.Serializable {
 		width = rect.width();
 		_width = width;
 		_height = height;
+		imgHeight = img.height();
+		imgWidth = img.width();
 
 		// We get pixel values in separate iterations and in order to keep
 		// the byte data in a predictable format at de-serialization.
 		// Get values of pixels along left-hand edge, top to bottom.
 		for (int j = y; j < y + height; j++) {
-			_pixels.add(cvGet2D(img, j, x));
+			if (2 <= j && j <= imgHeight - 2 && (x + width < imgWidth))
+				_pixels.add(cvGet2D(img, j, x));
 		}
 
 		// Get values of pixels along bottom edge, left to right.
 		for (int i = x; i < x + width; i++) {
-			_pixels.add(cvGet2D(img, y + height, i));
+			if (2 <= i && i <= imgWidth -2 && (y + height < imgHeight))
+				_pixels.add(cvGet2D(img, y + height, i));
 		}
 
 		// Get values of pixels along right edge, bottom to top.
 		for (int j = y + height; j > y; j--) {
-			_pixels.add(cvGet2D(img, j, x + width));
+			if (2 <= j && j <= imgHeight - 2 && (x + width < imgWidth))
+				_pixels.add(cvGet2D(img, j, x + width));
 		}
 
 		// Get values of pixels along top edge, right to left.
 		for (int i = x + width; i > x; i--) {
-			_pixels.add(cvGet2D(img, y, i));
-		}		
+			if (2 <= i && i <= imgWidth -2 && (y + height < imgHeight))
+				_pixels.add(cvGet2D(img, y, i));
+		}
 		pixelsToBytes();
 	}
 	
@@ -124,7 +130,7 @@ public class PixelBlock implements java.io.Serializable {
 	private void pixelsToBytes() {
 		CvScalar p;
 		_bytes = new byte[(2 * (_width + _height)) * PIXEL_CHANNELS * 4];
-		for (int i = 0; i < (2 * (_width + _height)) * (PIXEL_CHANNELS); i += PIXEL_CHANNELS) {
+		for (int i = 0; i < (2 * (_width + _height)) * (PIXEL_CHANNELS) - PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			p = _pixels.get(i / (PIXEL_CHANNELS));
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
 				_bytes[i + j] = (byte) ((int)p.val(j) & 0xFF);
@@ -204,7 +210,6 @@ public class PixelBlock implements java.io.Serializable {
 		}
 		
 		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
-			
 			r = _decompressed[i] & 0xFF;
 			g = _decompressed[i+1] & 0xFF;
 			b = _decompressed[i+2] & 0xFF;

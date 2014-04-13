@@ -79,8 +79,10 @@ public class CaptureLancher {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.exit(1);
 		} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
 			e.printStackTrace();
+			System.exit(2);
 		} finally {
 			
 			try {
@@ -126,7 +128,6 @@ public class CaptureLancher {
 			
 			@Override
 			public boolean accept(File f) {
-				
 				if (f.isDirectory()) return true;
 				return exFilter.accept(f);
 			}
