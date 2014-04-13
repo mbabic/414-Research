@@ -27,7 +27,7 @@ public class PixelBlockTests {
 			img = ImageIO.read(new File("tests/test.jpg"));
 			IplImage test = IplImage.createFrom(img);
 			System.out.println(test);
-			CvRect cvr = new CvRect(100, 100, 100, 100);
+			CvRect cvr = new CvRect(123, 321, 101, 100);
 			ArrayList<CvRect> rects = new ArrayList<CvRect>();
 			rects.add(cvr);
 			
@@ -37,10 +37,19 @@ public class PixelBlockTests {
 			TJCompressor compressor = new TJCompressor();
 			TJDecompressor decompressor = new TJDecompressor();
 			pb.compress(compressor);
+			CvRect cvr2 = new CvRect(123, 321, 101, 222);
+			PixelBlock pb2 = new PixelBlock(test, cvr2);
+			
+			System.out.println(6 * (cvr.height() + cvr.width()));
+			System.out.println(pb._pixels);
+			System.out.println(pb2._pixels);
+
+			pb2.compress(compressor);
 			IOUtils.bytesToFile(pb._compressed, "asdfasdf.jpg");
 			System.out.println(compressor.getCompressedSize());
 			pb.decompress(decompressor);
-			System.out.println(decompressor.getJPEGSize());
+			pb2.decompress(decompressor);
+//			System.out.println(decompressor.getJPEGSize());
 			System.out.println(pb._decompressed.length);
 //			for (int i = 0; i < pb._decompressed.length; i++) {
 //				if (Math.abs((pb._decompressed[i] & 0xFF) - (pb._bytes[i] & 0xFF)) > 10 ) {
@@ -52,7 +61,9 @@ public class PixelBlockTests {
 //			}
 			
 			reconstructedPixels = pb.reconstructPixels();
+			ArrayList<CvScalar> rp2 = pb2.reconstructPixels();
 			System.out.println(reconstructedPixels);
+			System.out.println(rp2);
 			for (int i = 0; i < reconstructedPixels.size(); i++) {
 				if (reconstructedPixels.get(i).val(0) != pixels.get(i).val(0)) {
 //					System.out.println(reconstructedPixels.get(i));
