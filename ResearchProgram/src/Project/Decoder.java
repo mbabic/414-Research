@@ -34,7 +34,17 @@ public class Decoder {
 	/** Frame height of the input video file. */
 	private int _imgHeight;
 	
-	
+	/**
+	 * 
+	 * @param in
+	 * 		Path to input file.
+	 * @param out
+	 * 		Name of output file.  Will be placed in Settings.OUT folder.
+	 * @param imgWidth
+	 * 		Width on input frames.
+	 * @param imgHeight
+	 * 		Height of inpute frames.
+	 */
 	public Decoder(String in, String out, int imgWidth, int imgHeight) {
 		_in = in;
 		_out = out;
@@ -68,6 +78,10 @@ public class Decoder {
 		toAVI();
 	}
 	
+	/**
+	 * Mux converted .yuv to .avi container for readability in various
+	 * players.
+	 */
 	public void toAVI() {
 		ExecutorService exec = Executors.newSingleThreadExecutor();
 		exec.submit(new ToAVITask());
@@ -164,7 +178,8 @@ public class Decoder {
 	}
 	
 	/**
-	 * 
+	 * Implemented as callable task such that decoding operation can be 
+	 * performed in own thread and results can be waited on.
 	 * @author Marko Babic, Marcus Karpoff
 	 */
 	private class DecodingTask implements Callable<Integer> {
