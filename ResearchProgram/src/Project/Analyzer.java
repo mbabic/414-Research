@@ -175,7 +175,7 @@ public class Analyzer {
 
 		// Transform CvSeq into ArrayList as the latter is easier to work with.
 		_faces = cvSeqToList(facesDetected);
-
+		
 		// Temporary list of trackers used to ensure no tracker is considered
 		// a second time after having been matched in the process below.
 		ArrayList<ObjectTracker> trackers = new ArrayList<ObjectTracker>();
@@ -203,10 +203,7 @@ public class Analyzer {
 			// tracker
 			nearestRect = getNearestRect(_faces, nearestTracker);
 
-			if (nearestRect.equals(rect)) {
-				pairs.put(rect, nearestTracker);
-				trackers.remove(nearestTracker);
-			} else {
+			if (nearestRect == null || !nearestRect.equals(rect)) {
 				// Rect is within _minDist of some tracker, but that tracker
 				// is not set up to track this rect. This means it is needs
 				// to be tracked.
@@ -214,6 +211,10 @@ public class Analyzer {
 				nearestTracker.trackNewObject(img, rect);
 				pairs.put(rect, nearestTracker);
 				_trackers.add(nearestTracker);
+
+			} else {
+				pairs.put(rect, nearestTracker);
+				trackers.remove(nearestTracker);
 			}
 		}
 
@@ -258,7 +259,13 @@ public class Analyzer {
 
 		simplifiedFaceList = RectAnalyzer.getBoundingRects(faceList);
 		for (int i = 0; i < simplifiedFaceList.size(); i++) {
-			cvSeqPush(faces, simplifiedFaceList.get(i));
+			// Ensure rectangle is valid
+			if (simplifiedFaceList.get(i).height() < img.height() 	&&
+				0 < simplifiedFaceList.get(i).height()			 	&&
+				simplifiedFaceList.get(i).width() < img.width() 	&&
+				0 < simplifiedFaceList.get(i).width()				){
+				cvSeqPush(faces, simplifiedFaceList.get(i));
+			}
 		}
 
 		return faces;
@@ -282,8 +289,7 @@ public class Analyzer {
 	public void separateStreams(IplImage orig, IplImage back, IplImage face,
 			FaceStream fs) {
 		CvSeq faces = getFaces(orig);
-		
-		fs.add(new FaceStreamElement(orig, faces));
+		//fs.add(new FaceStreamElement(orig, faces));
 		blackOutFaces(back, faces);
 		cvAbsDiff(orig, back, face);
 	}
