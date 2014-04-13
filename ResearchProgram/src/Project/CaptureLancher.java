@@ -27,6 +27,8 @@ public class CaptureLancher {
 		LoadingPanel settingsPanel = new LoadingPanel();
 		int mode = settingsPanel.getInputMode();
 		String password = settingsPanel.getPassword();
+		if (password != "\n")
+			Settings.PASSWORD = password;
 		
 		try {
 			if (mode == LoadingPanel.FILE){
@@ -58,7 +60,9 @@ public class CaptureLancher {
 		}
 		try {
 			origImage = frameGrabber.grab();
-			transmitter.initializeRecorders(outb, outf, origImage);
+			Settings.HEIGHT = origImage.height();
+			Settings.WIDTH = origImage.width();
+			transmitter.initializeRecorders(outb, outf);
 			backImage = origImage.clone();
 			faceImage = origImage.clone();
 			analyzer.separateStreams(origImage, backImage, faceImage, stream);

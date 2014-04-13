@@ -7,9 +7,9 @@ package Project;
  */
 public class Settings {
 
-	public static final int HEIGHT = 400;
-	public static final int WIDTH = 400;
-	public static final int FRAMERATE = 10;
+	public static int HEIGHT = 400;
+	public static int WIDTH = 400;
+	public static int FRAMERATE = 10;
 	public static final String CLASSIFIER_DIR = "res/haarcascades/";
 
 	public static final String OUTF = "out/outf.avi";
@@ -44,7 +44,7 @@ public class Settings {
 	public static final String DECRYPTED_OUTF_NAME = "decrypted_outf.hevc";
 	
 	public static final String FACESTREAM_OUT = "out/face_stream.ser";
-	public static final String DEFAULT_PASSWORD = "password";
+	public static String PASSWORD = "password";
 
 	
 	// Encoder settings

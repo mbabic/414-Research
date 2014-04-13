@@ -13,11 +13,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import org.libjpegturbo.turbojpeg.TJCompressor;
-import org.libjpegturbo.turbojpeg.TJDecompressor;
-
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
-
 /**
  * Serializable stream of FaceStreamElements.
  * @author Marko Babic, Marcus Karpoff

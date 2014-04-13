@@ -1,11 +1,14 @@
 package Project;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2BGR;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+import static com.googlecode.javacv.cpp.opencv_core.CV_FILLED;
+import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
+import static com.googlecode.javacv.cpp.opencv_core.cvCreateSeq;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
+import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_core.cvSeqPush;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
@@ -53,7 +56,6 @@ public class Analyzer {
 	 */
 	private int _minDist = 25 * 25;
 
-	private IplImage _img;
 
 	/**
 	 * Constructor for the analyzer.

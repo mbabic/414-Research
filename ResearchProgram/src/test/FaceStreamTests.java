@@ -15,7 +15,7 @@ public class FaceStreamTests {
 		FaceStream fs = FaceStream.fromFile();
 		System.out.println(fs);
 		FaceStreamElement fse = fs.getNextElement();
-		assert(1==1);
+//		assert(1==1);
 	}
 
 }

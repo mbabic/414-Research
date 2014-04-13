@@ -1,15 +1,15 @@
 package Project;
 
+import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
+
 import java.util.ArrayList;
 
 import org.libjpegturbo.turbojpeg.TJ;
 import org.libjpegturbo.turbojpeg.TJCompressor;
 import org.libjpegturbo.turbojpeg.TJDecompressor;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
-
+import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**

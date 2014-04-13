@@ -3,7 +3,6 @@ package Project;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_imgproc.CvDistanceFunction;
 
 public class HSVInterpolator implements Interpolator {
 	/**
