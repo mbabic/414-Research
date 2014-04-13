@@ -1,15 +1,17 @@
 package Project;
 
+import static com.googlecode.javacv.cpp.opencv_core.cvGet2D;
+
 import java.util.ArrayList;
 
 import org.libjpegturbo.turbojpeg.TJ;
 import org.libjpegturbo.turbojpeg.TJCompressor;
 import org.libjpegturbo.turbojpeg.TJDecompressor;
+import org.libjpegturbo.turbojpeg.TJTransform;
+import org.libjpegturbo.turbojpeg.TJTransformer;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
-
+import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
@@ -35,7 +37,7 @@ public class PixelBlock implements java.io.Serializable {
 	/** 
 	 * Byte information associated with pixels arranged in 1-dim array. 
 	 */
-	public byte[] _bytes;
+	public transient byte[] _bytes;
 	
 	/**
 	 * The compressed bytes associated with the pixels.
@@ -121,9 +123,9 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	private void pixelsToBytes() {
 		CvScalar p;
-		_bytes = new byte[(2 * (_width + _height)) * PIXEL_CHANNELS * 2];
-		for (int i = 0; i < (2 * (_width + _height)) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
-			p = _pixels.get(i / PIXEL_CHANNELS);
+		_bytes = new byte[(2 * (_width + _height)) * PIXEL_CHANNELS * 4];
+		for (int i = 0; i < (2 * (_width + _height)) * (PIXEL_CHANNELS); i += PIXEL_CHANNELS) {
+			p = _pixels.get(i / (PIXEL_CHANNELS));
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
 				_bytes[i + j] = (byte) ((int)p.val(j) & 0xFF);
 			}
@@ -139,18 +141,19 @@ public class PixelBlock implements java.io.Serializable {
 	public void compress(TJCompressor compressor) {
 		try {
 			compressor.setSourceImage(
-				_bytes,								// src buf
-				0,										// x offset
-				0,										// y offset
-				_width,									// width
-				0,										// pitch
-				(2 * (_width + _height)) / _width,		// height
+				_bytes,					// src buf
+				0,						// x offset
+				0,						// y offset
+				2,						// width
+				0,						// pitch
+				(_width + _height),		// height
 				TJ.PF_RGB
 			);
 			compressor.setSubsamp(TJ.SAMP_420);
 			compressor.setJPEGQuality(100);
 			_compressed = compressor.compress(0);
 			_compressedSize = compressor.getCompressedSize();
+			compressor.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -163,25 +166,20 @@ public class PixelBlock implements java.io.Serializable {
 	 * 		The instance of TJDecompressor to be used to perfrom the
 	 * 		decompression.
 	 */
-	public void decompress(TJDecompressor decompressor) {
+	public void decompress(TJDecompressor tjd) {
 		try {
-			
 			if (_compressed == null || _compressed.length == 0) return;
 			
-			_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS * 2];
-			decompressor.setJPEGImage(_compressed, _compressedSize);
-			
-//			_decompressed = decompressor.decompress(
-//				0, 0, 0, TJ.PF_RGB, 0
-//			);
-			
-			decompressor.decompress(
+			_decompressed = new byte[2 * (_height + _width) * PIXEL_CHANNELS * 100];
+			tjd.setJPEGImage(_compressed, _compressedSize);
+				
+			tjd.decompress(
 				_decompressed, 
 				0,
 				0, 
-				0, 
+				2, 
 				0,
-				0, 
+				_height + _width, 
 				TJ.PF_RGB, 
 				0
 			);
@@ -202,24 +200,14 @@ public class PixelBlock implements java.io.Serializable {
 		_pixels = new ArrayList<CvScalar>();
 		
 		if (_decompressed == null || _decompressed.length == 0) {
-			System.err.println("klajd f;laksjd f;lawkej f;alsjkf iwejf pwojf p2-38u r298r ");
 			System.exit(1);
 		}
 		
 		for (int i = 0; i < 2 * (_width + _height) * PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
 			
-			r = _bytes[i] & 0xFF;
-			g =_bytes[i+1] & 0xFF;
-			b = _bytes[i+2] & 0xFF;
-			
-			if (r == 0 && b == 0 && g == 0) {
-				System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				System.out.println(r);
-				System.out.println(g);			
-				System.out.println(b);			
-
-			}
-			
+			r = _decompressed[i] & 0xFF;
+			g = _decompressed[i+1] & 0xFF;
+			b = _decompressed[i+2] & 0xFF;
 			pixel = new CvScalar(r, g, b, 0f);
 			_pixels.add(pixel);
 		}
