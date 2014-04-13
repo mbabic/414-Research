@@ -9,6 +9,7 @@ import com.googlecode.javacv.cpp.opencv_imgproc.CvDistanceFunction;
  * the Interpolator interface.
  * @author Marko Babic, Marcus Karpoff
  */
+
 public class HSVInterpolator implements Interpolator {
 	/**
 	 * Returns an interpolated CvScalar in the HSV color space based on

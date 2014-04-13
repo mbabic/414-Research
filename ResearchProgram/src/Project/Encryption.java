@@ -50,7 +50,7 @@ public class Encryption {
 		String salt;
 		
 		if (password == null) {
-			password = Settings.DEFAULT_PASSWORD;
+			password = Settings.PASSWORD;
 		}
 		
 		// TODO: select better salt

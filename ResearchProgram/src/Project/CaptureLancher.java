@@ -13,13 +13,12 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class CaptureLancher {
 
 	public static void main(String[] args) {
-		UI gui = new UI();
+
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
 		outb.deleteOnExit();
 		outf.deleteOnExit();
 		Transmitter transmitter = new Transmitter();
-		Analyzer analyzer = null;
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
@@ -27,6 +26,8 @@ public class CaptureLancher {
 		LoadingPanel settingsPanel = new LoadingPanel();
 		int mode = settingsPanel.getInputMode();
 		String password = settingsPanel.getPassword();
+		if (password != "\n")
+			Settings.PASSWORD = password;
 		
 		try {
 			if (mode == LoadingPanel.FILE){
@@ -42,9 +43,11 @@ public class CaptureLancher {
 		} catch (Exception e1) {
 			System.err.println("Failed to load FrameGrabber");
 			e1.printStackTrace();
-			gui.destroy();
 			System.exit(-1);
 		}
+		
+		UI gui = new UI();
+		Analyzer analyzer = null;
 		
 		try {
 			analyzer = new Analyzer();
@@ -55,9 +58,10 @@ public class CaptureLancher {
 			System.exit(-1);
 		}
 		try {
-
 			origImage = frameGrabber.grab();
-			transmitter.initializeRecorders(outb, outf, origImage);
+			Settings.HEIGHT = origImage.height();
+			Settings.WIDTH = origImage.width();
+			transmitter.initializeRecorders(outb, outf);
 			backImage = origImage.clone();
 			faceImage = origImage.clone();
 			analyzer.separateStreams(origImage, backImage, faceImage, stream);
@@ -113,7 +117,6 @@ public class CaptureLancher {
 			private FileNameExtensionFilter exFilter = new FileNameExtensionFilter("mp4", "avi");
 			@Override
 			public String getDescription() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 			

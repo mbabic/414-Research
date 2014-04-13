@@ -69,17 +69,17 @@ public class Transmitter {
 	 *            The image that is used to set recording parameters
 	 * @throws Exception
 	 */
-	public void initializeRecorders(File bFile, File fFile, IplImage img)
+	public void initializeRecorders(File bFile, File fFile)
 			throws Exception {
 		
-		recorderBackGround = new FFmpegFrameRecorder(bFile, img.width(),
-				img.height());
+		recorderBackGround = new FFmpegFrameRecorder(bFile, Settings.WIDTH,
+				Settings.HEIGHT);
 		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
 		// Indicate that we want the encoding to be lossless.
 		recorderBackGround.setVideoQuality(0);
 		
-		recorderFacial = new FFmpegFrameRecorder(fFile, img.width(),
-				img.height());
+		recorderFacial = new FFmpegFrameRecorder(fFile, Settings.WIDTH,
+				Settings.HEIGHT);
 		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
 		// Indicate that we want the encoding to be lossless
 		recorderFacial.setVideoQuality(0);
@@ -97,10 +97,10 @@ public class Transmitter {
 
 		// TODO: get and same frame rate from cmd line, for now using default
 		// values defines in Settings.
-		_bgEncoder.setImgWidth(img.width());
-		_bgEncoder.setImgHeight(img.height());		
-		_faceEncoder.setImgWidth(img.width());
-		_faceEncoder.setImgHeight(img.height());
+		_bgEncoder.setImgWidth(Settings.WIDTH);
+		_bgEncoder.setImgHeight(Settings.HEIGHT);		
+		_faceEncoder.setImgWidth(Settings.WIDTH);
+		_faceEncoder.setImgHeight(Settings.HEIGHT);
 		
 		recorderBackGround.start();
 		recorderFacial.start();

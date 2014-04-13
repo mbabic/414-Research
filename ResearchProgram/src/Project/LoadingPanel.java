@@ -10,10 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
 public class LoadingPanel extends JFrame {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public static int WEBCAM = 0;
@@ -80,9 +76,7 @@ public class LoadingPanel extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				char[] text = passField.getPassword();
-				System.out.println(text);
 				password = new String(text);
-				System.out.println(password);
 			}
 		});
 		

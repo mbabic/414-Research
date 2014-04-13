@@ -130,7 +130,6 @@ public class Encoder {
 		
 		
 		try {
-			File f = new File(Settings.CFG + _out);
 			Writer writer = new OutputStreamWriter(
 				new FileOutputStream(Settings.CFG + _out + ".cfg"),
 				"UTF-8"
