@@ -24,6 +24,10 @@ public class ObjectTracker {
 		_obj = new TrackedObject();
 	}
 	
+	int _maxHeight;
+	
+	int _maxWidth;
+	
 	/**
 	 * 
 	 * @param img 
@@ -38,14 +42,14 @@ public class ObjectTracker {
 		int[] size = {_obj._bins};
 		int[] tmp1 = {0}, tmp2 = {0};
 
-		
 		_obj._bgr 	= cvCreateImage(cvGetSize(img), 8, 3);
 		_obj._hsv 	= cvCreateImage(cvGetSize(img), 8, 3);
 		_obj._mask 	= cvCreateImage(cvGetSize(img), 8, 1);
 		_obj._hue 	= cvCreateImage(cvGetSize(img), 8, 1);
 		_obj._prob 	= cvCreateImage(cvGetSize(img), 8, 1);
 		
-
+		_maxHeight = img.height();
+		_maxWidth = img.width();
 		
 		_obj._hist = cvCreateHist(
 			1, 				// Number of histogram dimensions.
@@ -122,9 +126,7 @@ public class ObjectTracker {
 		cvCamShift(
 			_obj._prob,
 			_obj._pRect,
-			// TODO: make thorough examination of termination criteria
-			// object
-			cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 0.1),
+			cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 5),
 			components,
 			_obj._currBox
 		);
@@ -161,8 +163,17 @@ public class ObjectTracker {
 		if (_obj._pRect.width() == 0 || _obj._pRect.height() == 0) {
 			return true;
 		} else if (_obj._pRect.width() > (4 * _obj._pRect.height())){
+			System.out.println(1);
 			return true;
 		} else if (_obj._pRect.height() > (4 * _obj._pRect.width())) {
+			System.out.println(2);
+			return true;
+		} else if ((_obj._pRect.y() + _obj._pRect.height()) > _maxHeight - 1) {
+			System.out.println(3);
+			System.out.println(_maxHeight);
+			return true;
+		} else if ((_obj._pRect.x() + _obj._pRect.width()) > _maxWidth - 1) {
+			System.out.println(4);
 			return true;
 		}
 		return false;

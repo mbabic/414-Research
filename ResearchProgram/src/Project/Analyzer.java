@@ -1,11 +1,14 @@
 package Project;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2RGB;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_HSV2BGR;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2BGR;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+import static com.googlecode.javacv.cpp.opencv_core.CV_FILLED;
+import static com.googlecode.javacv.cpp.opencv_core.cvAbsDiff;
+import static com.googlecode.javacv.cpp.opencv_core.cvCreateSeq;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
+import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_core.cvSeqPush;
 import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
@@ -53,7 +56,6 @@ public class Analyzer {
 	 */
 	private int _minDist = 25 * 25;
 
-	private IplImage _img;
 
 	/**
 	 * Constructor for the analyzer.
@@ -118,7 +120,7 @@ public class Analyzer {
 		ObjectTracker nearestNeighbour = null;
 		int min = Integer.MAX_VALUE, dist = 0;
 		for (int i = 0; i < trackers.size(); i++) {
-			dist = (int) RectAnalyzer.midpointDist(trackers.get(i)._obj._pRect,
+			dist = (int) RectAnalyzer.dist(trackers.get(i)._obj._pRect,
 					rect);
 			if ((dist < min) && (dist <= _minDist)) {
 				min = dist;
@@ -155,6 +157,23 @@ public class Analyzer {
 		return nearestNeighbour;
 	}
 
+	
+	/**
+	 * Merge trackers tracking objects within minDist of each other.
+	 */
+	private void filterTrackers() {
+		for (int i = 0; i < _trackers.size() - 1; i++) {
+			for (int j = i + 1; j < _trackers.size(); j++) {
+				if (RectAnalyzer.dist(_trackers.get(i)._obj._pRect, _trackers.get(j)._obj._pRect) < _minDist) {
+					_trackers.get(i)._obj._pRect = new CvRect(
+						RectAnalyzer.getMinBoundingRect(_trackers.get(i)._obj._pRect, _trackers.get(j)._obj._pRect)
+					);
+					_trackers.remove(j);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Set up new tracker pairs.
 	 * 
@@ -178,14 +197,13 @@ public class Analyzer {
 		
 		// Temporary list of trackers used to ensure no tracker is considered
 		// a second time after having been matched in the process below.
-		ArrayList<ObjectTracker> trackers = new ArrayList<ObjectTracker>();
+		ArrayList<ObjectTracker> trackers = new ArrayList<ObjectTracker>(_trackers);
 
 		ObjectTracker nearestTracker = null;
 		CvRect rect = null, nearestRect = null;
 
-		for (ObjectTracker ot : _trackers)
-			trackers.add(ot);
-
+		filterTrackers();
+		
 		for (int i = 0; i < _faces.size(); i++) {
 			rect = _faces.get(i);
 			nearestTracker = getNearestTracker(trackers, rect);
@@ -214,13 +232,18 @@ public class Analyzer {
 
 			} else {
 				pairs.put(rect, nearestTracker);
+				// Remove the tracker from consideration in future iterations.
 				trackers.remove(nearestTracker);
 			}
 		}
 
 		// For all unmatched trackers, pair them with key == null
 		for (int i = 0; i < trackers.size(); i++) {
-			pairs.put(null, trackers.get(i));
+			if (!trackers.get(i).hasLostObject())
+				pairs.put(null, trackers.get(i));
+			else {
+				_trackers.remove(trackers.get(i));
+			}
 		}
 		return pairs;
 	}
@@ -229,7 +252,7 @@ public class Analyzer {
 		CvSeq facesDetected = detectFaces(img);
 		ArrayList<CvRect> faceList = new ArrayList<CvRect>();
 		ArrayList<CvRect> simplifiedFaceList;
-
+//		return facesDetected;
 		CvSeq faces = cvCreateSeq(0, Loader.sizeof(CvSeq.class),
 				Loader.sizeof(CvRect.class), storage);
 
@@ -242,11 +265,7 @@ public class Analyzer {
 		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
 		while (iter.hasNext()) {
 			ObjectTracker tracker = iter.next();
-			if (tracker.hasLostObject()) {
-				_trackers.remove(tracker);
-			} else {
-				faceList.add(tracker.track(img));
-			}
+			faceList.add(tracker.track(img));
 		}
 
 		for (int i = 0; i < _faces.size(); i++) {
@@ -260,10 +279,10 @@ public class Analyzer {
 		simplifiedFaceList = RectAnalyzer.getBoundingRects(faceList);
 		for (int i = 0; i < simplifiedFaceList.size(); i++) {
 			// Ensure rectangle is valid
-			if (simplifiedFaceList.get(i).height() < img.height() 	&&
-				0 < simplifiedFaceList.get(i).height()			 	&&
-				simplifiedFaceList.get(i).width() < img.width() 	&&
-				0 < simplifiedFaceList.get(i).width()				){
+			if (simplifiedFaceList.get(i).height() <= img.height() 	&&
+				0 <= simplifiedFaceList.get(i).height()			 	&&
+				simplifiedFaceList.get(i).width() <= img.width() 	&&
+				0 <= simplifiedFaceList.get(i).width()				){
 				cvSeqPush(faces, simplifiedFaceList.get(i));
 			}
 		}

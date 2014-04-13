@@ -10,10 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
 public class LoadingPanel extends JFrame {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public static int WEBCAM = 0;
@@ -22,9 +18,17 @@ public class LoadingPanel extends JFrame {
 	private String password;
 	private JPasswordField passField;
 
+	/**
+	 * JPanel Item with some specialized functions
+	 */
 	LoadingPanel() {
+		super();
 	}
 
+	/**
+	 * Shows a panel that will find out what type of input the user wants
+	 * @return The mode selected. Will either be FILE or WEBCAM.
+	 */
 	public int getInputMode() {
 		modeSelected = -1;
 		JButton loadVideoButton = new JButton("Load a File");
@@ -58,6 +62,10 @@ public class LoadingPanel extends JFrame {
 		return modeSelected;
 	}
 
+	/**
+	 * Gets a password from the user
+	 * @return The password
+	 */
 	public String getPassword() {
 		password = "";
 		
@@ -68,9 +76,7 @@ public class LoadingPanel extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				char[] text = passField.getPassword();
-				System.out.println(text);
 				password = new String(text);
-				System.out.println(password);
 			}
 		});
 		

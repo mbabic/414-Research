@@ -45,10 +45,6 @@ class MyPanel extends CanvasFrame {
 	public void putFrame(IplImage img) {
 		this.showImage(img);
 	}
-
-	public void destroy() {
-		this.dispose();
-	}
 }
 
 /**
@@ -87,9 +83,9 @@ public class UI extends CanvasFrame implements ActionListener {
 		super("Super Sexy Research Program -- Original");
 
 		buildMenuBar();
-		setDefaultCloseOperation(CanvasFrame.HIDE_ON_CLOSE);
-		setSize(Settings.WIDTH, Settings.HEIGHT);
-		setVisible(true);
+		this.setDefaultCloseOperation(CanvasFrame.HIDE_ON_CLOSE);
+		this.setSize(Settings.WIDTH, Settings.HEIGHT);
+		this.setVisible(true);
 	}
 
 	/**
@@ -117,9 +113,9 @@ public class UI extends CanvasFrame implements ActionListener {
 			default:
 				break;
 			}
-			origPanel.putFrame(orig);
-			backPanel.putFrame(back);
-			facePanel.putFrame(face);
+			if (origPanel.isVisible()) origPanel.putFrame(orig);
+			if (backPanel.isVisible()) backPanel.putFrame(back);
+			if (facePanel.isVisible()) facePanel.putFrame(face);
 		}
 	}
 
@@ -127,9 +123,9 @@ public class UI extends CanvasFrame implements ActionListener {
 	 * Destroys the UI panel and all the pop out panels.
 	 */
 	public void destroy() {
-		origPanel.destroy();
-		backPanel.destroy();
-		facePanel.destroy();
+		origPanel.dispose();
+		backPanel.dispose();
+		facePanel.dispose();
 		this.dispose();
 	}
 

@@ -53,7 +53,7 @@ public class PixelBlockList implements java.io.Serializable {
 			_compressor = new TJCompressor();
 			for (int i = 0; i < rects.size(); i++) {
 				PixelBlock pb = new PixelBlock(img, rects.get(i));
-				pb.compress(_compressor);
+//				pb.compress(_compressor);
 				_pixelBlocks.add(pb);
 			}
 		} catch (Exception e) {

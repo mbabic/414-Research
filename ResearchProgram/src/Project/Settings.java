@@ -7,9 +7,9 @@ package Project;
  */
 public class Settings {
 
-	public static final int HEIGHT = 576;
-	public static final int WIDTH = 704;
-	public static final int FRAMERATE = 60;
+	public static int HEIGHT = 576;
+	public static int WIDTH = 704;
+	public static int FRAMERATE = 60;
 	public static final String CLASSIFIER_DIR = "res/haarcascades/";
 
 	public static final String OUTF = "out/outf.avi";
@@ -44,7 +44,7 @@ public class Settings {
 	public static final String DECRYPTED_OUTF_NAME = "decrypted_outf.hevc";
 	
 	public static final String FACESTREAM_OUT = "out/face_stream.ser";
-	public static final String DEFAULT_PASSWORD = "password";
+	public static String PASSWORD = "password";
 
 	
 	// Encoder settings
@@ -71,6 +71,6 @@ public class Settings {
 	
 	/** Boolean value indicating if pixel values on rectangle border should
 	 * be saved. */
-	public static boolean SAVE_PIXELS = true;
+	public static boolean SAVE_PIXELS = false;
 	
 }

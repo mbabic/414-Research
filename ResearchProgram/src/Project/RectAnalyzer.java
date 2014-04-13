@@ -22,8 +22,9 @@ public class RectAnalyzer {
 	 * 		List of bounding rects.
 	 */
 	public static ArrayList<CvRect> getBoundingRects(
-		ArrayList<CvRect> rects) {
+		ArrayList<CvRect> origRects) {
 		CvRect r1, r2, boundingRect;
+		ArrayList<CvRect> rects = new ArrayList<CvRect>(origRects);
 		int i, j;
 		for (i = 0; i < rects.size(); i++) {
 			r1 = rects.get(i);				
@@ -38,7 +39,7 @@ public class RectAnalyzer {
 			}
 		}
 		// No rectangles intersect.
-		return rects;
+		return new ArrayList<CvRect>(rects);
 	}
 	
 	/**
@@ -66,7 +67,7 @@ public class RectAnalyzer {
 	public static CvRect getMinBoundingRect(CvRect r1, CvRect r2) {
 		CvRect ret = new CvRect();
 		int x1 = r1.x(), y1 = r1.y(), w1 = r1.width(), h1 = r1.height();
-		int x2 = r2.x(), y2 = r2.y(), w2 = r2.width(), h2 = r1.height();
+		int x2 = r2.x(), y2 = r2.y(), w2 = r2.width(), h2 = r2.height();
 		
 		// Get x() and width() of ret
 		if (x1 < x2 && ((x1 + w1) < (x2 + w2))) {
@@ -113,9 +114,38 @@ public class RectAnalyzer {
 		return ret;
 	}
 	
+	
 	/**
-	 * Returns the square of the distance between the centers of the given
+	 * @param r1
+	 * 		The first rectangle.
+	 * @param r2
+	 * 		The second rectangle
+	 * @return	
+	 * Returns the min between topLeftDist and midpointDist.
+	 */
+	public static double dist(CvRect r1, CvRect r2) {
+		return Math.min(midpointDist(r1, r2), topLeftDist(r1, r2));
+	}	
+	
+	/**
+
+	 * @param r1
+	 * 		The first rectangle.
+	 * @param r2
+	 * 		The second rectangle
+	 * @return	
+	 * Returns the square of the distance between the top left corners of the given
 	 * CvRects.
+	 */
+	public static double topLeftDist(CvRect r1, CvRect r2) {
+		return 
+		Math.pow(r1.x() - 
+				 r2.x(), 2) +
+		Math.pow(r1.y() - 
+				 r2.y(), 2);
+	}	
+	
+	/**
 	 * @param r1
 	 * 		The first rectangle.
 	 * @param r2
@@ -126,10 +156,10 @@ public class RectAnalyzer {
 	 */
 	public static double midpointDist(CvRect r1, CvRect r2) {
 		return 
-		Math.pow(r1.x() + ((float) r1.width() / 2f) - 
-				r2.x() - ((float )r2.width() /2f), 2) +
-		Math.pow(r1.y() +((float) r1.height() / 2f) - 
-				r2.x() - ((float) r2.height() /2f), 2);
+		Math.pow(r1.x() + ((double) r1.width() 	/ 2f) - 
+				 r2.x() - ((double) r2.width() 	/ 2f), 2) +
+		Math.pow(r1.y() + ((double) r1.height() / 2f) - 
+				 r2.x() - ((double) r2.height() / 2f), 2);
 	}
 	/**
 	 * Determines if the point given by x, y coordinates provided lies inside

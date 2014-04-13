@@ -141,7 +141,7 @@ public class Recombiner {
 	public static void bilinearBoundaryInterpolate(IplImage cImage,
 			IplImage bImage, IplImage fImage, ArrayList<CvRect> rects,
 			Interpolator interpolator) {
-		CvScalar b, f, tl, tr, bl, br;
+		CvScalar tl, tr, bl, br;
 		CvRect boundaries;
 		int x, y, width, height;
 		int imgWidth = cImage.width();
@@ -253,7 +253,7 @@ public class Recombiner {
 		PixelBlockList pbl = fse.getPixelBlocks();
 		ArrayList<CvRect> rects = fse.getRectangles().toCvRectList();
 		ArrayList<CvScalar> pixels;
-		Iterator iter;
+		Iterator<CvScalar> iter;
 		CvRect rect;
 		PixelBlock pb;
 		CvScalar pixel, v0, v1;
@@ -281,7 +281,7 @@ public class Recombiner {
 				// Handle boundary conditions
 				if ((2 <= y && j <= imgHeight - 2)
 						&& (2 <= x && x <= imgWidth - 2)) {
-					pixel = (CvScalar) iter.next();
+					pixel = iter.next();
 					v0 = cvGet2D(bImage, j, x-2);
 					v1 = cvGet2D(fImage, j, x+2);
 					cvSet2D(cImage, j, x,pixel);
@@ -303,7 +303,7 @@ public class Recombiner {
 				// Handle boundary conditions
 				if ((0 <= i && i <= imgWidth - 2)
 						&& (2 <= y && y <= imgHeight - 2)) {
-					pixel = (CvScalar) iter.next();
+					pixel = iter.next();
 					v0 = cvGet2D(fImage, y + height - 2, i);
 					v1 = cvGet2D(bImage, y + height + 2, i);
 					cvSet2D(cImage, y + height, i, pixel);
@@ -321,7 +321,7 @@ public class Recombiner {
 				// Handle boundary conditions
 				if ((2 <= x && x <= imgWidth - 2)
 						&& (0 <= j && j <= imgHeight)) {
-					pixel = (CvScalar) iter.next();
+					pixel = iter.next();
 					v0 = cvGet2D(fImage, j, x + width - 2);
 					v1 = cvGet2D(bImage, j, x + width + 2);
 					cvSet2D(cImage, j, x + width, pixel);
@@ -338,7 +338,7 @@ public class Recombiner {
 			for (int i = x + width; i > x; i--) {
 				if ((2 <= i && i <= imgWidth - 2)
 						&& (0 <= y && y <= imgHeight)) {
-					pixel = (CvScalar) iter.next();
+					pixel = iter.next();
 					v0 = cvGet2D(bImage, y - 2, i);
 					v1 = cvGet2D(fImage, y + 2, i);
 					cvSet2D(cImage, y, i, pixel);
