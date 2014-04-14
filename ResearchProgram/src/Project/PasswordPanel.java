@@ -12,7 +12,9 @@ public class PasswordPanel extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 8343171159981586851L;
 	private String password = "";
 	private JPasswordField tField_Password;
-	
+	/**
+	 * This is a simple JFrame that prompts the user for a password.
+	 */
 	PasswordPanel() {
 		
 		JLabel label_Password = new JLabel("Password");
@@ -25,9 +27,16 @@ public class PasswordPanel extends JFrame implements ActionListener{
 		this.setVisible(true);
 		
 	}
+	/**
+	 * Gets the password the user entered
+	 * @return The password
+	 */
 	public String getPassword() {
 		return password;
 	}
+	/**
+	 * Action lisener
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();

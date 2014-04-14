@@ -56,13 +56,12 @@ public class Analyzer {
 	 */
 	private int _minDist = 25 * 25;
 
-
 	/**
 	 * Constructor for the analyzer.
 	 * 
 	 * @throws ClassiferLoadFailure
 	 */
-	Analyzer() throws ClassiferLoadFailure {
+	Analyzer() throws ClassiferLoadFailure  {
 		String classifierDir = Settings.CLASSIFIER_DIR
 				+ "haarcascade_frontalface_default.xml";
 		faceCascade = new CvHaarClassifierCascade(cvLoad(classifierDir));
@@ -120,8 +119,7 @@ public class Analyzer {
 		ObjectTracker nearestNeighbour = null;
 		int min = Integer.MAX_VALUE, dist = 0;
 		for (int i = 0; i < trackers.size(); i++) {
-			dist = (int) RectAnalyzer.dist(trackers.get(i)._obj._pRect,
-					rect);
+			dist = (int) RectAnalyzer.dist(trackers.get(i)._obj._pRect, rect);
 			if ((dist < min) && (dist <= _minDist)) {
 				min = dist;
 				nearestNeighbour = trackers.get(i);
@@ -157,23 +155,24 @@ public class Analyzer {
 		return nearestNeighbour;
 	}
 
-	
 	/**
 	 * Merge trackers tracking objects within minDist of each other.
 	 */
 	private void filterTrackers() {
 		for (int i = 0; i < _trackers.size() - 1; i++) {
 			for (int j = i + 1; j < _trackers.size(); j++) {
-				if (RectAnalyzer.dist(_trackers.get(i)._obj._pRect, _trackers.get(j)._obj._pRect) < _minDist) {
+				if (RectAnalyzer.dist(_trackers.get(i)._obj._pRect,
+						_trackers.get(j)._obj._pRect) < _minDist) {
 					_trackers.get(i)._obj._pRect = new CvRect(
-						RectAnalyzer.getMinBoundingRect(_trackers.get(i)._obj._pRect, _trackers.get(j)._obj._pRect)
-					);
+							RectAnalyzer.getMinBoundingRect(
+									_trackers.get(i)._obj._pRect,
+									_trackers.get(j)._obj._pRect));
 					_trackers.remove(j);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Set up new tracker pairs.
 	 * 
@@ -194,16 +193,17 @@ public class Analyzer {
 
 		// Transform CvSeq into ArrayList as the latter is easier to work with.
 		_faces = cvSeqToList(facesDetected);
-		
+
 		// Temporary list of trackers used to ensure no tracker is considered
 		// a second time after having been matched in the process below.
-		ArrayList<ObjectTracker> trackers = new ArrayList<ObjectTracker>(_trackers);
+		ArrayList<ObjectTracker> trackers = new ArrayList<ObjectTracker>(
+				_trackers);
 
 		ObjectTracker nearestTracker = null;
 		CvRect rect = null, nearestRect = null;
 
 		filterTrackers();
-		
+
 		for (int i = 0; i < _faces.size(); i++) {
 			rect = _faces.get(i);
 			nearestTracker = getNearestTracker(trackers, rect);
@@ -222,9 +222,11 @@ public class Analyzer {
 			nearestRect = getNearestRect(_faces, nearestTracker);
 
 			if (nearestRect == null || !nearestRect.equals(rect)) {
-				// Rect is within _minDist of some tracker, but that tracker
-				// is not set up to track this rect. This means it is needs
-				// to be tracked.
+				/*
+				 * Rect is within _minDist of some tracker, but that tracker is
+				 * not set up to track this rect. This means it is needs to be
+				 * tracked.
+				 */
 				nearestTracker = new ObjectTracker();
 				nearestTracker.trackNewObject(img, rect);
 				pairs.put(rect, nearestTracker);
@@ -252,16 +254,17 @@ public class Analyzer {
 		CvSeq facesDetected = detectFaces(img);
 		ArrayList<CvRect> faceList = new ArrayList<CvRect>();
 		ArrayList<CvRect> simplifiedFaceList;
-//		return facesDetected;
+		// return facesDetected;
 		CvSeq faces = cvCreateSeq(0, Loader.sizeof(CvSeq.class),
 				Loader.sizeof(CvRect.class), storage);
 
 		Multimap<CvRect, ObjectTracker> pairs = getFaceTrackerPairs(img,
 				facesDetected);
-
-		// For trackers for which no face was within _minDist of the tracker:
-		// If the tracker has lost the object we destroy it.
-		// Else, we push the face returned by the tracker.
+		/*
+		 * For trackers for which no face was within _minDist of the tracker: If
+		 * the tracker has lost the object we destroy it. Else, we push the face
+		 * returned by the tracker.
+		 */
 		Iterator<ObjectTracker> iter = pairs.get(null).iterator();
 		while (iter.hasNext()) {
 			ObjectTracker tracker = iter.next();
@@ -279,10 +282,10 @@ public class Analyzer {
 		simplifiedFaceList = RectAnalyzer.getBoundingRects(faceList);
 		for (int i = 0; i < simplifiedFaceList.size(); i++) {
 			// Ensure rectangle is valid
-			if (simplifiedFaceList.get(i).height() <= img.height() 	&&
-				0 <= simplifiedFaceList.get(i).height()			 	&&
-				simplifiedFaceList.get(i).width() <= img.width() 	&&
-				0 <= simplifiedFaceList.get(i).width()				){
+			if (simplifiedFaceList.get(i).height() <= img.height()
+					&& 0 <= simplifiedFaceList.get(i).height()
+					&& simplifiedFaceList.get(i).width() <= img.width()
+					&& 0 <= simplifiedFaceList.get(i).width()) {
 				cvSeqPush(faces, simplifiedFaceList.get(i));
 			}
 		}
@@ -308,7 +311,7 @@ public class Analyzer {
 	public void separateStreams(IplImage orig, IplImage back, IplImage face,
 			FaceStream fs) {
 		CvSeq faces = getFaces(orig);
-		//fs.add(new FaceStreamElement(orig, faces));
+		// fs.add(new FaceStreamElement(orig, faces));
 		blackOutFaces(back, faces);
 		cvAbsDiff(orig, back, face);
 	}
@@ -339,12 +342,6 @@ public class Analyzer {
 			IplImage fImage, FaceStreamElement fse) {
 		// TODO: change which recombinator called based on param set ...
 		// somewhere
-		Recombiner.barycentricRGBInterpolation(
-			cImage, 
-			bImage, 
-			fImage, 
-			fse
-		);
+		Recombiner.barycentricRGBInterpolation(cImage, bImage, fImage, fse);
 	}
 }
-

@@ -11,9 +11,11 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class MergerLauncher {
 
 	public static void main(String[] args) {
+		// Gets the user to supply the password
 		PasswordPanel panel_Password = new PasswordPanel();
 		while(panel_Password.isVisible())
 			Thread.yield();
+		
 		String password = panel_Password.getPassword();
 		if (password != "")
 			Settings.PASSWORD = password;
@@ -24,7 +26,6 @@ public class MergerLauncher {
 		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME + ".avi");
 		Transmitter transmitter = new Transmitter();
 		
-		// TODO: GET IMAGE HEIGHT AND WIDTH FROM THE MARKO FILE
 		transmitter.setUpDecoders(Settings.OUT + Settings.DECRYPTED_OUTF_NAME,
 				Settings.OUT + Settings.ENCODED_OUTB_NAME, 352, 288);
 
@@ -58,9 +59,7 @@ public class MergerLauncher {
 			while (gui.isVisible()) {
 				backImage = backFrameGrabber.grab();
 				faceImage = faceFrameGrabber.grab();
-
-				// Set up recording of merged images
-				// TODO: better setup mechanism
+				
 				if (!onceThrough && backImage != null) {
 					recorder = new FFmpegFrameRecorder(new File(
 							"out/mergedOut.avi"), Settings.WIDTH,

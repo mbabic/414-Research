@@ -37,33 +37,6 @@ public class PixelBlockList implements java.io.Serializable {
 	}
 	
 	/**
-	 * Given an image and an ArrayList of rectangles, construct a list of 
-	 * PixelBlocks.
-	 * @deprecated
-	 * @param img
-	 * 		The source image.
-	 * @param rects
-	 * 		The list of rectangles from which the PixelBlock instances are
-	 * 		to be constructed.
-	 */
-	public PixelBlockList(IplImage img, ArrayList<CvRect> rects) {
-		_pixelBlocks = new ArrayList<PixelBlock>();
-		
-		try {
-			_compressor = new TJCompressor();
-			for (int i = 0; i < rects.size(); i++) {
-				PixelBlock pb = new PixelBlock(img, rects.get(i));
-//				pb.compress(_compressor);
-				_pixelBlocks.add(pb);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-
-	}
-	
-	/**
 	 * Given an image and a CvSeq of rectangles, construct a list of 
 	 * PixelBlocks.
 	 * @param img

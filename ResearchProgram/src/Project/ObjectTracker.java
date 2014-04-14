@@ -80,7 +80,6 @@ public class ObjectTracker {
 	
 	/**
 	 * Update hue channel image for tracked object given current frame.
-	 * TODO: move to TrackedObject?
 	 * @param img
 	 *  	The image from which to update tracked object's hue image.
 	 */
@@ -141,8 +140,6 @@ public class ObjectTracker {
 			components.rect().height()
 		);
 		
-		// TODO: test if creation of new CvRect is necessary or if we can simply
-		// return reference to _obj._pRect
 		return new CvRect(
 			components.rect().x(), 
 			components.rect().y(), 
