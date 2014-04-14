@@ -22,7 +22,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.NumberFormatter;
 
 public class LoadingPanel extends JFrame implements ActionListener {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4752359407583649068L;
 
 	public static int WEBCAM = 0;
 	public static int FILE = 1;
@@ -185,7 +185,7 @@ public class LoadingPanel extends JFrame implements ActionListener {
 	private void makeFNFFrame() {
 		FNF = new JFrame();
 		JTextArea text = new JTextArea(
-				"The file your are looking for does not\n" +
+				"The file your are looking for does not \n" +
 				"exist too bad for you. Try a real one \n" +
 				"next time.");
 		text.setEditable(false);
@@ -290,7 +290,7 @@ public class LoadingPanel extends JFrame implements ActionListener {
 		if (o.equals(button_Done)) {
 			if (modeSelected == FILE) {
 				file = new File(tField_File.getText());
-				frames = (int) tField_FPS.getValue();
+				frames = (int) tField_Frames.getValue();
 				fPS = (int) tField_FPS.getValue();
 				char[] text = tField_Password.getPassword();
 				password = new String(text);
