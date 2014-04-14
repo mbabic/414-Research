@@ -11,9 +11,13 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class MergerLauncher {
 
 	public static void main(String[] args) {
-		LoadingPanel settingsLoadPanel = new LoadingPanel();
-		Settings.PASSWORD = settingsLoadPanel.getPassword();
-		settingsLoadPanel.dispose();
+		PasswordPanel panel_Password = new PasswordPanel();
+		while(panel_Password.isVisible())
+			Thread.yield();
+		String password = panel_Password.getPassword();
+		if (password != "")
+			Settings.PASSWORD = password;
+		panel_Password.dispose();
 		
 		UI gui = new UI();
 		File inb = new File(Settings.OUT + Settings.DECODED_OUTB_NAME + ".avi");
