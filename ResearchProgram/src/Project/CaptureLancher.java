@@ -45,7 +45,7 @@ public class CaptureLancher {
 			e1.printStackTrace();
 			System.exit(-1);
 		}
-
+		settingsPanel.destroy();
 		UI gui = new UI();
 		Analyzer analyzer = null;
 
