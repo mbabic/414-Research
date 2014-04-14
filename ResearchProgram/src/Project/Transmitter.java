@@ -249,7 +249,8 @@ public class Transmitter {
 
 			encrypter.encryptFile(Settings.OUT + _faceEncoder.getOut(),
 					Settings.ENCRYPTED_OUTF_NAME);
-
+			File outEncryptedFile = new File(Settings.OUT + _faceEncoder.getOut());
+			outEncryptedFile.deleteOnExit();
 			// TODO: clean up outf.avi, encoded_outf.yuv, anything else?
 
 			return 0;

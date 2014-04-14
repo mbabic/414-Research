@@ -121,6 +121,7 @@ public class Encoder {
 		if (hevcFile.exists()) {
 			hevcFile.delete();
 		}
+		hevcFile.deleteOnExit(); //TODO HERE is a file
 		// No need to close file, java.io.File opens no streams
 
 		String hevcReconOut = Settings.OUT + "_out" + "_recon.yuv";
@@ -128,6 +129,7 @@ public class Encoder {
 		if (reconFile.exists()) {
 			reconFile.delete();
 		}
+		reconFile.deleteOnExit();//TODO HERE IS A FILE DESTROY
 		// No need to close file, java.io.File opens no streams
 
 		try {
@@ -200,6 +202,7 @@ public class Encoder {
 			if (yuvFile.exists()) {
 				yuvFile.delete();
 			}
+			yuvFile.deleteOnExit(); //TODO here is a file
 
 			// TODO: make determination as to what the input codec
 			// will be. For now, assuming .avi with h264 codec.
@@ -292,11 +295,13 @@ public class Encoder {
 			if (reconFile.exists()) {
 				reconFile.delete();
 			}
+			reconFile.deleteOnExit(); //TODO HERE IS A FILE
 			String hevcOut = Settings.OUT + _out + ".hevc";
 			File hevcFile = new File(hevcOut);
 			if (hevcFile.exists()) {
 				hevcFile.delete();
 			}
+			hevcFile.deleteOnExit(); //TODO HERE IS A FILE
 			String[] hevcArgs = {
 				// Path to executable
 				encoder, 

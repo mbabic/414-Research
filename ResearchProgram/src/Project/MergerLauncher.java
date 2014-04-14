@@ -86,13 +86,14 @@ public class MergerLauncher {
 				}
 
 				if (backImage == null || faceImage == null) {
-					backFrameGrabber.restart();
-					faceFrameGrabber.restart();
-					stream.restart();
-					backFrameGrabber.start();
-					faceFrameGrabber.start();
-					backImage = backFrameGrabber.grab();
-					faceImage = faceFrameGrabber.grab();
+					gui.setVisible(false);
+//					backFrameGrabber.restart();
+//					faceFrameGrabber.restart();
+//					stream.restart();
+//					backFrameGrabber.start();
+//					faceFrameGrabber.start();
+//					backImage = backFrameGrabber.grab();
+//					faceImage = faceFrameGrabber.grab();
 				}
 
 				mergImage = backImage.clone();
