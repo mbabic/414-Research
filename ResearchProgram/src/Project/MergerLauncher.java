@@ -25,7 +25,8 @@ public class MergerLauncher {
 		Transmitter transmitter = new Transmitter();
 
 		FaceStream stream = FaceStream.fromFile();
-		System.out.println(stream._imgWidth + "x" + stream._imgHeight);
+		Settings.WIDTH = stream._imgWidth;
+		Settings.HEIGHT = stream._imgHeight;
 		transmitter.setUpDecoders(Settings.OUT + Settings.DECRYPTED_OUTF_NAME,
 				Settings.OUT + Settings.ENCODED_OUTB_NAME, stream._imgWidth, stream._imgHeight);
 
@@ -64,7 +65,7 @@ public class MergerLauncher {
 				if (!onceThrough && backImage != null) {
 					recorder = new FFmpegFrameRecorder(new File(
 							"out/mergedOut.avi"), Settings.WIDTH,
-							Settings.WIDTH);
+							Settings.HEIGHT);
 
 					recorder.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
 					// Indicate that we want the encoding to be lossless

@@ -110,11 +110,16 @@ public class Decoder {
 			String ffmpeg = ffmpegFile.getAbsolutePath();
 			
 			String output = Settings.OUT + _out + ".avi";
+			
+			System.out.println(output);
+			System.out.println(_yuv);
 			File outFile = new File(output);
 			if (outFile.exists()) {
 				outFile.delete();
 			}
 
+			System.out.println(_imgWidth);
+			System.out.println(_imgHeight);
 			String[] args = {
 				// Path to ffmpeg
 				ffmpeg,

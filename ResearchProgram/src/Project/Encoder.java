@@ -291,9 +291,16 @@ public class Encoder {
 			File inFile = new File(_yuv);
 			String encoder = encoderFile.getAbsolutePath();
 			String inputVideoPath = inFile.getAbsolutePath();
-
-
-			
+			String hevcReconOut = Settings.OUT + "_out" + "_recon.yuv";
+			File reconFile = new File(hevcReconOut);
+			if (reconFile.exists()) {
+				reconFile.delete();
+			}
+			String hevcOut = Settings.OUT + _out + ".hevc";
+			File hevcFile = new File(hevcOut);
+			if (hevcFile.exists()) {
+				hevcFile.delete();
+			}
 			String[] hevcArgs = {
 				// Path to executable
 				encoder, 
@@ -310,6 +317,28 @@ public class Encoder {
 				"-c",			
 				Settings.CFG + _out + ".cfg"
 			};		
+//			String[] hevcArgs = {
+//					// Path to executable
+//					encoder,
+//
+//					// Input video
+//					"--input", 
+//					inputVideoPath,
+//					"-f",
+//					_frames + "",
+//
+//					"--fps",
+//					_fps + "",
+//					
+//					"--input-res",
+//					_imgWidth + "x" + _imgHeight,
+//					
+//					"--output",
+//					Settings.OUT + _out,
+//					
+//					"--recon",
+//					hevcReconOut					
+//				};
 			
 			try {
 				Runtime rt = Runtime.getRuntime();

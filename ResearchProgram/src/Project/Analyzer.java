@@ -280,9 +280,9 @@ public class Analyzer {
 		for (int i = 0; i < simplifiedFaceList.size(); i++) {
 			// Ensure rectangle is valid
 			if (simplifiedFaceList.get(i).height() <= img.height() 	&&
-				0 <= simplifiedFaceList.get(i).height()			 	&&
+				0 < simplifiedFaceList.get(i).height()			 	&&
 				simplifiedFaceList.get(i).width() <= img.width() 	&&
-				0 <= simplifiedFaceList.get(i).width()				){
+				0 < simplifiedFaceList.get(i).width()				){
 				cvSeqPush(faces, simplifiedFaceList.get(i));
 			}
 		}
@@ -308,7 +308,7 @@ public class Analyzer {
 	public void separateStreams(IplImage orig, IplImage back, IplImage face,
 			FaceStream fs) {
 		CvSeq faces = getFaces(orig);
-		//fs.add(new FaceStreamElement(orig, faces));
+		fs.add(new FaceStreamElement(orig, faces));
 		blackOutFaces(back, faces);
 		cvAbsDiff(orig, back, face);
 	}

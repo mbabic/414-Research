@@ -28,7 +28,7 @@ public class FaceStreamElement implements java.io.Serializable {
 	
 	public FaceStreamElement(IplImage img, CvSeq rects) {
 		_rects = new SerializableRectList(rects);	
-		if (Settings.SAVE_PIXELS == true) {
+		if (Settings.SAVE_PIXELS == true && Settings.SAVE_PIXELS == false) {
 			_pixelBlocks = new PixelBlockList(img, rects);
 		} else {
 			_pixelBlocks = null;
