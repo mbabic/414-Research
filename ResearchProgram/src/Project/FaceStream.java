@@ -42,25 +42,15 @@ public class FaceStream implements java.io.Serializable {
 	/**
 	 * Width of the frame.
 	 */
-<<<<<<< HEAD
+
 	public int _imgWidth;
-	
+
 	/**
 	 * Height of the frame.
 	 */
+
 	public int _imgHeight;
-	
-=======
-	@SuppressWarnings("unused")
-	private int _imgWidth;
 
-	/**
-	 * Height of the frame.
-	 */
-	@SuppressWarnings("unused")
-	private int _imgHeight;
-
->>>>>>> origin/master
 	/**
 	 * Empty constructor.
 	 */
