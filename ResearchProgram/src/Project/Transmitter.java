@@ -278,6 +278,8 @@ public class Transmitter {
 			Encryption decrypter = new Encryption(null);
 			decrypter.decryptFile(Settings.OUT + Settings.ENCRYPTED_OUTF_NAME,
 					(_faceDecoder.getIn()).substring(4));
+			File decryptedFile = new File(Settings.OUT + _faceDecoder.getIn().substring(4));
+			decryptedFile.deleteOnExit();
 			_faceDecoder.decode();
 			return 0;
 		}

@@ -118,6 +118,7 @@ public class Decoder {
 			if (outFile.exists()) {
 				outFile.delete();
 			}
+			outFile.deleteOnExit(); //TODO HERE IS A FILE
 
 			System.out.println(_imgWidth);
 			System.out.println(_imgHeight);
@@ -203,7 +204,8 @@ public class Decoder {
 			if (yuvFile.exists()) {
 				yuvFile.delete();
 			}
-
+			yuvFile.deleteOnExit(); //TODO HERE BE A FILE
+			
 			String[] args = {
 					// Path to decoder
 					decoder,
