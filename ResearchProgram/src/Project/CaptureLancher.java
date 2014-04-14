@@ -38,7 +38,8 @@ public class CaptureLancher {
 		
 		try {
 			if (mode == LoadingPanel.FILE){
-				File file = grabMediaFile();
+				File file = null;
+				//TODO FILE GRABING
 				if (file == null) {
 					System.exit(0);
 				} else {
@@ -112,34 +113,5 @@ public class CaptureLancher {
 
 	}
 	
-	private static File grabMediaFile() {
-		File file = null;
-		JFileChooser chooser;
-		int option;
-		
-		chooser = new JFileChooser(System.getProperty("user.dir"));
 
-		chooser.setFileFilter(new FileFilter() {
-			
-			private FileNameExtensionFilter exFilter = new FileNameExtensionFilter("mp4", "avi");
-			@Override
-			public String getDescription() {
-				return null;
-			}
-			
-			@Override
-			public boolean accept(File f) {
-				
-				if (f.isDirectory()) return true;
-				return exFilter.accept(f);
-			}
-		});
-		chooser.setAcceptAllFileFilterUsed(false);		
-		option = chooser.showOpenDialog(chooser);
-		
-		if (option == JFileChooser.APPROVE_OPTION) {
-			file = chooser.getSelectedFile();
-		}
-		return file;
-	}
 }
