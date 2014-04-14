@@ -125,9 +125,8 @@ public class PixelBlock implements java.io.Serializable {
 	 */
 	private void pixelsToBytes() {
 		CvScalar p;
-		_bytes = new byte[(2 * (_width + _height)) * PIXEL_CHANNELS * 4];
-		for (int i = 0; i < (2 * (_width + _height)) * (PIXEL_CHANNELS)
-				- PIXEL_CHANNELS; i += PIXEL_CHANNELS) {
+		_bytes = new byte[_pixels.size() * PIXEL_CHANNELS * 4];
+		for (int i = 0; i < _pixels.size() * (PIXEL_CHANNELS); i += PIXEL_CHANNELS) {
 			p = _pixels.get(i / (PIXEL_CHANNELS));
 			for (int j = 0; j < PIXEL_CHANNELS; j++) {
 				_bytes[i + j] = (byte) ((int) p.val(j) & 0xFF);
