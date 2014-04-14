@@ -25,8 +25,8 @@ public class CaptureLancher {
 
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
-		outb.deleteOnExit();
-		outf.deleteOnExit();
+//		outb.deleteOnExit();
+//		outf.deleteOnExit();
 		// Initialize the various functional objects
 		Transmitter transmitter = new Transmitter();
 		FrameGrabber frameGrabber = null;

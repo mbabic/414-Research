@@ -26,21 +26,22 @@ public class MergerLauncher {
 		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME + ".avi");
 		inb.deleteOnExit();
 		inf.deleteOnExit();
-		
+
 		Transmitter transmitter = new Transmitter();
 
 		FaceStream stream = FaceStream.fromFile();
 		Settings.WIDTH = stream._imgWidth;
 		Settings.HEIGHT = stream._imgHeight;
 		transmitter.setUpDecoders(Settings.OUT + Settings.DECRYPTED_OUTF_NAME,
-				Settings.OUT + Settings.ENCODED_OUTB_NAME, stream._imgWidth, stream._imgHeight);
+				Settings.OUT + Settings.ENCODED_OUTB_NAME, stream._imgWidth,
+				stream._imgHeight);
 
 		transmitter.decodeHEVC();
 
 		Analyzer analyzer = null;
 		FrameGrabber backFrameGrabber = null, faceFrameGrabber = null;
 		IplImage mergImage, backImage, faceImage;
-		FFmpegFrameRecorder recorder = null;		
+		FFmpegFrameRecorder recorder = null;
 		FaceStreamElement fse;
 		try {
 			backFrameGrabber = transmitter.receiveStream(inb);
@@ -83,13 +84,13 @@ public class MergerLauncher {
 
 				if (backImage == null || faceImage == null) {
 					gui.setVisible(false);
-//					backFrameGrabber.restart();
-//					faceFrameGrabber.restart();
-//					stream.restart();
-//					backFrameGrabber.start();
-//					faceFrameGrabber.start();
-//					backImage = backFrameGrabber.grab();
-//					faceImage = faceFrameGrabber.grab();
+					// backFrameGrabber.restart();
+					// faceFrameGrabber.restart();
+					// stream.restart();
+					// backFrameGrabber.start();
+					// faceFrameGrabber.start();
+					// backImage = backFrameGrabber.grab();
+					// faceImage = faceFrameGrabber.grab();
 				}
 
 				mergImage = backImage.clone();
