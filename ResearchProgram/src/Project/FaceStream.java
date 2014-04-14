@@ -13,6 +13,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+
 /**
  * Serializable stream of FaceStreamElements.
  * @author Marko Babic, Marcus Karpoff
@@ -37,12 +39,25 @@ public class FaceStream implements java.io.Serializable {
 	private int _frame;
 
 
+	/** 
+	 * Width of the frame.
+	 */
+	private int _imgWidth;
+	
+	/**
+	 * Height of the frame.
+	 */
+	private int _imgHeight;
+	
+	
 	/**
 	 * Empty constructor.
 	 */
-	public FaceStream() {
+	public FaceStream(IplImage img) {
 		_stream = new ArrayList<FaceStreamElement>();
 		_frame = 0;
+		_imgWidth = img.width();
+		_imgHeight = img.height();
 	}
 
 	/**

@@ -27,7 +27,7 @@ public class CaptureLancher {
 		Transmitter transmitter = new Transmitter();
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
-		FaceStream stream = new FaceStream();
+		FaceStream stream;
 		
 //		LoadingPanel settingsPanel = new LoadingPanel();
 		
@@ -68,6 +68,7 @@ public class CaptureLancher {
 			origImage = frameGrabber.grab();
 			Settings.HEIGHT = origImage.height();
 			Settings.WIDTH = origImage.width();
+			stream = new FaceStream(origImage);
 			transmitter.initializeRecorders(outb, outf);
 			backImage = origImage.clone();
 			faceImage = origImage.clone();
