@@ -34,7 +34,7 @@ public class LoadingPanel extends JFrame implements ActionListener {
 	private JFormattedTextField tField_FPS;
 	private JFormattedTextField tField_Frames;
 	private JTextField tField_File;
-	
+
 	private JFrame FNF;
 
 	private int modeSelected = FILE;
@@ -45,14 +45,27 @@ public class LoadingPanel extends JFrame implements ActionListener {
 	private File file;
 
 	/**
-	 * JPanel Item with some specialized functions
+	 * This is the loading panel. It has all the attributes that the user needs
+	 * to enter.
 	 */
 	LoadingPanel() {
 		super();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		makeUI();
 		makeFNFFrame();
-		
+		this.setVisible(true);
+		this.pack();
+
+		while (this.isVisible())
+			Thread.yield();
+	}
+
+	/**
+	 * This adds the actual attributes need for the gui.
+	 */
+	private void makeUI() {
+
 		ButtonGroup bG_Mode = new ButtonGroup();
 		JRadioButton loadVideoRButton = new JRadioButton("Load a file", true);
 		loadVideoRButton.addActionListener(new ActionListener() {
@@ -136,30 +149,30 @@ public class LoadingPanel extends JFrame implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				savePixels = true;
-				
+
 			}
 		});
 		JRadioButton radio_PixelSaveOff = new JRadioButton("Off");
 		radio_PixelSaveOff.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				savePixels = false;
-				
+
 			}
 		});
-		
+
 		ButtonGroup bG_PixelSave = new ButtonGroup();
 		bG_PixelSave.add(radio_PixelSaveON);
 		bG_PixelSave.add(radio_PixelSaveOff);
-		
+
 		JPanel panel_PixelSave1 = new JPanel(new BorderLayout());
 		JPanel panel_PixelSave = new JPanel(new BorderLayout());
 		panel_PixelSave.add(label_PixelSave, BorderLayout.WEST);
 		panel_PixelSave1.add(radio_PixelSaveON, BorderLayout.CENTER);
 		panel_PixelSave1.add(radio_PixelSaveOff, BorderLayout.EAST);
 		panel_PixelSave.add(panel_PixelSave1, BorderLayout.EAST);
-		
+
 		JPanel panel_North = new JPanel(new BorderLayout());
 		panel_North.add(panel_Mode, BorderLayout.NORTH);
 		panel_North.add(panel_PixelSave, BorderLayout.CENTER);
@@ -175,22 +188,21 @@ public class LoadingPanel extends JFrame implements ActionListener {
 		this.add(panel_North, BorderLayout.NORTH);
 		this.add(panel_South, BorderLayout.SOUTH);
 
-		this.setVisible(true);
-		this.pack();
-
-		while (this.isVisible())
-			Thread.yield();
 	}
 
+	/**
+	 * This makes a JFrame that will pop up if the user doesn't enter a valid
+	 * file.
+	 */
 	private void makeFNFFrame() {
 		FNF = new JFrame();
 		JTextArea text = new JTextArea(
-				"The file your are looking for does not \n" +
-				"exist too bad for you. Try a real one \n" +
-				"next time.");
+				"The file your are looking for does not \n"
+						+ "exist too bad for you. Try a real one \n"
+						+ "next time.");
 		text.setEditable(false);
 		JButton close = new JButton("Ok");
-		close.addActionListener(new ActionListener() {		
+		close.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				FNF.setVisible(false);
@@ -201,7 +213,13 @@ public class LoadingPanel extends JFrame implements ActionListener {
 		FNF.pack();
 		FNF.setVisible(false);
 	}
-	
+
+	/**
+	 * This is a file grabber that is called when the user hits the browser
+	 * button.
+	 * 
+	 * @return
+	 */
 	private File grabMediaFile() {
 		File file = null;
 		JFileChooser chooser;
@@ -271,19 +289,28 @@ public class LoadingPanel extends JFrame implements ActionListener {
 	public int getframes() {
 		return frames;
 	}
-	
+
 	/**
 	 * Gets the File they entered.
-	 * @return
+	 * 
+	 * @return the file
 	 */
 	public File getFile() {
 		return file;
 	}
-	
+
+	/**
+	 * Gets the value for whether pixels are being saved or not.
+	 * 
+	 * @return A boolean for whether to save pixel values or not.
+	 */
 	public boolean getPixelSave() {
 		return savePixels;
 	}
 
+	/**
+	 * Action listener for button press.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
@@ -294,7 +321,7 @@ public class LoadingPanel extends JFrame implements ActionListener {
 				fPS = (int) tField_FPS.getValue();
 				char[] text = tField_Password.getPassword();
 				password = new String(text);
-				
+
 				if (file.exists()) {
 					this.setVisible(false);
 				} else {
@@ -311,9 +338,12 @@ public class LoadingPanel extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Destructor
+	 */
 	public void destroy() {
 		FNF.dispose();
 		super.dispose();
-		
+
 	}
 }

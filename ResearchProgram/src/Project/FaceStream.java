@@ -17,6 +17,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
  * Serializable stream of FaceStreamElements.
+ * 
  * @author Marko Babic, Marcus Karpoff
  * 
  */
@@ -26,22 +27,22 @@ public class FaceStream implements java.io.Serializable {
 	 * Auto-generated UID.
 	 */
 	private static final long serialVersionUID = -2647220701334355386L;
-	
+
 	/**
 	 * Aggregation of FaceStreamElements.
 	 */
 	public ArrayList<FaceStreamElement> _stream;
 
-	/** 
-	 * Private state variable.  Keeps tracks of the next element to be 
-	 * retrieved from the stream.
+	/**
+	 * Private state variable. Keeps tracks of the next element to be retrieved
+	 * from the stream.
 	 */
 	private int _frame;
 
-
-	/** 
+	/**
 	 * Width of the frame.
 	 */
+<<<<<<< HEAD
 	public int _imgWidth;
 	
 	/**
@@ -49,6 +50,17 @@ public class FaceStream implements java.io.Serializable {
 	 */
 	public int _imgHeight;
 	
+=======
+	@SuppressWarnings("unused")
+	private int _imgWidth;
+
+	/**
+	 * Height of the frame.
+	 */
+	@SuppressWarnings("unused")
+	private int _imgHeight;
+
+>>>>>>> origin/master
 	/**
 	 * Empty constructor.
 	 */
@@ -56,7 +68,7 @@ public class FaceStream implements java.io.Serializable {
 		_stream = new ArrayList<FaceStreamElement>();
 		_frame = 0;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -69,8 +81,8 @@ public class FaceStream implements java.io.Serializable {
 
 	/**
 	 * Reset instance attribute _frame to beginning such that next call to
-	 * getNextElement() returns the information associated with the first
-	 * frame in the stream.
+	 * getNextElement() returns the information associated with the first frame
+	 * in the stream.
 	 */
 	public void restart() {
 		_frame = 0;
@@ -78,16 +90,14 @@ public class FaceStream implements java.io.Serializable {
 
 	/**
 	 * @param fse
-	 * 		The face stream element to be added.
+	 *            The face stream element to be added.
 	 */
 	public void add(FaceStreamElement fse) {
 		_stream.add(fse);
 	}
-	
 
 	/**
-	 * @return
-	 * 		The next FaceStreamElement in the stream.
+	 * @return The next FaceStreamElement in the stream.
 	 */
 	public FaceStreamElement getNextElement() {
 		return _stream.get(_frame++);
@@ -138,8 +148,7 @@ public class FaceStream implements java.io.Serializable {
 	}
 
 	/**
-	 * @return
-	 * 		Deserialized FaceStream from file.
+	 * @return Deserialized FaceStream from file.
 	 */
 	public static FaceStream fromFile() {
 		InputStream file = null;

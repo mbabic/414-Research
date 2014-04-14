@@ -9,7 +9,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class CaptureLancher {
 
 	public static void main(String[] args) {
-
+		// Load the settings panel this is gui plashy stuff
 		LoadingPanel settingsPanel = new LoadingPanel();
 		while (settingsPanel.isVisible())
 			Thread.yield();
@@ -27,7 +27,7 @@ public class CaptureLancher {
 		File outf = new File(Settings.OUTF);
 		outb.deleteOnExit();
 		outf.deleteOnExit();
-
+		// Initialize the various functional objects
 		Transmitter transmitter = new Transmitter();
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
@@ -58,6 +58,7 @@ public class CaptureLancher {
 			System.exit(-1);
 		}
 		try {
+			// This sets the base values for the
 			origImage = frameGrabber.grab();
 			Settings.HEIGHT = origImage.height();
 			Settings.WIDTH = origImage.width();
@@ -68,6 +69,7 @@ public class CaptureLancher {
 			analyzer.separateStreams(origImage, backImage, faceImage, stream);
 			gui.putFrame(origImage, backImage, faceImage);
 			transmitter.videoBuilder(backImage, faceImage);
+			// This loop grabs and analyzes the video input stream.
 			while (gui.isVisible()) {
 				origImage = frameGrabber.grab();
 				backImage = origImage.clone();
@@ -79,10 +81,10 @@ public class CaptureLancher {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(1);
+			System.exit(-1);
 		} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
 			e.printStackTrace();
-			System.exit(2);
+			System.exit(-1);
 		} finally {
 
 			try {

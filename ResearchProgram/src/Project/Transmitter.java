@@ -24,7 +24,7 @@ public class Transmitter {
 
 	private FFmpegFrameRecorder recorderBackGround;
 	private FFmpegFrameRecorder recorderFacial;
-	
+
 	/**
 	 * The encoder to be used to encode the stream containing the face data.
 	 */
@@ -69,66 +69,53 @@ public class Transmitter {
 	 *            The image that is used to set recording parameters
 	 * @throws Exception
 	 */
-	public void initializeRecorders(File bFile, File fFile)
-			throws Exception {
-		
+	public void initializeRecorders(File bFile, File fFile) throws Exception {
+
 		recorderBackGround = new FFmpegFrameRecorder(bFile, Settings.WIDTH,
 				Settings.HEIGHT);
 		recorderBackGround.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
 		// Indicate that we want the encoding to be lossless.
 		recorderBackGround.setVideoQuality(0);
-		
+
 		recorderFacial = new FFmpegFrameRecorder(fFile, Settings.WIDTH,
 				Settings.HEIGHT);
 		recorderFacial.setVideoCodec(avcodec.AV_CODEC_ID_MPEG4);
 		// Indicate that we want the encoding to be lossless
 		recorderFacial.setVideoQuality(0);
-		
-		// Initialize encoders
-		_bgEncoder = new Encoder(
-			bFile.getAbsolutePath(), 
-			Settings.ENCODED_OUTB_NAME
-		);
-		
-		_faceEncoder = new Encoder(
-			fFile.getAbsolutePath(),
-			Settings.ENCODED_OUTF_NAME
-		);
 
-		// TODO: get and same frame rate from cmd line, for now using default
-		// values defines in Settings.
+		// Initialize encoders
+		_bgEncoder = new Encoder(bFile.getAbsolutePath(),
+				Settings.ENCODED_OUTB_NAME);
+
+		_faceEncoder = new Encoder(fFile.getAbsolutePath(),
+				Settings.ENCODED_OUTF_NAME);
+
 		_bgEncoder.setImgWidth(Settings.WIDTH);
-		_bgEncoder.setImgHeight(Settings.HEIGHT);		
+		_bgEncoder.setImgHeight(Settings.HEIGHT);
 		_faceEncoder.setImgWidth(Settings.WIDTH);
 		_faceEncoder.setImgHeight(Settings.HEIGHT);
-		
+
 		recorderBackGround.start();
 		recorderFacial.start();
 	}
-	
+
 	/**
-	 * Once a frame has been captured, called to pass the width and height
-	 * of a frame to the decoder used by the Transmitter instance.
+	 * Once a frame has been captured, called to pass the width and height of a
+	 * frame to the decoder used by the Transmitter instance.
+	 * 
 	 * @param inf
-	 * 		Path the the encrypted file containing the face stream.
+	 *            Path the the encrypted file containing the face stream.
 	 * @param imgWidth
-	 * 		The width of a frame in the streams to be recombined.
+	 *            The width of a frame in the streams to be recombined.
 	 * @param imgHeight
-	 * 		The height of a frame in the streams to be recombined.
+	 *            The height of a frame in the streams to be recombined.
 	 */
-	public void setUpDecoders(String inf, String inb, int imgWidth, int imgHeight) {
-		_faceDecoder = new Decoder(
-			inf, 
-			Settings.DECODED_OUTF_NAME,
-			imgWidth,
-			imgHeight
-		);
-		_bgDecoder = new Decoder(
-			inb,
-			Settings.DECODED_OUTB_NAME,
-			imgWidth,
-			imgHeight
-		);
+	public void setUpDecoders(String inf, String inb, int imgWidth,
+			int imgHeight) {
+		_faceDecoder = new Decoder(inf, Settings.DECODED_OUTF_NAME, imgWidth,
+				imgHeight);
+		_bgDecoder = new Decoder(inb, Settings.DECODED_OUTB_NAME, imgWidth,
+				imgHeight);
 	}
 
 	public void close() throws com.googlecode.javacv.FrameGrabber.Exception,
@@ -177,12 +164,13 @@ public class Transmitter {
 	 * @return A video stream
 	 * @throws com.googlecode.javacv.FrameGrabber.Exception
 	 */
-	public FrameGrabber receiveStream(File file) throws com.googlecode.javacv.FrameGrabber.Exception {
+	public FrameGrabber receiveStream(File file)
+			throws com.googlecode.javacv.FrameGrabber.Exception {
 		FrameGrabber grabber = new FFmpegFrameGrabber(file);
 		grabber.start();
 		return grabber;
 	}
-	
+
 	/**
 	 * receiveStream takes a number corresponding to the video capture device
 	 * that the user desires to use and initializes a video stream from that
@@ -217,7 +205,7 @@ public class Transmitter {
 	/**
 	 * Encodes the files produces by the frame grabbers to HEVC
 	 */
-	public void encodeHECV() {	
+	public void encodeHECV() {
 		ExecutorService exec = Executors.newFixedThreadPool(2);
 		exec.submit(new EncodeFaceTask());
 		exec.submit(new EncodeBackgroundTask());
@@ -229,7 +217,7 @@ public class Transmitter {
 		} catch (Throwable e) {
 			e.printStackTrace();
 			System.exit(1);
-		}	
+		}
 	}
 
 	/**
@@ -249,60 +237,56 @@ public class Transmitter {
 			System.exit(1);
 		}
 	}
-	
+
 	private class EncodeFaceTask implements Callable<Integer> {
 		public EncodeFaceTask() {
-			
+
 		}
-		
+
 		public Integer call() {
 			Encryption encrypter = new Encryption(null);
 			_faceEncoder.encode();
-			
-			encrypter.encryptFile(
-				Settings.OUT + _faceEncoder.getOut(),
-				Settings.ENCRYPTED_OUTF_NAME
-			);
-			
+
+			encrypter.encryptFile(Settings.OUT + _faceEncoder.getOut(),
+					Settings.ENCRYPTED_OUTF_NAME);
+
 			// TODO: clean up outf.avi, encoded_outf.yuv, anything else?
-			
+
 			return 0;
 		}
 	}
-	
+
 	private class EncodeBackgroundTask implements Callable<Integer> {
 		public EncodeBackgroundTask() {
-			
+
 		}
-		
+
 		public Integer call() {
 			_bgEncoder.encode();
 			return 0;
 		}
 	}
-	
+
 	private class DecodeFaceTask implements Callable<Integer> {
 		public DecodeFaceTask() {
-			
+
 		}
-		
+
 		public Integer call() {
 			System.out.println(_faceDecoder.getIn());
 			Encryption decrypter = new Encryption(null);
-			decrypter.decryptFile(
-				Settings.OUT + Settings.ENCRYPTED_OUTF_NAME, 
-				(_faceDecoder.getIn()).substring(4)
-			);
+			decrypter.decryptFile(Settings.OUT + Settings.ENCRYPTED_OUTF_NAME,
+					(_faceDecoder.getIn()).substring(4));
 			_faceDecoder.decode();
 			return 0;
 		}
 	}
-	
+
 	private class DecodeBackgroundTask implements Callable<Integer> {
 		public DecodeBackgroundTask() {
-			
+
 		}
-		
+
 		public Integer call() {
 			_bgDecoder.decode();
 			return 0;

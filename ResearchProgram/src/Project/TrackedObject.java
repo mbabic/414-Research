@@ -5,36 +5,37 @@ import com.googlecode.javacv.cpp.opencv_imgproc.CvHistogram;
 
 /**
  * Instance of an object to be tracked by ObjectTracker class.
+ * 
  * @author Marko Babic, Marcus Karpoff
  * @version 0.1
  */
 public class TrackedObject {
-	
-	/** 
+
+	/**
 	 * BGR coding of image in which object appears.
 	 */
 	public IplImage _bgr;
-	
-	/** 
-	 * HSV coding of image in which object appears. 
+
+	/**
+	 * HSV coding of image in which object appears.
 	 */
 	public IplImage _hsv;
-	
-	/** 
+
+	/**
 	 * Hue map of image in which object appears.
 	 */
 	public IplImage _hue;
-	
-	/** 
+
+	/**
 	 * Mask used in construction of probability coded image in which object
 	 * appears.
 	 */
 	public IplImage _mask;
-	
+
 	/**
-	 * Probability coded image in which object appears.  Each pixel's gray scale
-	 * value corresponds to the likelihood that that particular pixel belongs
-	 * to the object.
+	 * Probability coded image in which object appears. Each pixel's gray scale
+	 * value corresponds to the likelihood that that particular pixel belongs to
+	 * the object.
 	 */
 	public IplImage _prob;
 
@@ -42,35 +43,35 @@ public class TrackedObject {
 	 * Histogram constructed in construction of probability coded image.
 	 */
 	public CvHistogram _hist;
-	
+
 	/**
 	 * Number of bins in _hist.
 	 */
 	public int _bins = 30;
-	
+
 	/**
 	 * Range of values in _hist.
 	 */
-	public float[]_histRange = {0, 180};
-	
+	public float[] _histRange = { 0, 180 };
+
 	/**
 	 * ROI rectangle corresponding to position of object in image in previous
 	 * frame tracked.
 	 */
 	public CvRect _pRect;
-	
+
 	/**
-	 * The CvBOX2d (i.e., rotated rectangle) in which the tracking algorithm
-	 * has determined the object is in.
+	 * The CvBOX2d (i.e., rotated rectangle) in which the tracking algorithm has
+	 * determined the object is in.
 	 */
 	public CvBox2D _currBox;
-	
-	/** 
+
+	/**
 	 * Constructor.
 	 */
 	public TrackedObject() {
 		_pRect = new CvRect();
 		_currBox = new CvBox2D();
-	
+
 	}
 }

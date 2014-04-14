@@ -17,45 +17,46 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Encryption module.  Performs AES symmetric key 
+ * Encryption module. Performs AES symmetric key
+ * 
  * @author Marko Babic, Marcus Karpoff
  */
 public class Encryption {
 
 	byte[] _key;
-	
+
 	byte[] _iv;
-	
+
 	AlgorithmParameters _params;
-	
+
 	Cipher _cipher;
-	
+
 	IvParameterSpec _ivSpec;
-	
+
 	SecretKeySpec _keySpec;
 
-	private static byte[] iv(){
-	    byte[] iv = new byte [16];
-	    Random random = new Random();
-	    random.nextBytes(iv);
-	    return iv;
+	private static byte[] iv() {
+		byte[] iv = new byte[16];
+		Random random = new Random();
+		random.nextBytes(iv);
+		return iv;
 	}
-	
+
 	/**
 	 * @param password
-	 * 		The password from which the encryption key will be derived.
+	 *            The password from which the encryption key will be derived.
 	 */
 	public Encryption(String password) {
 		MessageDigest sha;
 		String salt;
-		
+
 		if (password == null) {
 			password = Settings.PASSWORD;
 		}
-		
+
 		// TODO: select better salt
 		salt = "salt!";
-		
+
 		try {
 			_key = (salt + password).getBytes("UTF-8");
 			sha = MessageDigest.getInstance("SHA-1");
@@ -70,27 +71,27 @@ public class Encryption {
 			System.exit(1);
 		} catch (NoSuchAlgorithmException nsae) {
 			System.err.println(nsae.toString());
-			System.exit(1);			
+			System.exit(1);
 		} catch (NoSuchPaddingException nspe) {
 			System.err.println(nspe.toString());
-			System.exit(1);			
-		} 
+			System.exit(1);
+		}
 	}
 
-	
 	/**
 	 * Encrypt the file whose path is specified by the provided argument.
+	 * 
 	 * @param in
-	 * 		The path (relative or absolute) to the file to be encrypted.
+	 *            The path (relative or absolute) to the file to be encrypted.
 	 * @param out
-	 * 		The name of the output file to be generated in the Settings.OUT
-	 * 		folder.
+	 *            The name of the output file to be generated in the
+	 *            Settings.OUT folder.
 	 */
 	public void encryptFile(String in, String out) {
 		byte[] bytes, encrypted;
 		try {
 			bytes = IOUtils.fileToBytes(in);
-			
+
 			encrypted = encrypt(bytes);
 
 			IOUtils.bytesToFile(encrypted, out);
@@ -100,14 +101,15 @@ public class Encryption {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * Decrypt the file whose path is specified by the provided argument.
+	 * 
 	 * @param in
-	 * 		The path (relative or absolute) to the file to be encrypted.
+	 *            The path (relative or absolute) to the file to be encrypted.
 	 * @param out
-	 * 		The name of the output file to be generated in the Settings.OUT
-	 * 		folder.
+	 *            The name of the output file to be generated in the
+	 *            Settings.OUT folder.
 	 */
 	public void decryptFile(String in, String out) {
 		byte[] encrypted, decrypted;
@@ -120,22 +122,22 @@ public class Encryption {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
-	 * Encrypt the given input key using 
+	 * Encrypt the given input key using
 	 */
 	public byte[] encrypt(byte[] in) {
 		try {
 			_cipher.init(Cipher.ENCRYPT_MODE, _keySpec);
 			return _cipher.doFinal(in);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			System.err.println(e.toString());
-			System.exit(1);	// Exit.  Should not fail on encryption.
+			System.exit(1); // Exit. Should not fail on encryption.
 		}
 		// Not reached.
 		return null;
 	}
-	
+
 	/**
 	 * This will take an encrypted video stream and return an video stream
 	 */
@@ -153,22 +155,22 @@ public class Encryption {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Convert the given java.Object to a series of bytes (in preperation
-	 * for encryption/decryption).
+	 * Convert the given java.Object to a series of bytes (in preperation for
+	 * encryption/decryption).
+	 * 
 	 * @param obj
-	 * 		The object to be written to a byte array.
-	 * @return
-	 * 		Byte representation of the object passed.
+	 *            The object to be written to a byte array.
+	 * @return Byte representation of the object passed.
 	 */
 	public static byte[] toByteArray(Object obj) {
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(bytes);		
+			ObjectOutputStream oos = new ObjectOutputStream(bytes);
 			oos.writeObject(obj);
 			return bytes.toByteArray();
-		} catch(IOException ioe) {
+		} catch (IOException ioe) {
 			return null;
 		}
 	}
