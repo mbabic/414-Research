@@ -13,6 +13,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
  * Serializable array of PixelBlocks.
+ * 
  * @author Marko Babic, Marcus Karpoff
  */
 public class PixelBlockList implements java.io.Serializable {
@@ -28,22 +29,23 @@ public class PixelBlockList implements java.io.Serializable {
 	private transient TJCompressor _compressor;
 	/** Instance of TJDecompressor used in decompression operations. */
 	private transient TJDecompressor _decompressor;
-	
+
 	/**
 	 * Empty constructor.
 	 */
 	public PixelBlockList() {
 		_pixelBlocks = new ArrayList<PixelBlock>();
 	}
-	
+
 	/**
-	 * Given an image and a CvSeq of rectangles, construct a list of 
+	 * Given an image and a CvSeq of rectangles, construct a list of
 	 * PixelBlocks.
+	 * 
 	 * @param img
-	 * 		The source image.
+	 *            The source image.
 	 * @param rects
-	 * 		The sequence of rectangles from which the PixelBlokck instances are
-	 * 		to be constructed.
+	 *            The sequence of rectangles from which the PixelBlokck
+	 *            instances are to be constructed.
 	 */
 	public PixelBlockList(IplImage img, CvSeq rects) {
 		_pixelBlocks = new ArrayList<PixelBlock>();
@@ -60,18 +62,16 @@ public class PixelBlockList implements java.io.Serializable {
 			System.exit(1);
 		}
 
-
 	}
-	
+
 	public PixelBlockList(ArrayList<PixelBlock> pbs) {
 		_pixelBlocks = new ArrayList<PixelBlock>(pbs);
 	}
-	
+
 	/**
 	 * @param i
-	 * 		The index of the element to be returned.
-	 * @return
-	 * 		The element at the given index.
+	 *            The index of the element to be returned.
+	 * @return The element at the given index.
 	 */
 	public PixelBlock get(int i) {
 		PixelBlock pb = _pixelBlocks.get(i);
@@ -79,10 +79,9 @@ public class PixelBlockList implements java.io.Serializable {
 		pb.decompress(_decompressor);
 		return pb;
 	}
-	
+
 	/**
-	 * Initialize _decompressor -- to be used after deserialization from
-	 * file.
+	 * Initialize _decompressor -- to be used after deserialization from file.
 	 */
 	public void initDecompressor() {
 		if (_decompressor == null) {
@@ -94,21 +93,20 @@ public class PixelBlockList implements java.io.Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * @param pb
-	 * 		PixelBlock instance to be added to list.
+	 *            PixelBlock instance to be added to list.
 	 */
 	public void add(PixelBlock pb) {
 		_pixelBlocks.add(pb);
 	}
-	
+
 	/**
-	 * @return
-	 * 		The number of elements in the pixel block list.
+	 * @return The number of elements in the pixel block list.
 	 */
 	public int size() {
 		return _pixelBlocks.size();
 	}
-	
+
 }

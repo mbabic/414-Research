@@ -13,19 +13,19 @@ public class MergerLauncher {
 	public static void main(String[] args) {
 		// Gets the user to supply the password
 		PasswordPanel panel_Password = new PasswordPanel();
-		while(panel_Password.isVisible())
+		while (panel_Password.isVisible())
 			Thread.yield();
-		
+
 		String password = panel_Password.getPassword();
 		if (password != "")
 			Settings.PASSWORD = password;
 		panel_Password.dispose();
-		
+
 		UI gui = new UI();
 		File inb = new File(Settings.OUT + Settings.DECODED_OUTB_NAME + ".avi");
 		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME + ".avi");
 		Transmitter transmitter = new Transmitter();
-		
+
 		transmitter.setUpDecoders(Settings.OUT + Settings.DECRYPTED_OUTF_NAME,
 				Settings.OUT + Settings.ENCODED_OUTB_NAME, 352, 288);
 
@@ -59,7 +59,7 @@ public class MergerLauncher {
 			while (gui.isVisible()) {
 				backImage = backFrameGrabber.grab();
 				faceImage = faceFrameGrabber.grab();
-				
+
 				if (!onceThrough && backImage != null) {
 					recorder = new FFmpegFrameRecorder(new File(
 							"out/mergedOut.avi"), Settings.WIDTH,

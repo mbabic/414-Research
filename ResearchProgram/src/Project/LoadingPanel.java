@@ -337,6 +337,7 @@ public class LoadingPanel extends JFrame implements ActionListener {
 			}
 		}
 	}
+
 	/**
 	 * Destructor
 	 */

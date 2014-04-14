@@ -61,7 +61,7 @@ public class Analyzer {
 	 * 
 	 * @throws ClassiferLoadFailure
 	 */
-	Analyzer() throws ClassiferLoadFailure  {
+	Analyzer() throws ClassiferLoadFailure {
 		String classifierDir = Settings.CLASSIFIER_DIR
 				+ "haarcascade_frontalface_default.xml";
 		faceCascade = new CvHaarClassifierCascade(cvLoad(classifierDir));

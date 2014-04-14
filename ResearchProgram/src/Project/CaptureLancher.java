@@ -22,7 +22,7 @@ public class CaptureLancher {
 		String password = settingsPanel.getPassword();
 		if (password != "")
 			Settings.PASSWORD = password;
-		
+
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
 		outb.deleteOnExit();
@@ -58,7 +58,7 @@ public class CaptureLancher {
 			System.exit(-1);
 		}
 		try {
-			// This sets the base values for the 
+			// This sets the base values for the
 			origImage = frameGrabber.grab();
 			Settings.HEIGHT = origImage.height();
 			Settings.WIDTH = origImage.width();

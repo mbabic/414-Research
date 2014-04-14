@@ -13,40 +13,43 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Responsible for encoding an input video to a hevc compliant bitstream.
- * SEE testEncode() IN EncoderTests FOR SAMPLE USAGE 
+ * Responsible for encoding an input video to a hevc compliant bitstream. SEE
+ * testEncode() IN EncoderTests FOR SAMPLE USAGE
+ * 
  * @author Marko Babic, Marcus Karpoff
  */
 public class Encoder {
 
 	/** Width of a frame in the video to be encoded. */
 	private int _imgHeight;
-	
+
 	/** Height of a frame in the video to be encoded. */
 	private int _imgWidth;
-	
+
 	/** Frame rate of the video to be encoded. */
 	private int _fps;
-	
+
 	/** The number of frames in the video to be encoded. */
 	private int _frames;
-	
+
 	/** The _path_ to the input file. */
 	private String _in;
-	
-	/** The path to the YUV file to be encoded.  Set based on Settings.OUT
-	 * and Encoder._out. */
+
+	/**
+	 * The path to the YUV file to be encoded. Set based on Settings.OUT and
+	 * Encoder._out.
+	 */
 	private String _yuv;
-	
+
 	/** The name of the output file to be generated. */
 	private String _out;
-	
+
 	/**
 	 * @param in
-	 *  	The path to the input file.
+	 *            The path to the input file.
 	 * @param out
-	 * 		The name of the file to be output.
-	 */	
+	 *            The name of the file to be output.
+	 */
 	public Encoder(String in, String out) {
 		_imgWidth = Settings.WIDTH;
 		_imgHeight = Settings.HEIGHT;
@@ -106,9 +109,9 @@ public class Encoder {
 	}
 
 	/**
-	 * Prepare a configuration file to be supplied to the HM HEVC encoder.
-	 * (Made public for ease of testing such that we don't have to reflection
-	 * or any tricks like that)
+	 * Prepare a configuration file to be supplied to the HM HEVC encoder. (Made
+	 * public for ease of testing such that we don't have to reflection or any
+	 * tricks like that)
 	 */
 	public void writeConfigurationFile() {
 		// Delete files of the same name as one we are going to create if they
@@ -120,20 +123,16 @@ public class Encoder {
 		}
 		// No need to close file, java.io.File opens no streams
 
-	
 		String hevcReconOut = Settings.OUT + "_out" + "_recon.yuv";
 		File reconFile = new File(hevcReconOut);
 		if (reconFile.exists()) {
 			reconFile.delete();
 		}
 		// No need to close file, java.io.File opens no streams
-		
-		
+
 		try {
-			Writer writer = new OutputStreamWriter(
-				new FileOutputStream(Settings.CFG + _out + ".cfg"),
-				"UTF-8"
-			);
+			Writer writer = new OutputStreamWriter(new FileOutputStream(
+					Settings.CFG + _out + ".cfg"), "UTF-8");
 			writer.write("InputBitDepth: 8\r\n");
 			writer.write("FrameRate: " + _fps + "\r\n");
 			writer.write("FrameSkip: 0\r\n");
@@ -150,7 +149,7 @@ public class Encoder {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * Produce an encoded file based on instance attribute values.
 	 */
@@ -158,7 +157,7 @@ public class Encoder {
 		toYUV();
 		compress();
 	}
-	
+
 	/**
 	 * Convert given input file to a YUV420p compliant bitstream.
 	 */
@@ -173,65 +172,61 @@ public class Encoder {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Implements Callable interface such that results of conversion to .yuv
 	 * done by external process "ffmpeg" can be waited on before calling another
 	 * external process to perfrom encoding to hevc bitstream.
+	 * 
 	 * @author Marko Babic, Marcus Karpoff
 	 */
 	private class ToYUVTask implements Callable<Integer> {
 		public ToYUVTask() {
-			
+
 		}
-		
+
 		@Override
 		public Integer call() {
-			
+
 			File ffmpegFile = new File(Settings.FFMPEG);
 			String ffmpegPath = ffmpegFile.getAbsolutePath();
-			
+
 			File inFile = new File(_in);
 			String inputVideoPath = inFile.getAbsolutePath();
-			
+
 			File yuvFile = new File(_yuv);
 			if (yuvFile.exists()) {
 				yuvFile.delete();
 			}
-			
+
 			// TODO: make determination as to what the input codec
-			// will be.  For now, assuming .avi with h264 codec.
+			// will be. For now, assuming .avi with h264 codec.
 			String[] ffmpegArgs = {
-				// Path to executable
-				ffmpegPath,
-					
-				// Input video file
-				"-i",
-				inputVideoPath,
-				// Pixel format of output stream
-				"-pix_fmt",
-				"yuv420p",
-				
-				// Number of frames to place in output stream
-				"-vframes",
-				Integer.toString(_frames),
-				
-				// Ouput stream video codec
-				"-vcodec",
-				"rawvideo",
-				
-				// Output file
-				_yuv
-			};
-			
+					// Path to executable
+					ffmpegPath,
+
+					// Input video file
+					"-i", inputVideoPath,
+					// Pixel format of output stream
+					"-pix_fmt", "yuv420p",
+
+					// Number of frames to place in output stream
+					"-vframes", Integer.toString(_frames),
+
+					// Ouput stream video codec
+					"-vcodec", "rawvideo",
+
+					// Output file
+					_yuv };
+
 			try {
 				Runtime rt = Runtime.getRuntime();
-				
+
 				// Execute encoder with given arguments.
 				Process proc = rt.exec(ffmpegArgs);
-				
+
 				// Get and print errors produced by running program
 				InputStream stdin = proc.getErrorStream();
 				InputStreamReader isr = new InputStreamReader(stdin);
@@ -240,17 +235,17 @@ public class Encoder {
 				while ((in = br.readLine()) != null) {
 					System.out.println(in);
 				}
-				
+
 				int exitVal = proc.waitFor();
 				return exitVal;
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
-			
+
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Compress _yuv to an hevc compliant bitstream.
 	 */
@@ -265,58 +260,53 @@ public class Encoder {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 	}
 
 	/**
-	 * Implements Callable interface such that results of encoding process
-	 * can be waited on or the external process can be terminated after certain
+	 * Implements Callable interface such that results of encoding process can
+	 * be waited on or the external process can be terminated after certain
 	 * amount of time.
+	 * 
 	 * @author Marko Babic, Marcus Karpoff
-	 *
+	 * 
 	 */
 	private class EncodingTask implements Callable<Integer> {
-		
+
 		public EncodingTask() {
 		}
-		
+
 		@Override
 		public Integer call() {
-	
+
 			// Create configuration file needed to encode this video.
-			writeConfigurationFile();			
-			
+			writeConfigurationFile();
+
 			// Set up encoder
 			File encoderFile = new File(Settings.ENCODER);
 			File inFile = new File(_yuv);
 			String encoder = encoderFile.getAbsolutePath();
 			String inputVideoPath = inFile.getAbsolutePath();
 
-
-			
 			String[] hevcArgs = {
-				// Path to executable
-				encoder, 
+					// Path to executable
+					encoder,
 
-				// Input video
-				"-i", 			
-				inputVideoPath,
-				
-				// Configuration file
-				"-c", 			
-				Settings.MAIN_CFG,
-				
-				// Configuration File
-				"-c",			
-				Settings.CFG + _out + ".cfg"
-			};		
-			
+					// Input video
+					"-i", inputVideoPath,
+
+					// Configuration file
+					"-c", Settings.MAIN_CFG,
+
+					// Configuration File
+					"-c", Settings.CFG + _out + ".cfg" };
+
 			try {
 				Runtime rt = Runtime.getRuntime();
-				
+
 				// Execute encoder with given arguments.
 				Process proc = rt.exec(hevcArgs);
-				
+
 				// Get and print errors produced by running program
 				InputStream stdin = proc.getInputStream();
 				InputStreamReader isr = new InputStreamReader(stdin);
@@ -330,8 +320,8 @@ public class Encoder {
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
-			
+
 			return -1;
 		}
-	}	
+	}
 }
