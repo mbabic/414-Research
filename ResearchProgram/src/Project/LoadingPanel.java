@@ -229,12 +229,12 @@ public class LoadingPanel extends JFrame implements ActionListener {
 
 		chooser.setFileFilter(new FileFilter() {
 
-			private FileNameExtensionFilter exFilter = new FileNameExtensionFilter(
+			private FileNameExtensionFilter exFilter = new FileNameExtensionFilter("MediaFiles",
 					"mp4", "avi");
 
 			@Override
 			public String getDescription() {
-				return null;
+				return exFilter.getDescription();
 			}
 
 			@Override
