@@ -310,4 +310,10 @@ public class LoadingPanel extends JFrame implements ActionListener {
 			}
 		}
 	}
+
+	public void destroy() {
+		FNF.dispose();
+		super.dispose();
+		
+	}
 }
