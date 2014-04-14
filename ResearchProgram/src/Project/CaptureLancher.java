@@ -17,9 +17,6 @@ public class CaptureLancher {
 		
 		LoadingPanel settingsPanel = new LoadingPanel();
 		
-		
-		
-
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
 		outb.deleteOnExit();
@@ -121,7 +118,6 @@ public class CaptureLancher {
 		int option;
 		
 		chooser = new JFileChooser(System.getProperty("user.dir"));
-
 		chooser.setFileFilter(new FileFilter() {
 			
 			private FileNameExtensionFilter exFilter = new FileNameExtensionFilter("mp4", "avi");

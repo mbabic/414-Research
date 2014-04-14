@@ -19,18 +19,18 @@ public class MergerLauncher {
 		File inb = new File(Settings.OUT + Settings.DECODED_OUTB_NAME + ".avi");
 		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME + ".avi");
 		Transmitter transmitter = new Transmitter();
-		
-		// TODO: GET IMAGE HEIGHT AND WIDTH FROM THE MARKO FILE
+
+		FaceStream stream = FaceStream.fromFile();
+		System.out.println(stream._imgWidth + "x" + stream._imgHeight);
 		transmitter.setUpDecoders(Settings.OUT + Settings.DECRYPTED_OUTF_NAME,
-				Settings.OUT + Settings.ENCODED_OUTB_NAME, 352, 288);
+				Settings.OUT + Settings.ENCODED_OUTB_NAME, stream._imgWidth, stream._imgHeight);
 
 		transmitter.decodeHEVC();
 
 		Analyzer analyzer = null;
 		FrameGrabber backFrameGrabber = null, faceFrameGrabber = null;
 		IplImage mergImage, backImage, faceImage;
-		FFmpegFrameRecorder recorder = null;
-		FaceStream stream = FaceStream.fromFile();
+		FFmpegFrameRecorder recorder = null;		
 		FaceStreamElement fse;
 		try {
 			backFrameGrabber = transmitter.receiveStream(inb);
