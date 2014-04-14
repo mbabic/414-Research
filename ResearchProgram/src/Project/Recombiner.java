@@ -61,7 +61,7 @@ public class Recombiner {
 			// Interpolate along left and right hand edges.
 			for (int j = y; j < y + height; j++) {
 				// Handle boundary conditions
-				if ((0 <= j && j <= imgHeight) && (2 < x && x < imgWidth - 2)) {
+				if ((0 <= j && j < imgHeight) && (2 < x && x < imgWidth - 2)) {
 					// Replace along left hand edge.
 					b = cvGet2D(bImage, j, x - 2);
 					f = cvGet2D(fImage, j, x + 2);
@@ -73,7 +73,7 @@ public class Recombiner {
 					cvSet2D(cImage, j, x + 1,
 							interpolator.linearInterpolate(b, f, 0.75));
 				}
-				if ((0 <= j && j <= imgHeight)
+				if ((0 <= j && j < imgHeight)
 						&& (2 < x + width && x + width < imgWidth - 2)) {
 					// Interpolate along right hand edge.
 					b = cvGet2D(bImage, j, x + width + 2);
@@ -94,7 +94,7 @@ public class Recombiner {
 			// Interpolate along top and bottom edges.
 			for (int i = x; i < x + width; i++) {
 				// Handle boundary conditions
-				if ((0 <= i && i <= imgWidth) && (2 < y && y < imgHeight - 2)) {
+				if ((0 <= i && i < imgWidth) && (2 < y && y < imgHeight - 2)) {
 					// Interpolate along top edge.
 					b = cvGet2D(bImage, y - 2, i);
 					f = cvGet2D(fImage, y + 2, i);
@@ -110,7 +110,7 @@ public class Recombiner {
 								interpolator.linearInterpolate(b, f, 0.75));
 					}
 				}
-				if ((0 <= i && i <= imgWidth)
+				if ((0 <= i && i < imgWidth)
 						&& (2 < y + height && y + height < imgHeight - 2)) {
 					// Interpolate along bottom edge.
 					b = cvGet2D(bImage, y + height + 2, i);
@@ -289,7 +289,7 @@ public class Recombiner {
 			// So, we begin along left hand edge.
 			for (int j = y; j < y + height; j++) {
 				// Handle boundary conditions
-				if ((0 <= j && j <= imgHeight) && (2 < x && x < imgWidth - 2)) {
+				if ((0 <= j && j < imgHeight) && (2 < x && x < imgWidth - 2)) {
 					pixel = iter.next();
 					v0 = cvGet2D(bImage, j, x - 2);
 					v1 = cvGet2D(fImage, j, x + 2);
@@ -307,7 +307,7 @@ public class Recombiner {
 			// Interpolate along bottom edge
 			for (int i = x; i < x + width; i++) {
 				// Handle boundary conditions
-				if ((0 <= i && i <= imgWidth)
+				if ((0 <= i && i < imgWidth)
 						&& (2 < y + height && y + height < imgHeight - 2)) {
 					pixel = iter.next();
 					v0 = cvGet2D(fImage, y + height - 2, i);
@@ -323,7 +323,7 @@ public class Recombiner {
 			// Interpolate along right-hand edge
 			for (int j = y + height; j > y; j--) {
 				// Handle boundary conditions
-				if (0 <= j && j <= imgHeight
+				if (0 <= j && j < imgHeight
 						&& (2 < x + width && x + width < imgWidth - 2)) {
 					pixel = iter.next();
 					v0 = cvGet2D(fImage, j, x + width - 2);
@@ -338,7 +338,7 @@ public class Recombiner {
 
 			// Interpolate along top edge
 			for (int i = x + width; i > x; i--) {
-				if (0 <= i && i <= imgWidth && (2 < y && y < imgHeight - 2)) {
+				if (0 <= i && i < imgWidth && (2 < y && y < imgHeight - 2)) {
 					pixel = iter.next();
 					v0 = cvGet2D(bImage, y - 2, i);
 					v1 = cvGet2D(fImage, y + 2, i);

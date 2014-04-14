@@ -250,11 +250,18 @@ public class Analyzer {
 		return pairs;
 	}
 
+	/**
+	 * @param img
+	 * 		The image in which the faces are to be detected.
+	 * @return
+	 * 		CvSeq of CvRects corresponding to areas in the image in which a face
+	 * 		was found.
+	 */
 	private CvSeq getFaces(IplImage img) {
 		CvSeq facesDetected = detectFaces(img);
 		ArrayList<CvRect> faceList = new ArrayList<CvRect>();
 		ArrayList<CvRect> simplifiedFaceList;
-		// return facesDetected;
+//		 return facesDetected;
 		CvSeq faces = cvCreateSeq(0, Loader.sizeof(CvSeq.class),
 				Loader.sizeof(CvRect.class), storage);
 

@@ -95,25 +95,25 @@ public class PixelBlock implements java.io.Serializable {
 		// the byte data in a predictable format at de-serialization.
 		// Get values of pixels along left-hand edge, top to bottom.
 		for (int j = y; j < y + height; j++) {
-			if ((0 <= j && j <= imgHeight) && (2 < x && x < imgWidth - 2)) 
+			if ((0 <= j && j < imgHeight) && (2 < x && x < imgWidth - 2)) 
 				_pixels.add(cvGet2D(img, j, x));
 		}
 
 		// Get values of pixels along bottom edge, left to right.
 		for (int i = x; i < x + width; i++) {
-			if ((0 <= i && i <= imgWidth) && (2 < y + height && y + height < imgHeight - 2)) 
+			if ((0 <= i && i < imgWidth) && (2 < y + height && y + height < imgHeight - 2)) 
 				_pixels.add(cvGet2D(img, y + height, i));
 		}
 
 		// Get values of pixels along right edge, bottom to top.
 		for (int j = y + height; j > y; j--) {
-			if (0 <= j && j <= imgHeight && (2 < x + width && x + width < imgWidth - 2))
+			if (0 <= j && j < imgHeight && (2 < x + width && x + width < imgWidth - 2))
 				_pixels.add(cvGet2D(img, j, x + width));
 		}
 
 		// Get values of pixels along top edge, right to left.
 		for (int i = x + width; i > x; i--) {
-			if (0 <= i && i <= imgWidth && (2 < y && y < imgHeight - 2))
+			if (0 <= i && i < imgWidth && (2 < y && y < imgHeight - 2))
 				_pixels.add(cvGet2D(img, y, i));
 		}
 		pixelsToBytes();
