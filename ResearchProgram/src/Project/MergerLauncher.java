@@ -31,6 +31,7 @@ public class MergerLauncher {
 		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME + ".avi");
 		inb.deleteOnExit();
 		inf.deleteOnExit();
+		
 		Transmitter transmitter = new Transmitter();
 
 		FaceStream stream = FaceStream.fromFile();
