@@ -16,35 +16,32 @@ public class CaptureLancher {
 		
 		
 		LoadingPanel settingsPanel = new LoadingPanel();
+		while (settingsPanel.isVisible())
+			Thread.yield();
 		
+		Settings.SAVE_PIXELS = settingsPanel.getPixelSave();
+		Settings.FPS = settingsPanel.getFPS();
+		Settings.FRAMES = settingsPanel.getframes();
 		
+		int mode = settingsPanel.getInputMode();
+		String password = settingsPanel.getPassword();
+		if (password != "")
+			Settings.PASSWORD = password;
 		
-
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
 		outb.deleteOnExit();
 		outf.deleteOnExit();
+		
 		Transmitter transmitter = new Transmitter();
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
-		
-//		LoadingPanel settingsPanel = new LoadingPanel();
-		
-		int mode = settingsPanel.getInputMode();
-		String password = settingsPanel.getPassword();
-		if (password != "\n")
-			Settings.PASSWORD = password;
-		
+
 		try {
 			if (mode == LoadingPanel.FILE){
-				File file = null;
-				//TODO FILE GRABING
-				if (file == null) {
-					System.exit(0);
-				} else {
-					frameGrabber = transmitter.receiveStream(file);
-				}
+				File file = settingsPanel.getFile();
+				frameGrabber = transmitter.receiveStream(file);
 			} else {
 				frameGrabber = transmitter.receiveStream();
 			}

@@ -93,15 +93,6 @@ public class LoadingPanel extends JFrame implements ActionListener {
 
 		JLabel label_Password = new JLabel("Password");
 		tField_Password = new JPasswordField(10);
-		tField_Password.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				char[] text = tField_Password.getPassword();
-				password = new String(text);
-			}
-		});
-
 		JPanel panel_Password = new JPanel(new BorderLayout());
 		panel_Password.add(label_Password, BorderLayout.WEST);
 		panel_Password.add(tField_Password, BorderLayout.CENTER);
@@ -113,13 +104,6 @@ public class LoadingPanel extends JFrame implements ActionListener {
 		formatter_FPS.setAllowsInvalid(false);
 		tField_FPS = new JFormattedTextField(formatter_FPS);
 		tField_FPS.setColumns(2);
-		tField_FPS.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				fPS = (int) tField_FPS.getValue();
-			}
-		});
 		tField_FPS.setValue(30);
 		JPanel panel_FPS = new JPanel(new BorderLayout());
 		panel_FPS.add(label_FPS, BorderLayout.WEST);
@@ -131,14 +115,7 @@ public class LoadingPanel extends JFrame implements ActionListener {
 		formatter_Frames.setAllowsInvalid(false);
 		tField_Frames = new JFormattedTextField(formatter_Frames);
 		tField_Frames.setColumns(10);
-		tField_Frames.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frames = (int) tField_Frames.getValue();
-			}
-		});
-
+		tField_Frames.setValue(5);
 		JPanel panel_Frames = new JPanel(new BorderLayout());
 		panel_Frames.add(label_Frames, BorderLayout.WEST);
 		panel_Frames.add(tField_Frames, BorderLayout.CENTER);
@@ -313,6 +290,11 @@ public class LoadingPanel extends JFrame implements ActionListener {
 		if (o.equals(button_Done)) {
 			if (modeSelected == FILE) {
 				file = new File(tField_File.getText());
+				frames = (int) tField_FPS.getValue();
+				fPS = (int) tField_FPS.getValue();
+				char[] text = tField_Password.getPassword();
+				password = new String(text);
+				
 				if (file.exists()) {
 					this.setVisible(false);
 				} else {
