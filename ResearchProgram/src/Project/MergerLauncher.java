@@ -17,6 +17,8 @@ public class MergerLauncher {
 		String password = panel_Password.getPassword();
 		if (password != "")
 			Settings.PASSWORD = password;
+		panel_Password.dispose();
+		
 		UI gui = new UI();
 		File inb = new File(Settings.OUT + Settings.DECODED_OUTB_NAME + ".avi");
 		File inf = new File(Settings.OUT + Settings.DECODED_OUTF_NAME + ".avi");
