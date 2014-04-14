@@ -342,6 +342,6 @@ public class Analyzer {
 			IplImage fImage, FaceStreamElement fse) {
 		// TODO: change which recombinator called based on param set ...
 		// somewhere
-		Recombiner.barycentricRGBInterpolation(cImage, bImage, fImage, fse);
+		Recombiner.linearRGBInterpolation(cImage, bImage, fImage, fse);
 	}
 }
