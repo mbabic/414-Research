@@ -49,9 +49,16 @@ public class FaceStream implements java.io.Serializable {
 	 */
 	private int _imgHeight;
 	
-	
 	/**
 	 * Empty constructor.
+	 */
+	public FaceStream() {
+		_stream = new ArrayList<FaceStreamElement>();
+		_frame = 0;
+	}
+	
+	/**
+	 * 
 	 */
 	public FaceStream(IplImage img) {
 		_stream = new ArrayList<FaceStreamElement>();

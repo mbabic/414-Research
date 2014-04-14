@@ -27,7 +27,7 @@ public class CaptureLancher {
 		Transmitter transmitter = new Transmitter();
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
-		FaceStream stream;
+		FaceStream stream = new FaceStream();
 		
 //		LoadingPanel settingsPanel = new LoadingPanel();
 		
