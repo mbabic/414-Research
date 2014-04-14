@@ -80,7 +80,7 @@ public class UI extends CanvasFrame implements ActionListener {
 	 * Initializes the UI
 	 */
 	public UI() {
-		super("Super Sexy Research Program -- Original");
+		super("Research Program -- Original");
 
 		buildMenuBar();
 		this.setDefaultCloseOperation(CanvasFrame.HIDE_ON_CLOSE);
@@ -139,13 +139,13 @@ public class UI extends CanvasFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == mi1_1 && mi1_1.isSelected()) {
-			setTitle("Super Sexy Research Program -- Original");
+			setTitle("Research Program -- Original");
 			selected = 1;
 		} else if (source == mi1_2 && mi1_2.isSelected()) {
-			setTitle("Super Sexy Research Program -- Background");
+			setTitle("Research Program -- Background");
 			selected = 2;
 		} else if (source == mi1_3 && mi1_3.isSelected()) {
-			setTitle("Super Sexy Research Program -- Foreground");
+			setTitle("Research Program -- Foreground");
 			selected = 3;
 		} else if (source == mi2_1) {
 			origPanel.setVisible(true);
