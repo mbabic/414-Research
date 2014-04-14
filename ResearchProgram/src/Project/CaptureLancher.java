@@ -2,10 +2,6 @@ package Project;
 
 import java.io.File;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
@@ -13,33 +9,32 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 public class CaptureLancher {
 
 	public static void main(String[] args) {
-		
-		
+
 		LoadingPanel settingsPanel = new LoadingPanel();
 		while (settingsPanel.isVisible())
 			Thread.yield();
-		
+
 		Settings.SAVE_PIXELS = settingsPanel.getPixelSave();
 		Settings.FPS = settingsPanel.getFPS();
 		Settings.FRAMES = settingsPanel.getframes();
-		
+
 		int mode = settingsPanel.getInputMode();
 		String password = settingsPanel.getPassword();
 		if (password != "")
 			Settings.PASSWORD = password;
-		
+
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
 		outb.deleteOnExit();
 		outf.deleteOnExit();
-		
+
 		Transmitter transmitter = new Transmitter();
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
 
 		try {
-			if (mode == LoadingPanel.FILE){
+			if (mode == LoadingPanel.FILE) {
 				File file = settingsPanel.getFile();
 				frameGrabber = transmitter.receiveStream(file);
 			} else {
@@ -50,10 +45,10 @@ public class CaptureLancher {
 			e1.printStackTrace();
 			System.exit(-1);
 		}
-		
+
 		UI gui = new UI();
 		Analyzer analyzer = null;
-		
+
 		try {
 			analyzer = new Analyzer();
 		} catch (ClassiferLoadFailure e1) {
@@ -81,7 +76,7 @@ public class CaptureLancher {
 				gui.putFrame(origImage, backImage, faceImage);
 				transmitter.videoBuilder(backImage, faceImage);
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -89,7 +84,7 @@ public class CaptureLancher {
 			e.printStackTrace();
 			System.exit(2);
 		} finally {
-			
+
 			try {
 				transmitter.close();
 			} catch (Exception e) {
@@ -97,7 +92,7 @@ public class CaptureLancher {
 			} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			try {
 				frameGrabber.stop();
 				frameGrabber.release();
