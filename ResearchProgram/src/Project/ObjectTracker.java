@@ -140,18 +140,13 @@ public class ObjectTracker {
 	public boolean hasLostObject() {
 		if (_obj._pRect.width() == 0 || _obj._pRect.height() == 0) {
 			return true;
-		} else if (_obj._pRect.width() > (4 * _obj._pRect.height())) {
-			System.out.println(1);
+		} else if (_obj._pRect.width() > (4 * _obj._pRect.height())){
 			return true;
 		} else if (_obj._pRect.height() > (4 * _obj._pRect.width())) {
-			System.out.println(2);
 			return true;
 		} else if ((_obj._pRect.y() + _obj._pRect.height()) > _maxHeight - 1) {
-			System.out.println(3);
-			System.out.println(_maxHeight);
 			return true;
 		} else if ((_obj._pRect.x() + _obj._pRect.width()) > _maxWidth - 1) {
-			System.out.println(4);
 			return true;
 		}
 		return false;
