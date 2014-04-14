@@ -23,7 +23,6 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 /**
  * Implements functionality with regard to the recombination of a frame
  * containing face information and a frame containing background information.
- * 
  * @author Marko Babic, Marcus Karpoff
  */
 public class Recombiner {
@@ -62,7 +61,7 @@ public class Recombiner {
 			// Interpolate along left and right hand edges.
 			for (int j = y; j < y + height; j++) {
 				// Handle boundary conditions
-				if ((0 <= j && j <= imgHeight ) && (2 < x && x < imgWidth - 2)) {
+				if ((0 <= j && j <= imgHeight) && (2 < x && x < imgWidth - 2)) {
 					// Replace along left hand edge.
 					b = cvGet2D(bImage, j, x - 2);
 					f = cvGet2D(fImage, j, x + 2);
@@ -74,7 +73,8 @@ public class Recombiner {
 					cvSet2D(cImage, j, x + 1,
 							interpolator.linearInterpolate(b, f, 0.75));
 				}
-				if ((0 <= j && j <= imgHeight) && (2 < x + width && x + width < imgWidth - 2)) {
+				if ((0 <= j && j <= imgHeight)
+						&& (2 < x + width && x + width < imgWidth - 2)) {
 					// Interpolate along right hand edge.
 					b = cvGet2D(bImage, j, x + width + 2);
 					f = cvGet2D(fImage, j, x + width - 2);
@@ -109,8 +109,9 @@ public class Recombiner {
 						cvSet2D(cImage, y + 1, i,
 								interpolator.linearInterpolate(b, f, 0.75));
 					}
-				} 
-				if ((0 <= i && i <= imgWidth) && (2 < y + height && y + height < imgHeight - 2)) {
+				}
+				if ((0 <= i && i <= imgWidth)
+						&& (2 < y + height && y + height < imgHeight - 2)) {
 					// Interpolate along bottom edge.
 					b = cvGet2D(bImage, y + height + 2, i);
 					f = cvGet2D(fImage, y + height - 2, i);
@@ -163,7 +164,8 @@ public class Recombiner {
 			// Interpolate along left and right hand edges.
 			for (int j = y; j < y + height; j++) {
 				// Handle boundary conditions
-				if ((2 <= j && j <= imgHeight - 2) && (2 < x && x < imgWidth - 2)) {
+				if ((2 <= j && j <= imgHeight - 2)
+						&& (2 < x && x < imgWidth - 2)) {
 					// Replace along left hand edge.
 					tl = cvGet2D(bImage, j - 1, x - 2);
 					bl = cvGet2D(bImage, j + 1, x - 2);
@@ -178,7 +180,8 @@ public class Recombiner {
 					cvSet2D(cImage, j, x + 1, interpolator.bilinearInterpolate(
 							tl, tr, bl, br, boundaries, x + 1, j));
 				}
-				if ((2 <= j && j <= imgHeight - 2) && (2 < x + width && x + width < imgWidth - 2)) {
+				if ((2 <= j && j <= imgHeight - 2)
+						&& (2 < x + width && x + width < imgWidth - 2)) {
 					// Interpolate along right hand edge.
 					tl = cvGet2D(fImage, j - 1, x + width - 2);
 					bl = cvGet2D(fImage, j + 1, x + width - 2);
@@ -200,7 +203,8 @@ public class Recombiner {
 			// Interpolate along top and bottom edges.
 			for (int i = x; i < x + width; i++) {
 				// Handle boundary conditions
-				if ((2 <= i && i <= imgWidth - 2) && (2 < y && y < imgHeight - 2)) {
+				if ((2 <= i && i <= imgWidth - 2)
+						&& (2 < y && y < imgHeight - 2)) {
 					// Interpolate along top edge.
 					tl = cvGet2D(bImage, y - 2, i - 1);
 					bl = cvGet2D(fImage, y + 2, i - 1);
@@ -214,7 +218,8 @@ public class Recombiner {
 					cvSet2D(cImage, y + 1, i, interpolator.bilinearInterpolate(
 							tl, tr, bl, br, boundaries, i, y + 1));
 				}
-				if ((2 <= i && i <= imgWidth -2) && (2 < y + height && y + height < imgHeight -2)) {
+				if ((2 <= i && i <= imgWidth - 2)
+						&& (2 < y + height && y + height < imgHeight - 2)) {
 					// Interpolate along bottom edge.
 					tl = cvGet2D(fImage, y + height - 2, i - 1);
 					bl = cvGet2D(bImage, y + height + 2, i - 1);
@@ -302,7 +307,8 @@ public class Recombiner {
 			// Interpolate along bottom edge
 			for (int i = x; i < x + width; i++) {
 				// Handle boundary conditions
-				if ((0 <= i && i <= imgWidth) && (2 < y + height && y + height < imgHeight - 2)) {
+				if ((0 <= i && i <= imgWidth)
+						&& (2 < y + height && y + height < imgHeight - 2)) {
 					pixel = iter.next();
 					v0 = cvGet2D(fImage, y + height - 2, i);
 					v1 = cvGet2D(bImage, y + height + 2, i);
@@ -317,7 +323,8 @@ public class Recombiner {
 			// Interpolate along right-hand edge
 			for (int j = y + height; j > y; j--) {
 				// Handle boundary conditions
-				if (0 <= j && j <= imgHeight && (2 < x + width && x + width < imgWidth - 2)) {
+				if (0 <= j && j <= imgHeight
+						&& (2 < x + width && x + width < imgWidth - 2)) {
 					pixel = iter.next();
 					v0 = cvGet2D(fImage, j, x + width - 2);
 					v1 = cvGet2D(bImage, j, x + width + 2);
@@ -399,7 +406,7 @@ public class Recombiner {
 							interpolator.barycentricInterpolate(v0, v1, v2, x0,
 									x1, x2, x + 1, j));
 				}
-				
+
 				if (2 <= j && j <= imgHeight - 2 && x + width < imgWidth - 2) {
 					// Interpolate along the right hand edge.
 					v0 = cvGet2D(cImage, j - 1, x + width);
@@ -479,8 +486,8 @@ public class Recombiner {
 	 */
 	public static void linearRGBInterpolation(IplImage cImage, IplImage bImage,
 			IplImage fImage, FaceStreamElement fse) {
-		linearBoundaryInterpolate(cImage, bImage, fImage, fse.getRectangles().toCvRectList(),
-				new RGBInterpolator());
+		linearBoundaryInterpolate(cImage, bImage, fImage, fse.getRectangles()
+				.toCvRectList(), new RGBInterpolator());
 	}
 
 	/**
@@ -500,8 +507,8 @@ public class Recombiner {
 	 */
 	public static void linearHSVInterpolation(IplImage cImage, IplImage bImage,
 			IplImage fImage, FaceStreamElement fse) {
-		linearBoundaryInterpolate(cImage, bImage, fImage, fse.getRectangles().toCvRectList(),
-				new HSVInterpolator());
+		linearBoundaryInterpolate(cImage, bImage, fImage, fse.getRectangles()
+				.toCvRectList(), new HSVInterpolator());
 	}
 
 	/**
@@ -535,8 +542,8 @@ public class Recombiner {
 		cvCvtColor(cImage, bgrImg, CV_RGB2BGR);
 		cvCvtColor(bgrImg, cHsv, CV_BGR2HSV);
 
-		bilinearBoundaryInterpolate(cHsv, bHsv, fHsv, fse.getRectangles().toCvRectList(),
-				new HSVInterpolator());
+		bilinearBoundaryInterpolate(cHsv, bHsv, fHsv, fse.getRectangles()
+				.toCvRectList(), new HSVInterpolator());
 
 		// Convert back to RGB scale
 		cvCvtColor(cHsv, bgrImg, CV_HSV2BGR);
@@ -561,8 +568,8 @@ public class Recombiner {
 	 */
 	public static void bilinearRGBInterpolation(IplImage cImage,
 			IplImage bImage, IplImage fImage, FaceStreamElement fse) {
-		bilinearBoundaryInterpolate(cImage, bImage, fImage, fse.getRectangles().toCvRectList(),
-				new RGBInterpolator());
+		bilinearBoundaryInterpolate(cImage, bImage, fImage, fse.getRectangles()
+				.toCvRectList(), new RGBInterpolator());
 	}
 
 	/**
