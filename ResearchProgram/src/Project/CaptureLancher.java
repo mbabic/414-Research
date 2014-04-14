@@ -16,31 +16,32 @@ public class CaptureLancher {
 		
 		
 		LoadingPanel settingsPanel = new LoadingPanel();
+		while (settingsPanel.isVisible())
+			Thread.yield();
+		
+		Settings.SAVE_PIXELS = settingsPanel.getPixelSave();
+		Settings.FPS = settingsPanel.getFPS();
+		Settings.FRAMES = settingsPanel.getframes();
+		
+		int mode = settingsPanel.getInputMode();
+		String password = settingsPanel.getPassword();
+		if (password != "")
+			Settings.PASSWORD = password;
 		
 		File outb = new File(Settings.OUTB);
 		File outf = new File(Settings.OUTF);
 		outb.deleteOnExit();
 		outf.deleteOnExit();
+		
 		Transmitter transmitter = new Transmitter();
 		FrameGrabber frameGrabber = null;
 		IplImage origImage, backImage, faceImage;
 		FaceStream stream = new FaceStream();
-		
-//		LoadingPanel settingsPanel = new LoadingPanel();
-		
-		int mode = settingsPanel.getInputMode();
-		String password = settingsPanel.getPassword();
-		if (password != "\n")
-			Settings.PASSWORD = password;
 
 		try {
 			if (mode == LoadingPanel.FILE){
-				File file = grabMediaFile();
-				if (file == null) {
-					System.exit(0);
-				} else {
-					frameGrabber = transmitter.receiveStream(file);
-				}
+				File file = settingsPanel.getFile();
+				frameGrabber = transmitter.receiveStream(file);
 			} else {
 				frameGrabber = transmitter.receiveStream();
 			}
@@ -110,34 +111,5 @@ public class CaptureLancher {
 
 		}
 
-	}
-	
-	private static File grabMediaFile() {
-		File file = null;
-		JFileChooser chooser;
-		int option;
-		
-		chooser = new JFileChooser(System.getProperty("user.dir"));
-		chooser.setFileFilter(new FileFilter() {
-			
-			private FileNameExtensionFilter exFilter = new FileNameExtensionFilter("mp4", "avi");
-			@Override
-			public String getDescription() {
-				return null;
-			}
-			
-			@Override
-			public boolean accept(File f) {
-				if (f.isDirectory()) return true;
-				return exFilter.accept(f);
-			}
-		});
-		chooser.setAcceptAllFileFilterUsed(false);		
-		option = chooser.showOpenDialog(chooser);
-		
-		if (option == JFileChooser.APPROVE_OPTION) {
-			file = chooser.getSelectedFile();
-		}
-		return file;
 	}
 }

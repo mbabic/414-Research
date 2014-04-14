@@ -7,9 +7,8 @@ package Project;
  */
 public class Settings {
 
-	public static int HEIGHT = 576;
-	public static int WIDTH = 704;
-	public static int FRAMERATE = 60;
+	public static int HEIGHT = 400;
+	public static int WIDTH = 400;
 	public static final String CLASSIFIER_DIR = "res/haarcascades/";
 
 	public static final String OUTF = "out/outf.avi";
@@ -49,9 +48,10 @@ public class Settings {
 	
 	// Encoder settings
 	/** Default encoding/decoding FPS. */
-	public static final int DEFAULT_FPS = 60;
+	public static int FPS = 30;
 	/** Default number of frames to be encoded/decoded. */
-	public static final int DEFAULT_FRAMES = 5;	
+
+	public static int FRAMES = 5;	
 
 	/** Path to ffmpeg executable.*/
 	public static final String FFMPEG = "libs/ffmpeg.exe"; 

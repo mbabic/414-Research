@@ -67,9 +67,9 @@ public class UI extends CanvasFrame implements ActionListener {
 	private JMenuItem mi2_1;
 	private JMenuItem mi2_2;
 	private JMenuItem mi2_3;
-	
+
 	private JCheckBoxMenuItem mi3;
-	
+
 	private boolean videoOn = true;
 
 	private MyPanel origPanel = new MyPanel("Original");
@@ -113,9 +113,12 @@ public class UI extends CanvasFrame implements ActionListener {
 			default:
 				break;
 			}
-			if (origPanel.isVisible()) origPanel.putFrame(orig);
-			if (backPanel.isVisible()) backPanel.putFrame(back);
-			if (facePanel.isVisible()) facePanel.putFrame(face);
+			if (origPanel.isVisible())
+				origPanel.putFrame(orig);
+			if (backPanel.isVisible())
+				backPanel.putFrame(back);
+			if (facePanel.isVisible())
+				facePanel.putFrame(face);
 		}
 	}
 
@@ -151,7 +154,7 @@ public class UI extends CanvasFrame implements ActionListener {
 		} else if (source == mi2_3) {
 			facePanel.setVisible(true);
 		} else if (source == mi3) {
-			videoOn =  !videoOn;
+			videoOn = !videoOn;
 		}
 	}
 
@@ -203,13 +206,11 @@ public class UI extends CanvasFrame implements ActionListener {
 
 		JMenu menu3 = new JMenu("Video");
 		menu3.setMnemonic(KeyEvent.VK_V);
-		
+
 		mi3 = new JCheckBoxMenuItem("Video", true);
 		mi3.setMnemonic(KeyEvent.VK_V);
 		mi3.addActionListener(this);
-		
 
-		
 		menuBar.add(menu1);
 		menuBar.add(menu2);
 		menuBar.add(mi3);
